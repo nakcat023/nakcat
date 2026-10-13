@@ -170,18 +170,27 @@ static async Task<RatingSummary> GetSummary(NakcatDb db)
 // ถ้าใส่มาเป็นแบบ Host=... อยู่แล้วก็ใช้ตามนั้นเลย
 static string ToNpgsqlConnectionString(string value)
 {
-    if (!value.StartsWith("postgres://") && !value.StartsWith("postgresql://")) return value;
-    var uri = new Uri(value);
-    string[] user = uri.UserInfo.Split(':', 2);
-    var result = new Npgsql.NpgsqlConnectionStringBuilder
+    Npgsql.NpgsqlConnectionStringBuilder result;
+    if (value.StartsWith("postgres://") || value.StartsWith("postgresql://"))
     {
-        Host = uri.Host,
-        Port = uri.Port > 0 ? uri.Port : 5432,
-        Database = uri.AbsolutePath.TrimStart('/'),
-        Username = Uri.UnescapeDataString(user[0]),
-        Password = user.Length > 1 ? Uri.UnescapeDataString(user[1]) : "",
-        SslMode = Npgsql.SslMode.Require, // เชื่อมต่อแบบเข้ารหัสเสมอ
-    };
+        var uri = new Uri(value);
+        string[] user = uri.UserInfo.Split(':', 2);
+        result = new Npgsql.NpgsqlConnectionStringBuilder
+        {
+            Host = uri.Host,
+            Port = uri.Port > 0 ? uri.Port : 5432,
+            Database = uri.AbsolutePath.TrimStart('/'),
+            Username = Uri.UnescapeDataString(user[0]),
+            Password = user.Length > 1 ? Uri.UnescapeDataString(user[1]) : "",
+            SslMode = Npgsql.SslMode.Require, // เชื่อมต่อแบบเข้ารหัสเสมอ
+        };
+    }
+    else
+    {
+        result = new Npgsql.NpgsqlConnectionStringBuilder(value);
+    }
+    // ปิดการล็อกอินแบบ Kerberos (GSS) ที่ Neon ไม่ได้ใช้ ไม่งั้นบน Render จะ error หาไฟล์ libgssapi_krb5.so.2 ไม่เจอ
+    result.GssEncryptionMode = Npgsql.GssEncryptionMode.Disable;
     return result.ConnectionString;
 }
 
