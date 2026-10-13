@@ -1,0 +1,41 @@
+// ตัวนับคนเข้าเว็บแบบไม่เก็บตัวตน: บอก API แค่ว่า "เปิดหน้าไหน / มือถือหรือคอม / วันนี้เพิ่งเข้าครั้งแรกไหม"
+// ไม่ส่งชื่อ ไม่ส่งอีเมล ไม่ฝังคุกกี้ติดตาม ฝั่ง API ก็เก็บแค่ตัวเลขรวมรายวัน (ตาราง DailyStats)
+// + นับว่าเกมไหนถูกเล่นจนเห็นผลลัพธ์กี่ครั้ง (ฟังจากเหตุการณ์ nakcat:game-finished ที่ gameRating() ใน index.html ส่งมา)
+// API_BASE (ที่อยู่ของ API) มาจาก src/api.ts
+// ไฟล์ต้นฉบับคือ src/visits.ts — แก้ที่นั่นแล้วสั่ง npm run build จะได้ nakcat-site/visits.js ใหม่
+
+(() => {
+    if (!API_BASE) return;
+    const api: string = API_BASE;
+
+    // ส่งแบบไม่รอผล: นับไม่ได้ก็ไม่เป็นไร ไม่ให้กระทบการใช้เว็บ
+    // keepalive = ถึงคนจะกดไปหน้าอื่นทันที คำขอนี้ก็ยังส่งจนจบ
+    const send = (path: string, body: object): void => {
+        fetch(`${api}${path}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body),
+            keepalive: true,
+        }).catch(() => {});
+    };
+
+    // หน้าไหน: "/" หรือ "/index.html" = index, "/article-sleep.html" หรือ "/article-sleep" = article-sleep
+    const page: string = location.pathname.split('/').pop()?.replace(/\.html$/, '') || 'index';
+    // จอสัมผัสเป็นหลัก = มือถือ/แท็บเล็ต, ใช้เมาส์ = คอม
+    const device: 'mobile' | 'desktop' = window.matchMedia('(pointer: coarse)').matches ? 'mobile' : 'desktop';
+
+    // "คนเข้าวันนี้" = เบราว์เซอร์ที่เปิดเว็บครั้งแรกของวัน (จำแค่วันที่ล่าสุดไว้ในเครื่อง ไม่มีรหัสประจำตัว)
+    const DAY_KEY: string = 'nakcat-last-visit-day';
+    const today: string = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Bangkok' }).format(new Date()); // เช่น 2026-10-13
+    let lastDay: string | null = null;
+    try { lastDay = localStorage.getItem(DAY_KEY); } catch (e) {}
+    const newVisitor: boolean = lastDay !== today;
+    try { localStorage.setItem(DAY_KEY, today); } catch (e) {}
+
+    send('/visits', { page, device, newVisitor });
+
+    document.addEventListener('nakcat:game-finished', (e: Event) => {
+        const game: string = (e as CustomEvent<string>).detail;
+        send('/game-plays', { game });
+    });
+})();

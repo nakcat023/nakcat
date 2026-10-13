@@ -1,5 +1,7 @@
 "use strict";
-// แบบประเมินท้ายบทความ: ส่งผ่าน Netlify Forms และจำไว้ในเบราว์เซอร์ว่าโหวตแล้ว จะได้ไม่ถามซ้ำ
+// แบบประเมินท้ายบทความ: ส่งโหวต (+ เหตุผลตอนกด 👎) เข้า API และจำไว้ในเบราว์เซอร์ว่าโหวตแล้ว จะได้ไม่ถามซ้ำ
+// แอดมินดูผลโหวตได้ในแท็บ "📊 ภาพรวม" และอ่านเหตุผลได้ในแท็บ "💬 ความเห็น"
+// API_BASE (ที่อยู่ของ API) มาจาก src/api.ts (หน้าบทความต้องโหลด api.js ก่อน feedback.js)
 // ไฟล์ต้นฉบับคือ src/feedback.ts — แก้ที่นั่นแล้วสั่ง npm run build จะได้ nakcat-site/feedback.js ใหม่
 (() => {
     const form = document.querySelector('.feedback-card');
@@ -9,13 +11,12 @@
     const status = form?.querySelector('.feedback-status');
     const submitBtn = more?.querySelector('button[type="submit"]');
     const comment = more?.querySelector('textarea');
+    const honeypot = form?.querySelector('input[name="bot-field"]');
     // หน้าที่ไม่มีแบบประเมิน (เช่นหน้าแรก) หรือหาชิ้นไหนไม่เจอ ก็ไม่ต้องทำอะไรต่อ
-    if (!form || !articleInput || !voteInput || !more || !status || !submitBtn || !comment)
+    if (!form || !articleInput || !voteInput || !more || !status || !submitBtn || !comment || !honeypot)
         return;
     const voteBtns = form.querySelectorAll('.vote-btn');
     const storeKey = `nakcat-feedback-${articleInput.value}`;
-    // เปิดจากไฟล์ในเครื่องไม่มี Netlify ให้ส่ง จึงข้ามการส่งเพื่อให้ทดสอบหน้าตาได้
-    const isLocalPreview = location.protocol === 'file:' || ['localhost', '127.0.0.1'].includes(location.hostname);
     const showThanks = (vote) => {
         form.classList.add('is-done');
         status.className = 'feedback-status is-success';
@@ -32,24 +33,18 @@
         showThanks(saved);
         return;
     }
-    // แปลงข้อมูลในฟอร์มเป็นข้อความแบบที่ Netlify Forms รับ (ข้ามช่องที่เป็นไฟล์ ซึ่งฟอร์มนี้ไม่มีอยู่แล้ว)
-    const formBody = () => {
-        const params = new URLSearchParams();
-        new FormData(form).forEach((value, key) => {
-            if (typeof value === 'string')
-                params.append(key, value);
-        });
-        return params.toString();
-    };
     const send = async () => {
         voteBtns.forEach((b) => { b.disabled = true; });
         submitBtn.disabled = true;
         try {
-            if (!isLocalPreview) {
-                const res = await fetch('/', {
+            // ช่องดักบอท: มีค่า = บอทกรอก ข้ามการส่งจริงไปเลย
+            if (!honeypot.value) {
+                if (!API_BASE)
+                    throw new Error('no api');
+                const res = await fetch(`${API_BASE}/article-feedback`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: formBody(),
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ article: articleInput.value, vote: voteInput.value, comment: comment.value }),
                 });
                 if (!res.ok)
                     throw new Error(String(res.status));

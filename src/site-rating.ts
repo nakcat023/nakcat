@@ -1,6 +1,6 @@
 // ให้คะแนนเว็บโดยรวม "ชอบเว็บ nakcat แค่ไหน?"
-// - ส่งคะแนน + ความเห็นผ่าน Netlify Forms เหมือนเดิม (ความเห็นส่งเข้าอีเมลเจ้าของเว็บ) และจำไว้ว่าให้คะแนนแล้ว
-// - ส่งคะแนนเข้า API ของเรา (โฟลเดอร์ api) เพื่อคิดค่าเฉลี่ยมาแสดง ถ้า API ไม่ตอบ ฟอร์มก็ยังใช้ได้ตามปกติ
+// - ส่งคะแนน + ความเห็นเข้า API ของเรา (โฟลเดอร์ api) แอดมินอ่านความเห็นได้ในแท็บ "💬 ความเห็น"
+// - API ตอบค่าเฉลี่ยใหม่กลับมาแสดง และจำไว้ในเครื่องว่าให้คะแนนแล้ว จะได้ไม่ถามซ้ำ
 // ไฟล์ต้นฉบับคือ src/site-rating.ts — แก้ที่นั่นแล้วสั่ง npm run build จะได้ nakcat-site/site-rating.js ใหม่
 
 // ข้อมูลที่ API ส่งกลับมา (ต้องตรงกับ record RatingSummary ใน api/Program.cs)
@@ -19,8 +19,6 @@ interface RatingSummary {
 
     const siteKey: string = 'nakcat-site-rating';
     const siteFaces: Record<string, string> = { 1: '😿', 2: '😾', 3: '🐱', 4: '😺', 5: '😻' };
-    // เปิดจากไฟล์ในเครื่องไม่มี Netlify ให้ส่ง จึงข้ามการส่งเพื่อให้ทดสอบหน้าตาได้
-    const isLocalPreview: boolean = location.protocol === 'file:' || ['localhost', '127.0.0.1'].includes(location.hostname);
 
     const siteThanks = (score: string): void => {
         siteForm.classList.add('is-done');
@@ -47,21 +45,6 @@ interface RatingSummary {
         } catch (err) {}
     };
 
-    // ส่งคะแนนเข้า API แล้วแสดงค่าเฉลี่ยใหม่ที่ API ตอบกลับมา (ไม่สำเร็จก็ไม่เป็นไร)
-    const sendToApi = async (score: number): Promise<void> => {
-        if (!API_BASE) return;
-        try {
-            const res: Response = await fetch(`${API_BASE}/ratings`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ score }),
-            });
-            if (!res.ok) return;
-            const summary: RatingSummary = await res.json();
-            showSummary(summary);
-        } catch (err) {}
-    };
-
     loadSummary();
 
     // ===================== ฟอร์ม =====================
@@ -73,33 +56,28 @@ interface RatingSummary {
         if (e.target instanceof HTMLInputElement && e.target.name === 'score') siteSubmit.disabled = false;
     });
 
-    // ข้อมูลในฟอร์มแบบที่ Netlify Forms รับ (ข้ามช่องที่เป็นไฟล์ ซึ่งฟอร์มนี้ไม่มีอยู่แล้ว)
-    const formBody = (): string => {
-        const params = new URLSearchParams();
-        new FormData(siteForm).forEach((value, key) => {
-            if (typeof value === 'string') params.append(key, value);
-        });
-        return params.toString();
-    };
-
     siteForm.addEventListener('submit', async (e: SubmitEvent) => {
         e.preventDefault();
         const score: string = siteForm.querySelector<HTMLInputElement>('input[name="score"]:checked')?.value ?? '';
+        const comment: string = siteForm.querySelector<HTMLTextAreaElement>('textarea[name="comment"]')?.value ?? '';
+        const honeypot: string = siteForm.querySelector<HTMLInputElement>('input[name="bot-field"]')?.value ?? '';
         if (!score) return;
+        // ช่องดักบอท: มีค่า = บอทกรอก ทำเป็นส่งสำเร็จแต่ไม่ส่งจริง
+        if (honeypot) { siteThanks(score); return; }
         siteSubmit.disabled = true;
         siteSubmit.textContent = 'กำลังส่ง...';
         try {
-            if (!isLocalPreview) {
-                const res: Response = await fetch('/', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: formBody(),
-                });
-                if (!res.ok) throw new Error(String(res.status));
-            }
+            if (!API_BASE) throw new Error('no api');
+            const res: Response = await fetch(`${API_BASE}/ratings`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ score: Number(score), comment }),
+            });
+            if (!res.ok) throw new Error(String(res.status));
+            const summary: RatingSummary = await res.json();
+            showSummary(summary);
             try { localStorage.setItem(siteKey, score); } catch (err) {}
             siteThanks(score);
-            sendToApi(Number(score)); // ส่งหลัง Netlify สำเร็จเท่านั้น กดซ้ำตอนส่งไม่สำเร็จจะได้ไม่นับซ้ำ
         } catch (err) {
             siteStatus.className = 'feedback-status is-error';
             siteStatus.textContent = 'ส่งไม่สำเร็จ 😿 ลองกดอีกครั้งนะ';

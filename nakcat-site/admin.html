@@ -48,13 +48,72 @@
         .admin-edit input:focus, .admin-edit textarea:focus { border-color: var(--orange); outline: none; box-shadow: 0 0 0 4px rgba(217, 109, 59, 0.15); }
         .admin-score { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
         .admin-score .admin-story-head { margin: 0; }
+        a.admin-btn { display: inline-flex; align-items: center; color: inherit; text-decoration: none; }
+        a.admin-btn.is-approve { color: #23663a; }
+        a.admin-btn.is-approve:hover { color: white; }
+        .admin-message.is-unread { box-shadow: inset 4px 0 0 var(--orange), var(--shadow-sm); }
+        .admin-message .admin-story-head a { color: var(--orange-dark); }
+        .tab-badge { display: inline-grid; place-items: center; min-width: 20px; height: 20px; margin-left: 6px; padding: 0 6px; border-radius: 999px; color: white; background: #9c2b22; font-size: 0.75rem; font-weight: 600; }
+        .admin-tab.is-active .tab-badge { color: #9c2b22; background: white; }
+
+        /* ===== แท็บภาพรวม (src/admin-dashboard.ts) ===== */
+        .dash { display: grid; gap: 16px; }
+        .dash-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+        .dash-tile { display: grid; gap: 2px; padding: 16px 18px; border: 0; border-radius: var(--radius); color: var(--ink); background: white; box-shadow: var(--shadow-sm); font: inherit; text-align: left; }
+        .dash-tile.is-link { cursor: pointer; transition: transform 180ms ease, box-shadow 180ms ease; }
+        .dash-tile.is-link:hover, .dash-tile.is-link:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--orange), var(--shadow-sm); transform: translateY(-2px); }
+        .dash-tile-label { color: var(--muted); font-size: 0.85rem; }
+        .dash-tile-value { font-size: 1.9rem; font-weight: 600; line-height: 1.2; }
+        .dash-tile-sub { color: var(--muted); font-size: 0.8rem; }
+        .dash-card { padding: 20px 22px; border-radius: var(--radius); background: white; box-shadow: var(--shadow-sm); min-width: 0; }
+        .dash-title { margin: 0; font-size: 1.05rem; font-weight: 600; }
+        .dash-note { margin: 2px 0 14px; color: var(--muted); font-size: 0.82rem; }
+        .dash-pair { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+
+        /* กราฟแท่งแนวตั้ง: แท่งบาง ปลายมน 4px ตั้งบนเส้นฐาน ห่างกัน 2px ขึ้นไป */
+        .dash-cols { display: grid; grid-template-columns: repeat(14, 1fr); gap: 6px; height: 180px; padding-top: 22px; border-bottom: 1px solid var(--line); }
+        .dash-col { position: relative; display: flex; min-width: 0; height: 100%; outline: none; cursor: default; }
+        .dash-col-track { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; }
+        .dash-col-bar { width: min(100%, 22px); min-height: 0; border-radius: 4px 4px 0 0; background: #f0a47c; transition: background 150ms ease; }
+        .dash-col.is-today .dash-col-bar { background: var(--orange); }
+        .dash-col:hover .dash-col-bar, .dash-col:focus-visible .dash-col-bar { background: var(--orange-dark); }
+        .dash-col-value { margin-bottom: 4px; color: var(--ink); font-size: 0.78rem; font-weight: 600; }
+        .dash-col-day { position: absolute; top: calc(100% + 6px); right: 0; left: 0; color: var(--muted); font-size: 0.75rem; text-align: center; }
+        .dash-col.is-today .dash-col-day { color: var(--ink); font-weight: 600; }
+        /* ป้ายตัวเลขตอนชี้/แตะแท่ง: ซ่อนจริง (display: none) จนกว่าจะชี้ จะได้ไม่ดันหน้าให้กว้างเกินจอ
+           7 วันแรกชิดซ้าย 7 วันหลังชิดขวา ป้ายจะไม่ล้นออกนอกกล่อง */
+        .dash-col::after { content: attr(data-tip); position: absolute; bottom: calc(100% + 4px); left: 0; z-index: 2; display: none; padding: 6px 10px; border-radius: 8px; color: white; background: var(--ink); font-size: 0.78rem; white-space: nowrap; pointer-events: none; }
+        .dash-col:nth-child(n+8)::after { right: 0; left: auto; }
+        .dash-col:hover::after, .dash-col:focus-visible::after { display: block; }
+        .dash-card:has(.dash-cols) { padding-bottom: 36px; }
+
+        /* กราฟแท่งแนวนอน: ชื่อ | แท่ง | ตัวเลข */
+        .dash-bars { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+        .dash-bar-row { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(60px, 1fr) auto; align-items: center; gap: 10px; font-size: 0.9rem; }
+        .dash-bar-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .dash-bar-track { height: 10px; border-radius: 4px; background: var(--warm); }
+        .dash-bar { display: block; height: 100%; border-radius: 4px; background: var(--orange); }
+        .dash-bar-value { color: var(--muted); font-size: 0.85rem; white-space: nowrap; }
+
+        .dash-table-wrap { overflow-x: auto; }
+        .dash-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        .dash-table th { padding: 8px 10px; border-bottom: 1px solid var(--line); color: var(--muted); font-weight: 500; text-align: right; white-space: nowrap; }
+        .dash-table td { padding: 9px 10px; border-bottom: 1px solid var(--warm); text-align: right; white-space: nowrap; }
+        .dash-table th:first-child, .dash-table td:first-child { text-align: left; white-space: normal; }
+        .dash-privacy { margin: 0; color: var(--muted); font-size: 0.82rem; line-height: 1.7; }
+
+        @media (max-width: 560px) {
+            .dash-cols { gap: 3px; }
+            .dash-col-value { font-size: 0.7rem; }
+            .dash-pair { grid-template-columns: 1fr; }
+        }
         [hidden] { display: none !important; }
     </style>
 </head>
 <body>
     <main class="container admin-wrap">
         <h1>✦ nakcat · แอดมิน</h1>
-        <p class="admin-sub">อ่านเรื่องเล่าจากทาสแมวก่อนให้ขึ้นเว็บ และดูแลกระดานคะแนนเกม</p>
+        <p class="admin-sub">ภาพรวมเว็บ ข้อความ ความเห็น เรื่องเล่า และกระดานคะแนน รวมไว้ที่เดียว</p>
 
         <form class="admin-card" id="admin-login">
             <label>รหัสแอดมิน
@@ -66,7 +125,10 @@
 
         <section id="admin-panel" hidden>
             <div class="admin-bar" role="group" aria-label="เลือกหมวด">
-                <button type="button" class="gallery-filter admin-tab is-active" data-status="Pending" aria-pressed="true">⏳ รอตรวจ</button>
+                <button type="button" class="gallery-filter admin-tab is-active" data-status="Overview" aria-pressed="true">📊 ภาพรวม</button>
+                <button type="button" class="gallery-filter admin-tab" data-status="Messages" aria-pressed="false">✉️ ข้อความ<span class="tab-badge" hidden></span></button>
+                <button type="button" class="gallery-filter admin-tab" data-status="Comments" aria-pressed="false">💬 ความเห็น</button>
+                <button type="button" class="gallery-filter admin-tab" data-status="Pending" aria-pressed="false">⏳ รอตรวจ<span class="tab-badge" hidden></span></button>
                 <button type="button" class="gallery-filter admin-tab" data-status="Approved" aria-pressed="false">✅ อนุมัติแล้ว</button>
                 <button type="button" class="gallery-filter admin-tab" data-status="Rejected" aria-pressed="false">❌ ไม่อนุมัติ</button>
                 <button type="button" class="gallery-filter admin-tab" data-status="Scores" aria-pressed="false">🏆 กระดานจับคู่การ์ด</button>
@@ -78,6 +140,7 @@
     </main>
 
     <script src="api.js"></script>
+    <script src="admin-dashboard.js"></script>
     <script src="admin.js"></script>
 </body>
 </html>

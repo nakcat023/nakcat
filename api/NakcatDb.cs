@@ -11,6 +11,10 @@ public class NakcatDb : DbContext
     public DbSet<CatStory> CatStories => Set<CatStory>();
     public DbSet<BreedLike> BreedLikes => Set<BreedLike>();
     public DbSet<MemoryScore> MemoryScores => Set<MemoryScore>();
+    public DbSet<ContactMessage> ContactMessages => Set<ContactMessage>();
+    public DbSet<GameRating> GameRatings => Set<GameRating>();
+    public DbSet<ArticleFeedback> ArticleFeedbacks => Set<ArticleFeedback>();
+    public DbSet<DailyStat> DailyStats => Set<DailyStat>();
 
     // ตั้งค่าตารางเพิ่มเติมที่บอกผ่าน property เฉยๆ ไม่ได้
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -18,6 +22,9 @@ public class NakcatDb : DbContext
         // ตาราง BreedLikes ใช้ชื่อพันธุ์เป็นกุญแจ (ไม่มีเลข Id) และใส่ทุกพันธุ์ไว้ตั้งแต่สร้างตาราง หัวใจเริ่มที่ 0
         modelBuilder.Entity<BreedLike>().HasKey(b => b.Breed);
         modelBuilder.Entity<BreedLike>().HasData(BreedLike.AllBreeds.Select(name => new BreedLike { Breed = name, Count = 0 }));
+
+        // ตาราง DailyStats ใช้ "วัน + ชื่อตัวนับ" คู่กันเป็นกุญแจ (1 วัน มีตัวนับแต่ละชื่อได้แถวเดียว)
+        modelBuilder.Entity<DailyStat>().HasKey(s => new { s.Day, s.Key });
     }
 }
 // (หมายเหตุ: PostgreSQL จำได้เองว่าเวลาเป็น UTC จึงไม่ต้องมีตัวแปลงเวลาแบบตอนใช้ SQLite แล้ว)
@@ -27,6 +34,7 @@ public class Rating
 {
     public int Id { get; set; }                 // เลขประจำแถว ฐานข้อมูลใส่ให้เอง (1, 2, 3, ...)
     public int Score { get; set; }              // คะแนน 1–5
+    public string? Comment { get; set; }        // ความเห็นเพิ่มเติม (ไม่กรอกก็ได้ = null)
     public DateTime CreatedAt { get; set; }     // เวลาที่ส่ง (เวลาสากล UTC)
 }
 
@@ -75,4 +83,44 @@ public enum StoryStatus
     Pending,   // รอแอดมินตรวจ (ค่าเริ่มต้น)
     Approved,  // อนุมัติแล้ว ขึ้นเว็บได้
     Rejected,  // ไม่อนุมัติ
+}
+
+// ข้อความจากฟอร์ม "ติดต่อเรา" 1 ข้อความ = 1 แถวในตาราง ContactMessages
+// มีชื่อและอีเมลที่คนส่งตั้งใจให้ไว้ เพื่อให้เราตอบกลับได้ ดูได้เฉพาะในหน้าแอดมินเท่านั้น
+public class ContactMessage
+{
+    public int Id { get; set; }
+    public string Name { get; set; } = "";
+    public string Email { get; set; } = "";
+    public string Message { get; set; } = "";
+    public DateTime CreatedAt { get; set; }
+    public bool IsRead { get; set; }            // แอดมินเปิดอ่านแล้วหรือยัง
+}
+
+// ดาวที่ให้หลังเล่นเกมจบ ("เกมนี้สนุกไหม?") 1 ครั้ง = 1 แถว
+public class GameRating
+{
+    public int Id { get; set; }
+    public string Game { get; set; } = "";      // รหัสเกม เช่น "memory-match" (ดูรายชื่อใน Known.Games)
+    public int Stars { get; set; }              // 1–5 ดาว
+    public DateTime CreatedAt { get; set; }
+}
+
+// โหวตท้ายบทความ ("บทความนี้มีประโยชน์ไหม?") 1 ครั้ง = 1 แถว
+public class ArticleFeedback
+{
+    public int Id { get; set; }
+    public string Article { get; set; } = "";   // รหัสบทความ เช่น "article-sleep"
+    public string Vote { get; set; } = "";      // "up" = มีประโยชน์ / "down" = ยังไม่ค่อย
+    public string? Comment { get; set; }        // เหตุผลตอนกด 👎 (ไม่กรอกก็ได้)
+    public DateTime CreatedAt { get; set; }
+}
+
+// ตัวนับรายวัน: เก็บแค่ตัวเลขรวม ไม่เก็บว่าใครเข้า (ไม่มี IP ไม่มีชื่อ)
+// เช่น วันที่ 2026-10-13 + "views:index" = 57 → วันนั้นหน้าแรกถูกเปิด 57 ครั้ง
+public class DailyStat
+{
+    public DateOnly Day { get; set; }           // วันตามเวลาไทย
+    public string Key { get; set; } = "";       // ชื่อตัวนับ: visitors, views:<หน้า>, device:<mobile|desktop>, plays:<เกม>
+    public int Count { get; set; }
 }

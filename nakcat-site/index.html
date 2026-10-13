@@ -386,10 +386,6 @@
                 </div>
             </div>
 
-            <form name="game-rating" data-netlify="true" netlify-honeypot="bot-field" hidden>
-                <input name="game"><input name="stars"><input name="bot-field">
-            </form>
-
             <dialog class="photo-viewer" id="photo-viewer" aria-label="ดูรูปเต็ม">
                 <button type="button" class="dialog-close" id="photo-close" aria-label="ปิดรูป">✕</button>
                 <img id="photo-full" src="" alt="">
@@ -486,8 +482,7 @@
                     <h2>ติดต่อเรา</h2>
                     <p>มีเรื่องแมวอยากเล่า อยากถาม หรืออยากให้เราเขียนเรื่องอะไร ส่งข้อความถึงทีมงาน nakcat ได้เลย</p>
                 </div>
-                <form class="contact-form reveal" id="contact-form" name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field">
-                    <input type="hidden" name="form-name" value="contact">
+                <form class="contact-form reveal" id="contact-form">
                     <p class="hidden-field"><label>อย่ากรอกช่องนี้ <input name="bot-field" tabindex="-1" autocomplete="off"></label></p>
                     <label>ชื่อ
                         <input type="text" name="name" placeholder="ชื่อของคุณ" required>
@@ -508,8 +503,7 @@
                     </div>
                     <p class="form-note" id="form-status" aria-live="polite">ข้อความจะส่งถึงทีมงาน nakcat โดยตรง เราจะตอบกลับทางอีเมลที่คุณกรอกไว้</p>
                 </form>
-                <form class="site-rating-card reveal" id="site-rating-form" name="site-rating" method="POST" data-netlify="true" netlify-honeypot="bot-field">
-                    <input type="hidden" name="form-name" value="site-rating">
+                <form class="site-rating-card reveal" id="site-rating-form">
                     <p class="hidden-field"><label>อย่ากรอกช่องนี้ <input name="bot-field" tabindex="-1" autocomplete="off"></label></p>
                     <div class="site-rating-head">
                         <h3>ชอบเว็บ nakcat แค่ไหน?</h3>
@@ -770,36 +764,7 @@
             }
         });
 
-        // ฟอร์มติดต่อ: ส่งผ่าน Netlify Forms แล้ว Netlify จะส่งต่อเข้าอีเมลเจ้าของเว็บ
-        const contactForm = document.querySelector('#contact-form');
-        const formStatus = document.querySelector('#form-status');
-        const contactSubmit = document.querySelector('#contact-submit');
-        contactForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            contactSubmit.disabled = true;
-            contactSubmit.textContent = 'กำลังส่ง...';
-            formStatus.className = 'form-note';
-            try {
-                const res = await fetch('/', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: new URLSearchParams(new FormData(contactForm)).toString(),
-                });
-                if (!res.ok) throw new Error(res.status);
-                contactForm.reset();
-                formStatus.textContent = 'ส่งข้อความเรียบร้อยแล้ว ขอบคุณมากนะ 🐾 เราจะตอบกลับโดยเร็ว';
-                formStatus.classList.add('is-success');
-            } catch (err) {
-                formStatus.textContent = 'ส่งไม่สำเร็จ 😿 ลองใหม่อีกครั้ง หรือทักมาทาง Instagram, Facebook หรือ TikTok ได้เลย';
-                formStatus.classList.add('is-error');
-            }
-            contactSubmit.disabled = false;
-            contactSubmit.textContent = 'ส่งข้อความ';
-        });
-
-        // ให้ดาวหลังเล่นเกมจบ: ส่งผ่าน Netlify Forms และจำไว้ว่าเกมไหนให้ดาวไปแล้ว
-        // เปิดจากไฟล์ในเครื่องไม่มี Netlify ให้ส่ง จึงข้ามการส่งเพื่อให้ทดสอบหน้าตาได้
-        const isLocalPreview = location.protocol === 'file:' || ['localhost', '127.0.0.1'].includes(location.hostname);
+        // ให้ดาวหลังเล่นเกมจบ: ส่งเข้า API (แอดมินดูค่าเฉลี่ยได้ในแท็บภาพรวม) และจำไว้ว่าเกมไหนให้ดาวไปแล้ว
         const ratingKey = (game) => `nakcat-rating-${game}`;
         function savedRating(game) {
             try { return localStorage.getItem(ratingKey(game)); } catch (e) { return null; }
@@ -808,6 +773,8 @@
             return `ขอบคุณที่ให้ ${'⭐'.repeat(Number(stars))} นะ 🐾`;
         }
         function gameRating(game) {
+            // gameRating ถูกเรียกตอนเกมแสดงผลลัพธ์ = เล่นจบ 1 ครั้ง (visits.js ฟังแล้วนับให้)
+            document.dispatchEvent(new CustomEvent('nakcat:game-finished', { detail: game }));
             const saved = savedRating(game);
             if (saved) return `<div class="rating"><p class="rating-status is-success">${ratingThanks(saved)}</p></div>`;
             const stars = [1, 2, 3, 4, 5].map((n) =>
@@ -829,14 +796,13 @@
             const buttons = box.querySelectorAll('.rating-star');
             buttons.forEach((b) => { b.disabled = true; });
             try {
-                if (!isLocalPreview) {
-                    const res = await fetch('/', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                        body: new URLSearchParams({ 'form-name': 'game-rating', game, stars }).toString(),
-                    });
-                    if (!res.ok) throw new Error(res.status);
-                }
+                if (!API_BASE) throw new Error('no api');
+                const res = await fetch(`${API_BASE}/game-ratings`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ game, stars: Number(stars) }),
+                });
+                if (!res.ok) throw new Error(res.status);
                 try { localStorage.setItem(ratingKey(game), stars); } catch (err) {}
                 box.querySelector('.rating-q').remove();
                 box.querySelector('.rating-stars').remove();
@@ -1472,6 +1438,8 @@
     <script src="catsays.js"></script>
     <script src="age.js"></script>
     <script src="api.js"></script>
+    <script src="visits.js"></script>
+    <script src="contact.js"></script>
     <script src="breed-likes.js"></script>
     <script src="leaderboard.js"></script>
     <script src="site-rating.js"></script>

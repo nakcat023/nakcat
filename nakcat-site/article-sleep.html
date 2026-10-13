@@ -85,8 +85,7 @@
             <div class="callout">
                 <p><strong>เมื่อไรควรพาไปหาหมอ?</strong> ถ้าน้องนอนมากหรือน้อยผิดไปจากปกติอย่างชัดเจน ซึม ไม่กินอาหาร ไม่ยอมเล่น หรือหลบซ่อนตัวนานผิดปกติ อาจเป็นสัญญาณว่าไม่สบาย ควรปรึกษาสัตวแพทย์</p>
             </div>
-            <form class="feedback-card" name="article-feedback" method="POST" data-netlify="true" netlify-honeypot="bot-field">
-                <input type="hidden" name="form-name" value="article-feedback">
+            <form class="feedback-card">
                 <input type="hidden" name="article" value="article-sleep">
                 <input type="hidden" name="vote" value="">
                 <p class="hidden-field"><label>อย่ากรอกช่องนี้ <input name="bot-field" tabindex="-1" autocomplete="off"></label></p>
@@ -139,6 +138,8 @@
             menuToggle.textContent = isOpen ? '✕' : '☰';
         });
     </script>
+    <script src="api.js"></script>
+    <script src="visits.js"></script>
     <script src="feedback.js" defer></script>
     <script src="app.js" defer></script>
 </body>

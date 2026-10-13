@@ -27,8 +27,10 @@ builder.Services.AddCors(options =>
     options.AddDefaultPolicy(policy =>
         policy.WithOrigins(allowedOrigins).AllowAnyHeader().WithMethods("GET", "POST", "PUT", "DELETE")));
 
-// กันกดรัว / บอทยิงซ้ำ: ทุกปุ่มที่ "เขียน" ข้อมูล (ส่งเรื่อง ให้คะแนน กดถูกใจ บันทึกคะแนนเกม)
+// กันกดรัว / บอทยิงซ้ำ: ทุกปุ่มที่ "เขียน" ข้อมูล (ส่งเรื่อง ให้คะแนน กดถูกใจ บันทึกคะแนนเกม ส่งข้อความ)
 // รวมกันได้ไม่เกิน 60 ครั้งต่อนาทีต่อ 1 เครื่อง (นับจาก IP) เกินแล้วตอบ 429 ให้รอก่อน
+// ตัวนับคนเข้าเว็บ / เกมที่เล่นจบ แยกโควตาเป็นของตัวเอง (120 ครั้งต่อนาที) จะได้ไม่ไปกินโควตาปุ่มอื่น
+// (IP ใช้แค่นับโควตาในหน่วยความจำชั่วคราว ไม่ได้บันทึกลงฐานข้อมูล)
 builder.Services.AddRateLimiter(options =>
 {
     options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
@@ -37,6 +39,9 @@ builder.Services.AddRateLimiter(options =>
     options.AddPolicy("writes", context => RateLimitPartition.GetFixedWindowLimiter(
         context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
         _ => new FixedWindowRateLimiterOptions { PermitLimit = 60, Window = TimeSpan.FromMinutes(1) }));
+    options.AddPolicy("tracking", context => RateLimitPartition.GetFixedWindowLimiter(
+        context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+        _ => new FixedWindowRateLimiterOptions { PermitLimit = 120, Window = TimeSpan.FromMinutes(1) }));
 });
 
 // บน Render มีเครื่องกลาง (proxy) รับคำขอแทนเรา IP จริงของคนเข้าเว็บจึงอยู่ใน header X-Forwarded-For
@@ -70,14 +75,19 @@ app.MapGet("/cat-age/{years:int}", (int years) =>
 
 // ===================== คะแนนรีวิวเว็บ "ชอบเว็บ nakcat แค่ไหน?" =====================
 
-// รับคะแนนใหม่ 1 คะแนน: หน้าเว็บส่ง {"score": 5} มา
+// รับคะแนนใหม่ 1 คะแนน: หน้าเว็บส่ง {"score": 5, "comment": "อยากได้เกมเพิ่ม"} มา (comment ไม่ส่งก็ได้)
 app.MapPost("/ratings", async (RatingRequest request, NakcatDb db) =>
 {
     if (request.Score < 1 || request.Score > 5)
     {
         return Results.BadRequest(new ErrorResponse("คะแนนต้องอยู่ระหว่าง 1 ถึง 5"));
     }
-    db.Ratings.Add(new Rating { Score = request.Score, CreatedAt = DateTime.UtcNow });
+    string comment = request.Comment?.Trim() ?? "";
+    if (comment.Length > 1000)
+    {
+        return Results.BadRequest(new ErrorResponse("ความเห็นยาวเกิน 1,000 ตัวอักษร"));
+    }
+    db.Ratings.Add(new Rating { Score = request.Score, Comment = comment == "" ? null : comment, CreatedAt = DateTime.UtcNow });
     await db.SaveChangesAsync();
     return Results.Ok(await GetSummary(db));
 }).RequireRateLimiting("writes");
@@ -287,6 +297,9 @@ async Task<IResult> Review(int id, StoryStatus newStatus, HttpRequest request, N
     return Results.Ok(story);
 }
 
+// ข้อความติดต่อ ดาวให้เกม โหวตบทความ ตัวนับคนเข้าเว็บ และหน้าภาพรวมแอดมิน (อยู่ในไฟล์ InsightsEndpoints.cs)
+app.MapInsights(IsAdmin);
+
 app.Run();
 
 // ตรวจเรื่องที่ส่งมา: ถูกต้องคืน null / ผิดคืนข้อความบอกว่าผิดตรงไหน
@@ -365,7 +378,7 @@ static int ToHumanAge(int years)
 
 // แบบฟอร์มของข้อมูลที่รับเข้า/ส่งกลับ (คล้าย interface ใน TypeScript)
 record CatAge(int CatYears, int HumanYears);
-record RatingRequest(int Score);
+record RatingRequest(int Score, string? Comment);
 record RatingSummary(int Count, double Average);
 record ErrorResponse(string Message);
 record StoryRequest(string? CatName, string? AuthorName, string? Story); // ? = หน้าเว็บอาจไม่ส่งช่องนี้มา

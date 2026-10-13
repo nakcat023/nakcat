@@ -1,6 +1,6 @@
 "use strict";
-// หน้าแอดมิน (admin.html): ดู / อนุมัติ / ไม่อนุมัติ / แก้ / ลบ เรื่องเล่าแมว และลบคะแนนเกมที่ไม่เหมาะสม
-// ต้องใส่รหัสแอดมินของ API
+// หน้าแอดมิน (admin.html): ภาพรวมเว็บ ข้อความติดต่อ ความเห็น เรื่องเล่าแมว (อนุมัติ / แก้ / ลบ) และกระดานคะแนนเกม
+// ต้องใส่รหัสแอดมินของ API · ส่วนวาดหน้าภาพรวมอยู่ใน src/admin-dashboard.ts
 // API_BASE (ที่อยู่ของ API) มาจาก src/api.ts
 // ไฟล์ต้นฉบับคือ src/admin.ts — แก้ที่นั่นแล้วสั่ง npm run build จะได้ nakcat-site/admin.js ใหม่
 (() => {
@@ -27,8 +27,11 @@
         adminKey = sessionStorage.getItem(KEY_STORE) ?? '';
     }
     catch (e) { }
-    let current = 'Pending';
-    const labels = { Pending: 'รอตรวจ', Approved: 'อนุมัติแล้ว', Rejected: 'ไม่อนุมัติ', Scores: 'กระดานจับคู่การ์ด' };
+    let current = 'Overview';
+    const labels = {
+        Overview: 'ภาพรวม', Messages: 'ข้อความ', Comments: 'ความเห็น',
+        Pending: 'รอตรวจ', Approved: 'อนุมัติแล้ว', Rejected: 'ไม่อนุมัติ', Scores: 'กระดานจับคู่การ์ด',
+    };
     const dateFormat = new Intl.DateTimeFormat('th-TH', { dateStyle: 'medium', timeStyle: 'short' });
     // เรียก API พร้อมแนบรหัสแอดมินใน header (ถ้ามี body ส่งไปเป็น JSON)
     const callApi = (path, method = 'GET', body) => fetch(`${api}${path}`, {
@@ -94,6 +97,7 @@
                 // เรื่องนี้ย้ายไปอยู่แท็บอื่นแล้ว เอาออกจากรายการนี้
                 card.remove();
                 updateCount();
+                refreshBadges();
             }
             catch (err) {
                 setMsg(`เปลี่ยนสถานะเรื่อง #${s.id} ไม่สำเร็จ 😿 ลองใหม่อีกครั้ง`);
@@ -196,11 +200,12 @@
                     throw new Error(String(res.status)); // 404 = มีคนลบไปก่อนแล้ว
                 // กระดานคะแนน: โหลดใหม่ ให้อันดับเรียงใหม่และอันดับที่ 11 ขยับขึ้นมา
                 if (current === 'Scores') {
-                    loadStories();
+                    loadTab();
                     return;
                 }
                 card.remove();
                 updateCount();
+                refreshBadges();
             }
             catch (err) {
                 setMsg('ลบไม่สำเร็จ 😿 ลองใหม่อีกครั้ง');
@@ -223,18 +228,164 @@
         card.append(head, deleteButton(`/admin/memory-scores/${s.id}`, `ลบคะแนนของ "${s.playerName}" ออกจากกระดานไหม?`, card));
         return card;
     };
+    // ข้อความติดต่อ 1 ใบ: ยังไม่อ่าน = มีแถบสีส้ม · ตอบทางอีเมลได้เลย (เปิดโปรแกรมอีเมลของเครื่อง)
+    const messageCard = (m) => {
+        const card = document.createElement('article');
+        card.className = `admin-story admin-message${m.isRead ? '' : ' is-unread'}`;
+        const head = document.createElement('p');
+        head.className = 'admin-story-head';
+        const name = document.createElement('strong');
+        name.textContent = `${m.isRead ? '' : '🆕 '}${m.name}`;
+        const email = document.createElement('a');
+        email.href = `mailto:${m.email}`;
+        email.textContent = m.email;
+        const when = document.createElement('span');
+        when.textContent = dateFormat.format(new Date(m.createdAt));
+        head.append(name, email, when);
+        const text = document.createElement('p');
+        text.className = 'admin-story-text';
+        text.textContent = m.message;
+        const markRead = async () => {
+            if (!card.classList.contains('is-unread'))
+                return;
+            const res = await callApi(`/admin/messages/${m.id}/read`, 'POST');
+            if (res.status === 401) {
+                showLogin('รหัสหมดอายุหรือไม่ถูกต้อง ใส่ใหม่อีกครั้งนะ');
+                return;
+            }
+            if (!res.ok)
+                return;
+            card.classList.remove('is-unread');
+            name.textContent = m.name;
+            readBtn.remove();
+            refreshBadges();
+        };
+        const reply = document.createElement('a');
+        reply.className = 'admin-btn is-approve';
+        reply.href = `mailto:${m.email}?subject=${encodeURIComponent('ตอบกลับจาก nakcat 🐾')}`;
+        reply.textContent = '↩️ ตอบทางอีเมล';
+        reply.addEventListener('click', () => { markRead(); });
+        const readBtn = document.createElement('button');
+        readBtn.type = 'button';
+        readBtn.className = 'admin-btn';
+        readBtn.textContent = '✓ อ่านแล้ว';
+        readBtn.addEventListener('click', () => { markRead(); });
+        const actions = document.createElement('div');
+        actions.className = 'admin-actions';
+        actions.append(reply);
+        if (!m.isRead)
+            actions.append(readBtn);
+        actions.append(deleteButton(`/admin/messages/${m.id}`, `ลบข้อความจาก "${m.name}" ถาวรเลยไหม?`, card));
+        card.append(head, text, actions);
+        return card;
+    };
+    // ความเห็น 1 ใบ: บอกว่ามาจากไหน (ให้คะแนนเว็บ / บทความไหน) + ข้อความ (ไม่มีชื่อคนเขียน)
+    const commentCard = (c) => {
+        const card = document.createElement('article');
+        card.className = 'admin-story';
+        const head = document.createElement('p');
+        head.className = 'admin-story-head';
+        const where = document.createElement('strong');
+        where.textContent = c.kind === 'site'
+            ? `⭐ ให้คะแนนเว็บ ${c.score}/5`
+            : `📖 ${dashName(c.topic)} · ${c.vote === 'up' ? '👍 มีประโยชน์' : '👎 ยังไม่ค่อย'}`;
+        const when = document.createElement('span');
+        when.textContent = dateFormat.format(new Date(c.createdAt));
+        head.append(where, when);
+        const text = document.createElement('p');
+        text.className = 'admin-story-text';
+        text.textContent = c.text;
+        card.append(head, text);
+        return card;
+    };
+    // ตัวเลขบนแท็บ เช่น "✉️ ข้อความ 2" "⏳ รอตรวจ 1" (0 = ซ่อน)
+    const setBadges = (pending, unread) => {
+        const show = (tab, n) => {
+            const badge = document.querySelector(`.admin-tab[data-status="${tab}"] .tab-badge`);
+            if (!badge)
+                return;
+            badge.textContent = String(n);
+            badge.hidden = n === 0;
+        };
+        show('Pending', pending);
+        show('Messages', unread);
+    };
+    const refreshBadges = async () => {
+        try {
+            const res = await callApi('/admin/overview');
+            if (!res.ok)
+                return;
+            const data = await res.json();
+            setBadges(data.pendingStories, data.unreadMessages);
+        }
+        catch (err) { }
+    };
     const updateCount = () => {
         const count = list.querySelectorAll('.admin-story').length;
+        if (current === 'Messages') {
+            setMsg(count === 0 ? 'ยังไม่มีข้อความติดต่อ' : `ข้อความ ${count} รายการ (ใหม่สุดอยู่บน)`);
+            return;
+        }
+        if (current === 'Comments') {
+            setMsg(count === 0 ? 'ยังไม่มีใครเขียนความเห็น' : `ความเห็น ${count} รายการ จากการให้คะแนนเว็บและโหวตบทความ (ใหม่สุดอยู่บน)`);
+            return;
+        }
         if (current === 'Scores') {
             setMsg(count === 0 ? 'ยังไม่มีใครบันทึกคะแนนเกมจับคู่การ์ดแมว' : '10 อันดับแรกของเกมจับคู่การ์ดแมว (ลบแล้วอันดับถัดไปจะขยับขึ้นมาแทน)');
             return;
         }
         setMsg(count === 0 ? `ไม่มีเรื่องในหมวด "${labels[current]}" 🎉` : `${labels[current]} ${count} เรื่อง`);
     };
-    const loadStories = async () => {
+    // เปิดแท็บ (ใช้ทั้งตอนกดแท็บ และตอนกดตัวเลขในหน้าภาพรวม)
+    const selectTab = (tab) => {
+        current = tab;
+        tabs.forEach((t) => {
+            const on = t.dataset.status === tab;
+            t.classList.toggle('is-active', on);
+            t.setAttribute('aria-pressed', String(on));
+        });
+        loadTab();
+    };
+    // ขอข้อมูลของแท็บที่เปิดอยู่จาก API แล้ววาดลง #admin-list
+    const getJson = async (path) => {
+        const res = await callApi(path);
+        if (res.status === 401) {
+            showLogin('รหัสไม่ถูกต้อง ลองใหม่อีกครั้งนะ');
+            return null;
+        }
+        if (!res.ok)
+            throw new Error(String(res.status));
+        return res.json();
+    };
+    const loadTab = async () => {
         list.replaceChildren();
-        setMsg('กำลังโหลด...');
+        setMsg('กำลังโหลด... (ถ้า API หลับอยู่ อาจรอเกือบ 1 นาที)');
         try {
+            if (current === 'Overview') {
+                const data = await getJson('/admin/overview');
+                if (!data)
+                    return;
+                setBadges(data.pendingStories, data.unreadMessages);
+                list.replaceChildren(renderOverview(data, (tab) => selectTab(tab)));
+                setMsg(`อัปเดตล่าสุด ${dateFormat.format(new Date())}`);
+                return;
+            }
+            if (current === 'Messages') {
+                const messages = await getJson('/admin/messages');
+                if (!messages)
+                    return;
+                list.replaceChildren(...messages.map(messageCard));
+                updateCount();
+                return;
+            }
+            if (current === 'Comments') {
+                const comments = await getJson('/admin/comments');
+                if (!comments)
+                    return;
+                list.replaceChildren(...comments.map(commentCard));
+                updateCount();
+                return;
+            }
             if (current === 'Scores') {
                 // กระดานคะแนนดูได้ทุกคนอยู่แล้ว (ไม่ต้องใช้รหัส) แต่ปุ่มลบต้องใช้รหัส
                 const res = await fetch(`${api}/memory-scores`);
@@ -245,14 +396,9 @@
                 updateCount();
                 return;
             }
-            const res = await callApi(`/admin/stories?status=${current}`);
-            if (res.status === 401) {
-                showLogin('รหัสไม่ถูกต้อง ลองใหม่อีกครั้งนะ');
+            const stories = await getJson(`/admin/stories?status=${current}`);
+            if (!stories)
                 return;
-            }
-            if (!res.ok)
-                throw new Error(String(res.status));
-            const stories = await res.json();
             list.replaceChildren(...stories.map(storyCard));
             updateCount();
         }
@@ -263,7 +409,7 @@
     const showPanel = () => {
         loginForm.hidden = true;
         panel.hidden = false;
-        loadStories();
+        selectTab('Overview');
     };
     // ===================== ปุ่มต่างๆ =====================
     loginForm.addEventListener('submit', (e) => {
@@ -279,14 +425,7 @@
         showPanel();
     });
     tabs.forEach((tab) => {
-        tab.addEventListener('click', () => {
-            current = tab.dataset.status ?? 'Pending';
-            tabs.forEach((t) => {
-                t.classList.toggle('is-active', t === tab);
-                t.setAttribute('aria-pressed', String(t === tab));
-            });
-            loadStories();
-        });
+        tab.addEventListener('click', () => selectTab(tab.dataset.status ?? 'Overview'));
     });
     logoutBtn.addEventListener('click', () => showLogin('ออกจากระบบแล้ว'));
     if (adminKey)
