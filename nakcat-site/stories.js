@@ -13,6 +13,7 @@
     const counter = document.querySelector('#tale-count');
     const submitBtn = document.querySelector('#tale-submit');
     const status = document.querySelector('#tale-status');
+    const sortButtons = document.querySelectorAll('.tales-sort [data-sort]');
     if (!section || !list || !form || !catInput || !authorInput || !storyInput || !honeypot || !counter || !submitBtn || !status)
         return;
     // เว็บจริงยังไม่มี API: ปล่อยส่วนนี้ซ่อนไว้ (ใน HTML ใส่ hidden ไว้ตั้งแต่แรก)
@@ -21,6 +22,20 @@
     const api = API_BASE;
     section.hidden = false;
     const dateFormat = new Intl.DateTimeFormat('th-TH', { day: 'numeric', month: 'short', year: 'numeric' });
+    let sort = 'latest';
+    // เรื่องที่เครื่องนี้กดถูกใจไว้ (เก็บเลข id) กันกดซ้ำ และให้ปุ่มขึ้นสีถูกต้องตอนเปิดเว็บครั้งหน้า
+    const LIKED_KEY = 'nakcat-liked-stories';
+    let liked = [];
+    try {
+        liked = JSON.parse(localStorage.getItem(LIKED_KEY) ?? '[]');
+    }
+    catch (e) { }
+    const saveLiked = () => {
+        try {
+            localStorage.setItem(LIKED_KEY, JSON.stringify(liked));
+        }
+        catch (e) { }
+    };
     // ===================== รายการเรื่องเล่า =====================
     // สร้างการ์ด 1 ใบ: ใช้ textContent ทุกช่อง ข้อความที่คนพิมพ์มาจะแสดงเป็นตัวหนังสือเสมอ ไม่ถูกตีความเป็นโค้ด
     const storyCard = (s) => {
@@ -35,9 +50,48 @@
         cat.textContent = `🐱 ${s.catName}`;
         const meta = document.createElement('span');
         meta.textContent = `เล่าโดย ${s.authorName} · ${dateFormat.format(new Date(s.createdAt))}`;
-        who.append(cat, meta);
+        who.append(cat, meta, likeButton(s));
         card.append(text, who);
         return card;
+    };
+    // ปุ่มถูกใจ ♡ 3 / ♥ 4: เปลี่ยนตัวเลขบนจอทันที แล้วค่อยบอก API (ถ้าไม่สำเร็จค่อยย้อนกลับ)
+    const likeButton = (s) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'tale-like';
+        let count = s.likes;
+        const show = () => {
+            const on = liked.includes(s.id);
+            btn.classList.toggle('is-on', on);
+            btn.setAttribute('aria-pressed', String(on));
+            btn.setAttribute('aria-label', `ถูกใจเรื่องของ ${s.catName} (${count} คน)`);
+            btn.textContent = `${on ? '♥' : '♡'} ${count.toLocaleString('th-TH')}`;
+        };
+        btn.addEventListener('click', async () => {
+            const action = liked.includes(s.id) ? 'unlike' : 'like';
+            const before = count;
+            liked = action === 'like' ? [...liked, s.id] : liked.filter((id) => id !== s.id);
+            count = Math.max(0, count + (action === 'like' ? 1 : -1));
+            saveLiked();
+            show();
+            btn.disabled = true;
+            try {
+                const res = await fetch(`${api}/stories/${s.id}/${action}`, { method: 'POST' });
+                if (!res.ok)
+                    throw new Error(String(res.status));
+                const data = await res.json();
+                count = data.likes;
+            }
+            catch (err) {
+                liked = action === 'like' ? liked.filter((id) => id !== s.id) : [...liked, s.id];
+                count = before;
+                saveLiked();
+            }
+            btn.disabled = false;
+            show();
+        });
+        show();
+        return btn;
     };
     const showListMessage = (message) => {
         const p = document.createElement('p');
@@ -48,7 +102,7 @@
     const loadStories = async () => {
         showListMessage('กำลังโหลดเรื่องเล่า... 🐾');
         try {
-            const res = await fetch(`${api}/stories`);
+            const res = await fetch(`${api}/stories?sort=${sort}`);
             if (!res.ok)
                 throw new Error(String(res.status));
             const stories = await res.json();
@@ -71,6 +125,20 @@
         status.className = `tale-status ${kind}`;
         status.textContent = message;
     };
+    // ===================== เรียงเรื่อง: ล่าสุด / ยอดนิยม =====================
+    sortButtons.forEach((btn) => {
+        btn.addEventListener('click', () => {
+            const picked = btn.dataset.sort === 'popular' ? 'popular' : 'latest';
+            if (picked === sort)
+                return;
+            sort = picked;
+            sortButtons.forEach((b) => {
+                b.classList.toggle('is-active', b === btn);
+                b.setAttribute('aria-pressed', String(b === btn));
+            });
+            loadStories();
+        });
+    });
     storyInput.addEventListener('input', updateCounter);
     form.addEventListener('submit', async (e) => {
         e.preventDefault();

@@ -12,6 +12,8 @@
         try { localStorage.setItem(FAV_KEY, JSON.stringify(favs)); } catch (e) {}
     };
     const hasFav = (key) => favs.some((f) => f.key === key);
+    // บอกไฟล์อื่น (เช่น breed-likes.js) ว่ามีการกด/เอาหัวใจออก
+    const announceFav = (key, on) => document.dispatchEvent(new CustomEvent('nakcat:fav-change', { detail: { key, on } }));
 
     function syncFavButtons(root = document) {
         root.querySelectorAll('.fav-btn[data-fav]').forEach((btn) => {
@@ -100,6 +102,7 @@
         if (remove) {
             favs = favs.filter((f) => f.key !== remove.dataset.remove);
             saveFavs();
+            announceFav(remove.dataset.remove, false);
             renderFavList();
             syncFavButtons();
             if (!favs.length) favDialog.close();
@@ -131,6 +134,7 @@
         }
         saveFavs();
         syncFavButtons();
+        announceFav(key, hasFav(key));
     }, true);
 
     // ปุ่มหัวใจที่สร้างทีหลัง (การ์ดพันธุ์แมว ชื่อที่สุ่มได้) ให้แสดงสถานะถูกต้องเสมอ

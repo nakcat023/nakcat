@@ -21,6 +21,131 @@ namespace NakcatApi.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("BreedLike", b =>
+                {
+                    b.Property<string>("Breed")
+                        .HasColumnType("text");
+
+                    b.Property<int>("Count")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Breed");
+
+                    b.ToTable("BreedLikes");
+
+                    b.HasData(
+                        new
+                        {
+                            Breed = "Abyssinian",
+                            Count = 0
+                        },
+                        new
+                        {
+                            Breed = "American Shorthair",
+                            Count = 0
+                        },
+                        new
+                        {
+                            Breed = "Australian Mist",
+                            Count = 0
+                        },
+                        new
+                        {
+                            Breed = "Bengal",
+                            Count = 0
+                        },
+                        new
+                        {
+                            Breed = "Birman",
+                            Count = 0
+                        },
+                        new
+                        {
+                            Breed = "British Shorthair",
+                            Count = 0
+                        },
+                        new
+                        {
+                            Breed = "Burmilla",
+                            Count = 0
+                        },
+                        new
+                        {
+                            Breed = "Chinchilla Persian",
+                            Count = 0
+                        },
+                        new
+                        {
+                            Breed = "Exotic Shorthair",
+                            Count = 0
+                        },
+                        new
+                        {
+                            Breed = "Khao Manee",
+                            Count = 0
+                        },
+                        new
+                        {
+                            Breed = "Korat",
+                            Count = 0
+                        },
+                        new
+                        {
+                            Breed = "Maine Coon",
+                            Count = 0
+                        },
+                        new
+                        {
+                            Breed = "Munchkin",
+                            Count = 0
+                        },
+                        new
+                        {
+                            Breed = "Norwegian Forest",
+                            Count = 0
+                        },
+                        new
+                        {
+                            Breed = "Ocicat",
+                            Count = 0
+                        },
+                        new
+                        {
+                            Breed = "Persian",
+                            Count = 0
+                        },
+                        new
+                        {
+                            Breed = "RagaMuffin",
+                            Count = 0
+                        },
+                        new
+                        {
+                            Breed = "Ragdoll",
+                            Count = 0
+                        },
+                        new
+                        {
+                            Breed = "Russian Blue",
+                            Count = 0
+                        },
+                        new
+                        {
+                            Breed = "Scottish Fold",
+                            Count = 0
+                        },
+                        new
+                        {
+                            Breed = "Siamese",
+                            Count = 0
+                        },
+                        new
+                        {
+                            Breed = "Sphynx",
+                            Count = 0
+                        });
+                });
+
             modelBuilder.Entity("CatStory", b =>
                 {
                     b.Property<int>("Id")
@@ -40,6 +165,9 @@ namespace NakcatApi.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<int>("Likes")
+                        .HasColumnType("integer");
+
                     b.Property<DateTime?>("ReviewedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -53,6 +181,32 @@ namespace NakcatApi.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("CatStories");
+                });
+
+            modelBuilder.Entity("MemoryScore", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Moves")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("PlayerName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Seconds")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("MemoryScores");
                 });
 
             modelBuilder.Entity("Rating", b =>

@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=14">
+    <link rel="stylesheet" href="style.css?v=15">
     <style>
         /* สไตล์เฉพาะหน้าแอดมิน (ส่วนที่เหลือใช้ style.css ร่วมกับหน้าเว็บหลัก) */
         body { background: var(--warm); }
@@ -41,13 +41,20 @@
         .admin-btn.is-reject { border-color: #9c2b22; color: #9c2b22; }
         .admin-btn.is-reject:hover { color: white; background: #9c2b22; }
         .admin-btn:disabled { opacity: 0.5; cursor: wait; }
+        .admin-edit { display: grid; gap: 12px; }
+        .admin-edit label { display: grid; gap: 6px; font-size: 0.95rem; }
+        .admin-edit input, .admin-edit textarea { padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; font: inherit; }
+        .admin-edit textarea { min-height: 150px; resize: vertical; line-height: 1.7; }
+        .admin-edit input:focus, .admin-edit textarea:focus { border-color: var(--orange); outline: none; box-shadow: 0 0 0 4px rgba(217, 109, 59, 0.15); }
+        .admin-score { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
+        .admin-score .admin-story-head { margin: 0; }
         [hidden] { display: none !important; }
     </style>
 </head>
 <body>
     <main class="container admin-wrap">
         <h1>✦ nakcat · แอดมิน</h1>
-        <p class="admin-sub">อ่านเรื่องเล่าจากทาสแมว ก่อนให้ขึ้นเว็บ</p>
+        <p class="admin-sub">อ่านเรื่องเล่าจากทาสแมวก่อนให้ขึ้นเว็บ และดูแลกระดานคะแนนเกม</p>
 
         <form class="admin-card" id="admin-login">
             <label>รหัสแอดมิน
@@ -62,6 +69,7 @@
                 <button type="button" class="gallery-filter admin-tab is-active" data-status="Pending" aria-pressed="true">⏳ รอตรวจ</button>
                 <button type="button" class="gallery-filter admin-tab" data-status="Approved" aria-pressed="false">✅ อนุมัติแล้ว</button>
                 <button type="button" class="gallery-filter admin-tab" data-status="Rejected" aria-pressed="false">❌ ไม่อนุมัติ</button>
+                <button type="button" class="gallery-filter admin-tab" data-status="Scores" aria-pressed="false">🏆 คะแนนเกม</button>
                 <button type="button" class="btn btn-ghost" id="admin-logout">ออกจากระบบ</button>
             </div>
             <p class="admin-msg" id="admin-msg" aria-live="polite"></p>

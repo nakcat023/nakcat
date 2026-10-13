@@ -22,7 +22,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=14">
+    <link rel="stylesheet" href="style.css?v=15">
 </head>
 <body>
     <nav>
@@ -413,7 +413,13 @@
                     <p>เรื่องขำๆ อบอุ่นๆ ของแมวที่บ้านคนอื่น และเล่าเรื่องน้องของคุณได้เหมือนกัน</p>
                 </div>
                 <div class="tales-grid">
-                    <div class="tales-list" id="tales-list" aria-live="polite"></div>
+                    <div class="tales-col">
+                        <div class="tales-sort" role="group" aria-label="เรียงเรื่องเล่า">
+                            <button type="button" class="gallery-filter is-active" data-sort="latest" aria-pressed="true">🕒 ล่าสุด</button>
+                            <button type="button" class="gallery-filter" data-sort="popular" aria-pressed="false">❤️ ยอดนิยม</button>
+                        </div>
+                        <div class="tales-list" id="tales-list" aria-live="polite"></div>
+                    </div>
                     <form class="tale-form" id="tale-form">
                         <h3>เล่าเรื่องน้องแมวของคุณ</h3>
                         <p class="tale-note">📢 เรื่องจะขึ้นเว็บให้ทุกคนอ่าน หลังทีมงานอ่านแล้ว ไม่ต้องใส่ข้อมูลส่วนตัวนะ · มีคำถามอยากให้ตอบ ส่งทาง<a href="#contact-form">ฟอร์มส่งข้อความ</a>แทน</p>
@@ -1466,6 +1472,8 @@
     <script src="catsays.js"></script>
     <script src="age.js"></script>
     <script src="api.js"></script>
+    <script src="breed-likes.js"></script>
+    <script src="leaderboard.js"></script>
     <script src="site-rating.js"></script>
     <script src="stories.js"></script>
     <script src="app.js" defer></script>

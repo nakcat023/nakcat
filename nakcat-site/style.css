@@ -2828,3 +2828,83 @@ footer {
 
 /* คำทับศัพท์ที่เบราว์เซอร์ตัดคำภาษาไทยผิด (เช่น "ไอ / เดีย") ให้อยู่บรรทัดเดียวกัน */
 .nowrap { white-space: nowrap; }
+
+/* ===================== หัวใจรวมของแต่ละสายพันธุ์ (breed-likes.js) ===================== */
+.breed-likes { margin-top: 4px; color: var(--orange-dark); font-size: 0.78rem; font-weight: 500; }
+.breed-dialog .breed-likes { display: inline-block; margin: 2px 0 6px 10px; font-size: 0.88rem; }
+
+/* ===================== เรียง + ถูกใจ เรื่องเล่า (stories.js) ===================== */
+.tales-col { display: grid; gap: 14px; min-width: 0; }
+.tales-sort { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.tale-like {
+    margin-left: auto;
+    padding: 5px 12px;
+    border: 1.5px solid var(--line);
+    border-radius: 999px;
+    color: var(--ink);
+    background: white;
+    font: inherit;
+    font-size: 0.88rem;
+    cursor: pointer;
+    transition: border-color 180ms ease, background 180ms ease, transform 180ms ease;
+}
+
+.tale-like:hover { border-color: #f0a47c; transform: scale(1.05); }
+.tale-like.is-on { border-color: var(--orange); color: var(--orange-dark); background: var(--peach); }
+.tale-like:disabled { cursor: wait; }
+
+/* ===================== กระดานคะแนนเกมจับคู่การ์ด (leaderboard.js) ===================== */
+.board {
+    max-width: 440px;
+    margin: 24px auto 0;
+    padding: 20px 22px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: white;
+    text-align: left;
+}
+
+.board[hidden] { display: none; }
+.board-title { margin: 0 0 12px; font-size: 1.05rem; font-weight: 600; text-align: center; }
+.board-form { display: flex; gap: 8px; margin-bottom: 12px; }
+
+.board-form input {
+    flex: 1;
+    min-width: 0;
+    padding: 10px 16px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    font: inherit;
+}
+
+.board-form input:focus { border-color: var(--orange); outline: none; box-shadow: 0 0 0 4px rgba(217, 109, 59, 0.15); }
+.board .btn { padding: 10px 18px; white-space: nowrap; }
+.quiz-result .board .btn::after { content: none; }
+.board .btn:disabled { opacity: 0.6; cursor: wait; }
+.quiz-result .board-status { margin: 0 0 12px; font-weight: 500; text-align: center; }
+.board-status:empty { display: none; }
+.board-status.is-success { color: #23663a; }
+.board-status.is-error { color: #9c2b22; }
+.board-list { display: grid; gap: 4px; margin: 0; padding: 0; list-style: none; }
+
+.board-list li {
+    display: grid;
+    grid-template-columns: 32px 1fr auto;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    border-radius: 12px;
+}
+
+.board-list li:nth-child(odd) { background: var(--paper); }
+.board-list li.is-me { background: var(--peach); font-weight: 600; }
+.board-rank { text-align: center; }
+.board-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.board-score { color: var(--muted); font-size: 0.85rem; }
+.board-list li.board-empty { display: block; color: var(--muted); text-align: center; background: none; }
+
+@media (max-width: 420px) {
+    .board { padding: 18px 14px; }
+    .board-form { flex-direction: column; }
+}

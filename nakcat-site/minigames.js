@@ -101,10 +101,13 @@
                 <div class="result-actions">
                     <button type="button" class="btn" id="mem-restart">เล่นอีกครั้ง</button>
                 </div>
+                <div class="board" id="mem-board" hidden></div>
                 ${shareBar({ text: `ฉันจับคู่การ์ดแมวครบ 6 คู่ใน ${memMoves} ครั้ง ได้ฉายา "${rank[1]}" ${rank[0]} มาแข่งความจำกัน!`, emoji: rank[0], label: 'จับคู่การ์ดแมว ครบใน', title: `${memMoves} ครั้ง`, sub: `ฉายา "${rank[1]}" · ใช้เวลา ${secs} วินาที` })}
                 ${gameRating('memory-match')}
             </div>`;
         memoryBody.querySelector('#mem-restart').addEventListener('click', renderMemory);
+        // กระดานคะแนน (leaderboard.js) รอฟังเหตุการณ์นี้ แล้วเติมลงกล่อง #mem-board
+        document.dispatchEvent(new CustomEvent('nakcat:memory-done', { detail: { moves: memMoves, seconds: secs } }));
     }
 
     renderMemory();
