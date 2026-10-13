@@ -28,7 +28,7 @@
     }
     catch (e) { }
     let current = 'Pending';
-    const labels = { Pending: 'รอตรวจ', Approved: 'อนุมัติแล้ว', Rejected: 'ไม่อนุมัติ', Scores: 'คะแนนเกม' };
+    const labels = { Pending: 'รอตรวจ', Approved: 'อนุมัติแล้ว', Rejected: 'ไม่อนุมัติ', Scores: 'กระดานจับคู่การ์ด' };
     const dateFormat = new Intl.DateTimeFormat('th-TH', { dateStyle: 'medium', timeStyle: 'short' });
     // เรียก API พร้อมแนบรหัสแอดมินใน header (ถ้ามี body ส่งไปเป็น JSON)
     const callApi = (path, method = 'GET', body) => fetch(`${api}${path}`, {
@@ -226,7 +226,7 @@
     const updateCount = () => {
         const count = list.querySelectorAll('.admin-story').length;
         if (current === 'Scores') {
-            setMsg(count === 0 ? 'ยังไม่มีคะแนนบนกระดาน' : '10 อันดับแรกบนกระดาน (ลบแล้วอันดับถัดไปจะขยับขึ้นมาแทน)');
+            setMsg(count === 0 ? 'ยังไม่มีใครบันทึกคะแนนเกมจับคู่การ์ดแมว' : '10 อันดับแรกของเกมจับคู่การ์ดแมว (ลบแล้วอันดับถัดไปจะขยับขึ้นมาแทน)');
             return;
         }
         setMsg(count === 0 ? `ไม่มีเรื่องในหมวด "${labels[current]}" 🎉` : `${labels[current]} ${count} เรื่อง`);
