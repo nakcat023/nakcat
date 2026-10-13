@@ -1,0 +1,16 @@
+{
+    "name": "nakcat | เรื่องราวของแมว",
+    "short_name": "nakcat",
+    "description": "บทความ มินิเกม เช็กลิสต์มือใหม่ และเครื่องมือสำหรับคนรักแมว",
+    "lang": "th",
+    "start_url": "./index.html",
+    "scope": "./",
+    "display": "standalone",
+    "background_color": "#fffdf9",
+    "theme_color": "#d96d3b",
+    "icons": [
+        { "src": "images/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+        { "src": "images/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+        { "src": "images/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    ]
+}

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- หน้าเครื่องมือของแอดมิน: ไม่ให้ Google เก็บไปแสดงในผลค้นหา -->
+    <meta name="robots" content="noindex, nofollow">
+    <title>แอดมิน · nakcat</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27><rect width=%27100%27 height=%27100%27 rx=%2728%27 fill=%27%23fbe3d2%27/><text x=%2750%27 y=%2770%27 font-size=%2762%27 text-anchor=%27middle%27>🐱</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=14">
+    <style>
+        /* สไตล์เฉพาะหน้าแอดมิน (ส่วนที่เหลือใช้ style.css ร่วมกับหน้าเว็บหลัก) */
+        body { background: var(--warm); }
+        .admin-wrap { max-width: 860px; padding-top: 48px; padding-bottom: 64px; }
+        .admin-wrap h1 { margin: 0; font-size: clamp(1.8rem, 4vw, 2.4rem); font-weight: 600; }
+        .admin-sub { margin: 4px 0 28px; color: var(--muted); }
+        .admin-card, .admin-story { padding: 22px 24px; border-radius: var(--radius); background: white; box-shadow: var(--shadow-sm); }
+        .admin-card { display: grid; gap: 12px; max-width: 420px; }
+        .admin-card label { display: grid; gap: 6px; }
+        .admin-card input { padding: 12px 14px; border: 1px solid var(--line); border-radius: 12px; font: inherit; }
+        .admin-card input:focus { border-color: var(--orange); outline: none; box-shadow: 0 0 0 4px rgba(217, 109, 59, 0.15); }
+        .admin-card .btn { justify-self: start; cursor: pointer; }
+        .admin-card .btn::after, .admin-bar .btn::after { content: none; }
+        .admin-login-msg { margin: 0; color: #9c2b22; font-weight: 500; }
+        .admin-login-msg:empty { display: none; }
+        .admin-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 16px; }
+        .admin-bar .btn { margin-left: auto; padding: 8px 16px; cursor: pointer; }
+        .admin-msg { margin: 0 0 14px; color: var(--muted); }
+        .admin-list { display: grid; gap: 14px; }
+        .admin-story-head { display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: baseline; margin: 0 0 10px; font-size: 0.9rem; }
+        .admin-story-head strong { color: var(--orange-dark); font-size: 1rem; }
+        .admin-story-head span { color: var(--muted); }
+        .admin-story-text { margin: 0 0 16px; line-height: 1.8; white-space: pre-line; overflow-wrap: anywhere; }
+        .admin-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+        .admin-btn { padding: 9px 16px; border: 1.5px solid var(--line); border-radius: 999px; background: white; font: inherit; font-weight: 500; cursor: pointer; }
+        .admin-btn.is-approve { border-color: #23663a; color: #23663a; }
+        .admin-btn.is-approve:hover { color: white; background: #23663a; }
+        .admin-btn.is-reject { border-color: #9c2b22; color: #9c2b22; }
+        .admin-btn.is-reject:hover { color: white; background: #9c2b22; }
+        .admin-btn:disabled { opacity: 0.5; cursor: wait; }
+        [hidden] { display: none !important; }
+    </style>
+</head>
+<body>
+    <main class="container admin-wrap">
+        <h1>✦ nakcat · แอดมิน</h1>
+        <p class="admin-sub">อ่านเรื่องเล่าจากทาสแมว ก่อนให้ขึ้นเว็บ</p>
+
+        <form class="admin-card" id="admin-login">
+            <label>รหัสแอดมิน
+                <input type="password" id="admin-key" autocomplete="current-password" required>
+            </label>
+            <button type="submit" class="btn">เข้าสู่ระบบ</button>
+            <p class="admin-login-msg" id="admin-login-msg" aria-live="polite"></p>
+        </form>
+
+        <section id="admin-panel" hidden>
+            <div class="admin-bar" role="group" aria-label="เลือกหมวด">
+                <button type="button" class="gallery-filter admin-tab is-active" data-status="Pending" aria-pressed="true">⏳ รอตรวจ</button>
+                <button type="button" class="gallery-filter admin-tab" data-status="Approved" aria-pressed="false">✅ อนุมัติแล้ว</button>
+                <button type="button" class="gallery-filter admin-tab" data-status="Rejected" aria-pressed="false">❌ ไม่อนุมัติ</button>
+                <button type="button" class="btn btn-ghost" id="admin-logout">ออกจากระบบ</button>
+            </div>
+            <p class="admin-msg" id="admin-msg" aria-live="polite"></p>
+            <div class="admin-list" id="admin-list"></div>
+        </section>
+    </main>
+
+    <script src="api.js"></script>
+    <script src="admin.js"></script>
+</body>
+</html>
