@@ -121,6 +121,6 @@ public class ArticleFeedback
 public class DailyStat
 {
     public DateOnly Day { get; set; }           // วันตามเวลาไทย
-    public string Key { get; set; } = "";       // ชื่อตัวนับ: visitors, views:<หน้า>, device:<mobile|desktop>, plays:<เกม>
+    public string Key { get; set; } = "";       // ชื่อตัวนับ เช่น visitors, views:<หน้า>, plays:<เกม> (ดูทั้งหมดใน Known.EventKeys)
     public int Count { get; set; }
 }

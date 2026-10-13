@@ -447,27 +447,27 @@
                     <p>เรื่องที่ทาสแมวสงสัยกันบ่อย</p>
                 </div>
                 <div class="faq-list reveal">
-                    <details>
+                    <details data-faq="f1">
                         <summary>ทำไมแมวชอบเอาเท้านวดผ้าห่ม?</summary>
                         <p>เป็นพฤติกรรมที่ติดมาตั้งแต่ตอนเป็นลูกแมวที่นวดท้องแม่ระหว่างกินนม แมวโตจึงมักนวดเวลารู้สึกผ่อนคลายและปลอดภัย นอกจากนี้อุ้งเท้ามีต่อมกลิ่น การนวดจึงเป็นการทิ้งกลิ่นบอกว่า "ที่นี่ของฉัน" ด้วย</p>
                     </details>
-                    <details>
+                    <details data-faq="f2">
                         <summary>ทำไมแมวถึงรักกล่องกระดาษ?</summary>
                         <p>กล่องเป็นที่ซ่อนที่มองเห็นรอบตัวได้แต่ไม่ถูกมองเห็นง่าย ช่วยให้แมวรู้สึกปลอดภัยและลดความเครียด ผนังกล่องยังช่วยเก็บความอุ่น ซึ่งแมวชอบมาก</p>
                     </details>
-                    <details>
+                    <details data-faq="f3">
                         <summary>แมวนอนวันละกี่ชั่วโมงถึงจะปกติ?</summary>
                         <p>แมวโตส่วนใหญ่นอนราว 12–16 ชั่วโมงต่อวัน ลูกแมวและแมวสูงวัยอาจนอนมากกว่านั้น แมวมักตื่นตัวช่วงเช้ามืดและพลบค่ำ แต่ถ้าน้องนอนมากผิดปกติร่วมกับไม่กินอาหาร ควรพาไปพบสัตวแพทย์</p>
                     </details>
-                    <details>
+                    <details data-faq="f4">
                         <summary>เสียงครางครืดๆ แปลว่าแมวมีความสุขเสมอไหม?</summary>
                         <p>ส่วนใหญ่ใช่ แต่ไม่เสมอไป แมวอาจครางเพื่อปลอบตัวเองตอนเครียด เจ็บ หรือไม่สบายได้ด้วย ให้ดูภาษากายอื่นประกอบ เช่น ท่าทาง หู และการกิน</p>
                     </details>
-                    <details>
+                    <details data-faq="f5">
                         <summary>ทำไมแมวเอาหัวมาชนเรา?</summary>
                         <p>บนหัวและแก้มแมวมีต่อมกลิ่น การชนหัวหรือถูแก้มคือการทิ้งกลิ่นของตัวเองไว้ เป็นสัญญาณว่าแมวไว้ใจและนับเราเป็นพวกเดียวกัน</p>
                     </details>
-                    <details>
+                    <details data-faq="f6">
                         <summary>อาหารอะไรที่ห้ามให้แมวกิน?</summary>
                         <p>ห้ามให้หัวหอม กระเทียม ช็อกโกแลต องุ่นและลูกเกด และเครื่องดื่มแอลกอฮอล์ ระวังดอกลิลลี่เป็นพิเศษ เพราะทุกส่วนของต้นเป็นพิษต่อไตแมวอย่างรุนแรง และแมวโตหลายตัวย่อยนมวัวไม่ได้ ถ้าสงสัยว่าน้องกินของเป็นพิษ ให้รีบพาไปพบสัตวแพทย์</p>
                     </details>
@@ -501,7 +501,7 @@
                             <a class="social-link" href="https://www.tiktok.com/@nakwasu" target="_blank" rel="noopener noreferrer" aria-label="ติดตาม nakcat บน TikTok">♪&nbsp;&nbsp;TikTok</a>
                         </div>
                     </div>
-                    <p class="form-note" id="form-status" aria-live="polite">ข้อความจะส่งถึงทีมงาน nakcat โดยตรง เราจะตอบกลับทางอีเมลที่คุณกรอกไว้</p>
+                    <p class="form-note" id="form-status" aria-live="polite">ข้อความจะส่งถึงทีมงาน nakcat โดยตรง เก็บไว้ให้ทีมงานอ่านเท่านั้น ไม่เปิดเผยให้คนอื่นเห็น เราจะตอบกลับทางอีเมลที่คุณกรอกไว้</p>
                 </form>
                 <form class="site-rating-card reveal" id="site-rating-form">
                     <p class="hidden-field"><label>อย่ากรอกช่องนี้ <input name="bot-field" tabindex="-1" autocomplete="off"></label></p>
@@ -580,6 +580,12 @@
         // แชร์ผลเกม: Facebook / X / รูปสำหรับ IG Story / คัดลอกข้อความ ติดแฮชแท็ก #nakcat ทุกช่องทาง
         const shareUrl = 'https://nakcat.netlify.app/#games';
         const shareStore = [];
+        // นับเหตุการณ์ให้หลังบ้าน (ตัวเลขรวม ไม่ระบุตัวตน): visits.js รับไปส่งเข้า API /events
+        // ชื่อตัวนับต้องอยู่ในรายการ Known.EventKeys ของ API เช่น track('plays:true-or-false', 'truth-score:8')
+        function track(...keys) {
+            document.dispatchEvent(new CustomEvent('nakcat:track', { detail: keys }));
+        }
+
         function shareBar(data) {
             const id = shareStore.push(data) - 1;
             return `
@@ -737,6 +743,8 @@
             hint.textContent = '📸 ดาวน์โหลดรูปผลลัพธ์ให้แล้ว ส่งเข้ามือถือแล้วลงสตอรี่ แท็ก #nakcat ได้เลย (บนมือถือกดปุ่มนี้จะแชร์เข้า IG ได้ตรงๆ)';
         }
 
+        // แผงเกมแต่ละแผง (id ใน HTML) = รหัสเกมที่หลังบ้านใช้
+        const panelGames = { 'breed-match': 'breed-match', quiz: 'personality', truth: 'true-or-false', memory: 'memory-match', names: 'name-generator', catsays: 'cat-says' };
         document.addEventListener('click', async (e) => {
             const chip = e.target.closest('.share-chip');
             if (!chip) return;
@@ -745,6 +753,8 @@
             const hint = bar.querySelector('.share-hint');
             const enc = encodeURIComponent;
             const via = chip.dataset.via;
+            const sharedGame = panelGames[chip.closest('[role="tabpanel"]')?.id];
+            if (sharedGame) track(`shares:${sharedGame}`, `share-via:${via}`);
             if (via === 'facebook') {
                 window.open(`https://www.facebook.com/sharer/sharer.php?u=${enc(shareUrl)}&hashtag=${enc('#nakcat')}`, '_blank', 'noopener,width=620,height=600');
                 // Facebook ไม่ยอมให้เว็บเติมข้อความในโพสต์ จึงคัดลอกไว้ให้วางเอง
@@ -773,8 +783,6 @@
             return `ขอบคุณที่ให้ ${'⭐'.repeat(Number(stars))} นะ 🐾`;
         }
         function gameRating(game) {
-            // gameRating ถูกเรียกตอนเกมแสดงผลลัพธ์ = เล่นจบ 1 ครั้ง (visits.js ฟังแล้วนับให้)
-            document.dispatchEvent(new CustomEvent('nakcat:game-finished', { detail: game }));
             const saved = savedRating(game);
             if (saved) return `<div class="rating"><p class="rating-status is-success">${ratingThanks(saved)}</p></div>`;
             const stars = [1, 2, 3, 4, 5].map((n) =>
@@ -915,6 +923,7 @@
             if (quizStep >= quizQuestions.length) {
                 const best = Object.keys(quizResults).reduce((a, b) => ((quizScore[b] || 0) > (quizScore[a] || 0) ? b : a));
                 const r = quizResults[best];
+                track('plays:personality', `result:personality:${best}`);
                 quizBody.innerHTML = `
                     <div class="quiz-result">
                         <span class="quiz-result-emoji">${r.emoji}</span>
@@ -1141,6 +1150,7 @@
                 .map((b) => ({ ...b, score: matchScore(b, user) }))
                 .sort((a, b) => b.score - a.score);
             const top = ranked[0];
+            track('plays:breed-match', `result:breed-match:${top.en}`);
             breedBody.innerHTML = `
                 <div class="quiz-result breed-result">
                     <img class="breed-photo is-zoomable" src="${top.img}" alt="แมวพันธุ์${top.name}" tabindex="0" role="button" aria-label="ดูรูปแมวพันธุ์${top.name}แบบเต็ม">
@@ -1315,43 +1325,48 @@
         photoViewer.addEventListener('click', () => photoViewer.close());
 
         // ----- เกม: จริงหรือมั่ว? -----
+        // id = รหัสถาวรของแต่ละข้อ (หลังบ้านใช้นับว่าข้อไหนตอบผิดบ่อย) แก้ข้อความได้ แต่อย่าเปลี่ยน id
+        // เพิ่มข้อใหม่ = ใช้ id ใหม่ แล้วเพิ่มใน Known.TruthQuestions (api) และ dashNames (src/admin-dashboard.ts)
         const truthFacts = [
-            { q: 'แมวโตทุกตัวดื่มนมวัวได้สบาย ไม่มีปัญหา', a: false,
+            { id: 't1', q: 'แมวโตทุกตัวดื่มนมวัวได้สบาย ไม่มีปัญหา', a: false,
               why: 'แมวโตหลายตัวย่อยน้ำตาลแล็กโทสในนมไม่ได้ ดื่มแล้วอาจท้องเสีย น้ำสะอาดดีที่สุด' },
-            { q: 'หนวดแมวช่วยกะระยะและรับรู้สิ่งรอบตัวได้', a: true,
+            { id: 't2', q: 'หนวดแมวช่วยกะระยะและรับรู้สิ่งรอบตัวได้', a: true,
               why: 'หนวดไวต่อแรงสั่นสะเทือนและลม ช่วยให้แมวกะความกว้างของช่องและรู้ว่ามีอะไรอยู่ใกล้ๆ' },
-            { q: 'แมวตกจากที่สูงแล้วไม่เป็นอะไรเสมอ เพราะลงด้วยเท้าได้', a: false,
+            { id: 't3', q: 'แมวตกจากที่สูงแล้วไม่เป็นอะไรเสมอ เพราะลงด้วยเท้าได้', a: false,
               why: 'แม้แมวพลิกตัวกลางอากาศได้ แต่ก็บาดเจ็บสาหัสจากการตกได้ ควรติดตาข่ายที่หน้าต่างและระเบียง' },
-            { q: 'แมวไม่สามารถรับรสหวานได้', a: true,
+            { id: 't4', q: 'แมวไม่สามารถรับรสหวานได้', a: true,
               why: 'แมวไม่มีตัวรับรสหวานที่ทำงานได้ เพราะเป็นสัตว์กินเนื้อที่ไม่ต้องพึ่งน้ำตาลจากพืช' },
-            { q: 'เสียงครางครืดๆ แปลว่าแมวมีความสุขเสมอ', a: false,
+            { id: 't5', q: 'เสียงครางครืดๆ แปลว่าแมวมีความสุขเสมอ', a: false,
               why: 'ส่วนใหญ่ใช่ แต่แมวก็ครางเพื่อปลอบตัวเองตอนเจ็บหรือเครียดได้เหมือนกัน' },
-            { q: 'ดอกลิลลี่เป็นอันตรายต่อแมวอย่างมาก', a: true,
+            { id: 't6', q: 'ดอกลิลลี่เป็นอันตรายต่อแมวอย่างมาก', a: true,
               why: 'ทุกส่วนของลิลลี่ แม้แต่เกสรหรือน้ำในแจกัน อาจทำให้แมวไตวายได้' },
-            { q: 'แมวทุกตัวเกลียดน้ำ', a: false,
+            { id: 't7', q: 'แมวทุกตัวเกลียดน้ำ', a: false,
               why: 'หลายตัวไม่ชอบเปียก แต่บางพันธุ์อย่างเบงกอลกลับชอบเล่นน้ำ' },
-            { q: 'แมวโตร้องเหมียวคุยกับแมวด้วยกันเป็นประจำ', a: false,
+            { id: 't8', q: 'แมวโตร้องเหมียวคุยกับแมวด้วยกันเป็นประจำ', a: false,
               why: 'แมวโตไม่ค่อยร้องเหมียวใส่กันเอง เสียงเหมียวส่วนใหญ่ใช้คุยกับคน' },
-            { q: 'แมวสีขาวตาสีฟ้ามีโอกาสหูหนวกแต่กำเนิดสูงกว่าแมวทั่วไป', a: true,
+            { id: 't9', q: 'แมวสีขาวตาสีฟ้ามีโอกาสหูหนวกแต่กำเนิดสูงกว่าแมวทั่วไป', a: true,
               why: 'ยีนที่ทำให้ขนขาวสัมพันธ์กับความผิดปกติของหูชั้นใน จึงพบหูหนวกได้บ่อยกว่า' },
-            { q: 'แมวมีเหงื่อออกทางอุ้งเท้า', a: true,
+            { id: 't10', q: 'แมวมีเหงื่อออกทางอุ้งเท้า', a: true,
               why: 'อุ้งเท้าแมวมีต่อมเหงื่อ บางครั้งจะเห็นรอยเท้าชื้นๆ ตอนน้องตื่นเต้นหรือเครียด' },
         ];
         const truthBody = document.querySelector('#truth-body');
         let truthOrder = [];
         let truthStep = 0;
         let truthScore = 0;
+        let truthAnswers = []; // ['truth-right:t3', 'truth-wrong:t7', ...] ส่งให้หลังบ้านตอนจบเกม
 
         function startTruth() {
             truthOrder = [...truthFacts].sort(() => Math.random() - 0.5);
             truthStep = 0;
             truthScore = 0;
+            truthAnswers = [];
             renderTruth();
         }
 
         function renderTruth() {
             if (truthStep >= truthOrder.length) {
                 const total = truthOrder.length;
+                track('plays:true-or-false', `truth-score:${truthScore}`, ...truthAnswers);
                 const rank = truthScore === total ? ['🏆', 'ปรมาจารย์แมว', 'รู้จริงทุกเรื่อง เจ้าเหมียวต้องภูมิใจในตัวคุณ'] :
                     truthScore >= 7 ? ['😻', 'ทาสแมวตัวจริง', 'รู้จักแมวดีมาก พลาดไปนิดเดียวเอง'] :
                     truthScore >= 4 ? ['😺', 'เริ่มเข้าใจเหมียวแล้ว', 'มาถูกทางแล้ว ลองอ่านบทความของเราเพิ่มอีกนิด'] :
@@ -1385,6 +1400,7 @@
                 btn.addEventListener('click', () => {
                     const correct = (btn.dataset.answer === 'true') === item.a;
                     if (correct) truthScore++;
+                    truthAnswers.push(`truth-${correct ? 'right' : 'wrong'}:${item.id}`);
                     truthBody.querySelectorAll('.truth-btn').forEach((b) => {
                         b.disabled = true;
                         if ((b.dataset.answer === 'true') === item.a) b.classList.add('is-correct');
@@ -1402,6 +1418,13 @@
             });
         }
         startTruth();
+
+        // ถาม-ตอบ: นับว่าคนกดเปิดอ่านข้อไหน (รู้ว่าคนสงสัยเรื่องอะไร) · data-faq ต้องตรงกับ Known.Faqs ใน API
+        document.querySelectorAll('.faq-list details[data-faq]').forEach((item) => {
+            item.addEventListener('toggle', () => {
+                if (item.open) track(`faq:${item.dataset.faq}`);
+            });
+        });
 
         // สลับแท็บมินิเกม
         const gameTabs = document.querySelectorAll('.game-tab');

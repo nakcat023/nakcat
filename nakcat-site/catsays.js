@@ -157,6 +157,7 @@
     let currentName = DEFAULT_NAME;
     // สุ่มประโยคใหม่แล้วแสดงในกรอบคำพูด
     const speak = () => {
+        track('plays:cat-says'); // ได้ประโยคใหม่ 1 ครั้ง = เล่น 1 ครั้ง
         current = pickLine();
         currentName = cleanName(nameInput.value);
         // ใช้ textContent ไม่ใช่ innerHTML: ชื่อที่ผู้ใช้พิมพ์จะแสดงเป็นตัวหนังสือเสมอ ไม่ถูกตีความเป็นโค้ด

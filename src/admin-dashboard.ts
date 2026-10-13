@@ -1,4 +1,4 @@
-// แท็บ "📊 ภาพรวม" ในหน้าแอดมิน: วาดตัวเลขสรุป กราฟคนเข้า 14 วัน และตารางหน้า/เกม/บทความ จากข้อมูล /admin/overview
+// แท็บ "📊 ภาพรวม" ในหน้าแอดมิน: วาดตัวเลขสรุป กราฟคนเข้า 14 วัน หน้า/อุปกรณ์ เกม ผลลัพธ์เกม บทความ ถาม-ตอบ จากข้อมูล /admin/overview
 // ไฟล์นี้มีแค่ "วิธีวาด" ส่วนการเรียก API และสลับแท็บอยู่ใน src/admin.ts (admin.html โหลดไฟล์นี้ก่อน admin.js)
 // ไฟล์ต้นฉบับคือ src/admin-dashboard.ts — แก้ที่นั่นแล้วสั่ง npm run build จะได้ nakcat-site/admin-dashboard.js ใหม่
 
@@ -11,8 +11,14 @@ interface OverviewData {
     daily: { day: string; visitors: number; views: number }[];
     pages: { name: string; count: number }[];
     devices: { name: string; count: number }[];
-    games: { game: string; plays: number; ratingCount: number; ratingAverage: number }[];
+    games: { game: string; plays: number; shares: number; ratingCount: number; ratingAverage: number }[];
+    shareChannels: { name: string; count: number }[];
+    truth: { finished: number; maxScore: number; averageScore: number; perfect: number; questions: { id: string; right: number; wrong: number }[] };
+    breedResults: { name: string; count: number }[];
+    personalityResults: { name: string; count: number }[];
+    memory: { saved: number; best: { playerName: string; moves: number; seconds: number } | null };
     articles: { article: string; up: number; down: number }[];
+    faq: { name: string; count: number }[];
 }
 
 // ชื่อภาษาคนของรหัสต่างๆ (รหัสต้องตรงกับ Known ใน api/InsightsEndpoints.cs)
@@ -30,6 +36,35 @@ const dashNames: Record<string, string> = {
     'cat-says': '🗣️ ถ้าแมวพูดได้',
     'mobile': '📱 มือถือ / แท็บเล็ต',
     'desktop': '💻 คอมพิวเตอร์',
+    // ช่องทางแชร์ (data-via ของปุ่มแชร์)
+    'facebook': 'Facebook', 'x': 'X', 'story': 'IG Story', 'copy': 'คัดลอกข้อความ',
+    // ผลเกม "แมวของคุณเป็นสายไหน" (quizResults ใน index.html)
+    'sleep': '😴 สายนอน', 'play': '😼 สายป่วน', 'cuddle': '😻 สายอ้อน', 'explore': '🧐 สายสำรวจ',
+    // ผลเกม "แมวพันธุ์ไหนเหมาะกับคุณ" (breeds ใน index.html)
+    'Abyssinian': 'อะบิสซิเนียน', 'American Shorthair': 'อเมริกัน ช็อตแฮร์', 'Australian Mist': 'ออสเตรเลียน มิสท์',
+    'Bengal': 'เบงกอล', 'Birman': 'เบอร์แมน', 'British Shorthair': 'บริติช ช็อตแฮร์', 'Burmilla': 'เบอร์มิลล่า',
+    'Chinchilla Persian': 'ชินชิลล่า', 'Exotic Shorthair': 'เอ็กซอติก ช็อตแฮร์', 'Khao Manee': 'ขาวมณี',
+    'Korat': 'โคราช (สีสวาด)', 'Maine Coon': 'เมนคูน', 'Munchkin': 'มันช์กิ้น', 'Norwegian Forest': 'นอร์วีเจียน ฟอเรสต์',
+    'Ocicat': 'โอซีแคท', 'Persian': 'เปอร์เซีย', 'RagaMuffin': 'แร็กามัฟฟิน', 'Ragdoll': 'แร็กดอลล์',
+    'Russian Blue': 'รัสเซียนบลู', 'Scottish Fold': 'สก็อตติช โฟลด์', 'Siamese': 'วิเชียรมาศ', 'Sphynx': 'สฟิงซ์',
+    // คำถามเกม "จริงหรือมั่ว?" (id ใน truthFacts ใน index.html) พร้อมเฉลย
+    't1': 'แมวโตทุกตัวดื่มนมวัวได้สบาย (มั่ว)',
+    't2': 'หนวดแมวช่วยกะระยะได้ (จริง)',
+    't3': 'แมวตกจากที่สูงไม่เป็นอะไรเสมอ (มั่ว)',
+    't4': 'แมวรับรสหวานไม่ได้ (จริง)',
+    't5': 'ครางครืดๆ = มีความสุขเสมอ (มั่ว)',
+    't6': 'ดอกลิลลี่อันตรายต่อแมวมาก (จริง)',
+    't7': 'แมวทุกตัวเกลียดน้ำ (มั่ว)',
+    't8': 'แมวโตร้องเหมียวคุยกันเอง (มั่ว)',
+    't9': 'แมวขาวตาฟ้าเสี่ยงหูหนวกกว่า (จริง)',
+    't10': 'แมวมีเหงื่อออกทางอุ้งเท้า (จริง)',
+    // หัวข้อถาม-ตอบ (data-faq ใน index.html)
+    'f1': 'ทำไมแมวชอบเอาเท้านวดผ้าห่ม?',
+    'f2': 'ทำไมแมวถึงรักกล่องกระดาษ?',
+    'f3': 'แมวนอนวันละกี่ชั่วโมงถึงจะปกติ?',
+    'f4': 'เสียงครางครืดๆ แปลว่ามีความสุขเสมอไหม?',
+    'f5': 'ทำไมแมวเอาหัวมาชนเรา?',
+    'f6': 'อาหารอะไรที่ห้ามให้แมวกิน?',
 };
 const dashName = (code: string): string => dashNames[code] ?? code;
 
@@ -88,21 +123,51 @@ const dashDailyChart = (daily: OverviewData['daily'], today: string): HTMLElemen
     return chart;
 };
 
-// กราฟแท่งแนวนอน: ชื่อ + แท่ง + ตัวเลข (เรียงมากไปน้อย)
+// ยังไม่มีข้อมูล: บอกตรงๆ ดีกว่าโชว์แท่งว่างๆ
+const dashEmpty = (): HTMLElement => dashEl('p', 'dash-empty', 'ยังไม่มีข้อมูลใน 30 วันล่าสุด');
+
+// กราฟแท่งแนวนอน 1 แถว: ชื่อ | แท่ง (ยาวตาม fraction 0–1) | ข้อความตัวเลข
+const dashBarRow = (name: string, fraction: number, value: string): HTMLElement => {
+    const row: HTMLElement = dashEl('li', 'dash-bar-row');
+    const track: HTMLElement = dashEl('span', 'dash-bar-track');
+    const bar: HTMLElement = dashEl('span', 'dash-bar');
+    bar.style.width = `${Math.min(1, fraction) * 100}%`;
+    track.append(bar);
+    row.append(dashEl('span', 'dash-bar-name', name), track, dashEl('span', 'dash-bar-value', value));
+    return row;
+};
+
+// กราฟแท่งแนวนอน: ชื่อ + แท่ง + ตัวเลข (เรียงมากไปน้อย แท่งยาวสุด = ค่ามากสุด)
 const dashBars = (rows: { name: string; count: number }[], unit: string): HTMLElement => {
+    if (rows.every((r) => r.count === 0)) return dashEmpty();
     const sorted = [...rows].sort((a, b) => b.count - a.count);
     const max: number = Math.max(1, ...sorted.map((r) => r.count));
     const list: HTMLElement = dashEl('ul', 'dash-bars');
-    sorted.forEach((r) => {
-        const row: HTMLElement = dashEl('li', 'dash-bar-row');
-        const track: HTMLElement = dashEl('span', 'dash-bar-track');
-        const bar: HTMLElement = dashEl('span', 'dash-bar');
-        bar.style.width = `${(r.count / max) * 100}%`;
-        track.append(bar);
-        row.append(dashEl('span', 'dash-bar-name', dashName(r.name)), track, dashEl('span', 'dash-bar-value', `${dashNum(r.count)} ${unit}`));
-        list.append(row);
-    });
+    sorted.forEach((r) => list.append(dashBarRow(dashName(r.name), r.count / max, `${dashNum(r.count)} ${unit}`)));
     return list;
+};
+
+// ส่วนย่อยในการ์ด: หัวข้อเล็ก + เนื้อหา
+const dashSub = (title: string, ...content: HTMLElement[]): HTMLElement => {
+    const sub: HTMLElement = dashEl('div', 'dash-sub');
+    sub.append(dashEl('h4', 'dash-sub-title', title), ...content);
+    return sub;
+};
+
+// เกม "จริงหรือมั่ว?": ตัวเลขสรุป + ทุกข้อเรียงจากตอบผิดบ่อยสุด (แท่ง = % ที่ตอบผิด)
+const dashTruth = (truth: OverviewData['truth']): HTMLElement[] => {
+    if (truth.finished === 0) return [dashEmpty()];
+    const summary: HTMLElement = dashEl('p', 'dash-sub-summary',
+        `เล่นจบ ${dashNum(truth.finished)} ครั้ง · คะแนนเฉลี่ย ${truth.averageScore.toFixed(1)}/${truth.maxScore} · `
+        + `ได้เต็ม ${dashNum(truth.perfect)} ครั้ง (${Math.round((truth.perfect / truth.finished) * 100)}%)`);
+    const answered = truth.questions
+        .map((q) => ({ ...q, total: q.right + q.wrong }))
+        .filter((q) => q.total > 0)
+        .sort((a, b) => b.wrong / b.total - a.wrong / a.total);
+    const list: HTMLElement = dashEl('ul', 'dash-bars is-wrap'); // ชื่อข้อยาว ให้ขึ้นบรรทัดใหม่ได้ ไม่ตัดเฉลยทิ้ง
+    answered.forEach((q) => list.append(dashBarRow(dashName(q.id), q.wrong / q.total,
+        `ผิด ${Math.round((q.wrong / q.total) * 100)}% จาก ${dashNum(q.total)}`)));
+    return [summary, dashEl('p', 'dash-note', 'ข้อที่ตอบผิดบ่อย = เรื่องที่คนยังเข้าใจผิด เอาไปเขียนบทความต่อได้'), list];
 };
 
 // ตารางธรรมดา: หัวตาราง + แถว (แต่ละช่องเป็นข้อความ)
@@ -141,7 +206,28 @@ function renderOverview(data: OverviewData, go: (tab: string) => void): HTMLElem
 
     const games: string[][] = [...data.games]
         .sort((a, b) => b.plays - a.plays)
-        .map((g) => [dashName(g.game), dashNum(g.plays), g.ratingCount ? `⭐ ${g.ratingAverage.toFixed(1)}` : '–', dashNum(g.ratingCount)]);
+        .map((g) => [dashName(g.game), dashNum(g.plays), dashNum(g.shares), g.ratingCount ? `⭐ ${g.ratingAverage.toFixed(1)}` : '–', dashNum(g.ratingCount)]);
+    const shareTotal: number = data.shareChannels.reduce((sum, c) => sum + c.count, 0);
+    const shareLine: HTMLElement = dashEl('p', 'dash-sub-summary', shareTotal === 0
+        ? 'ยังไม่มีใครกดแชร์ใน 30 วันล่าสุด'
+        : `กดแชร์ผ่าน: ${[...data.shareChannels].sort((a, b) => b.count - a.count).map((c) => `${dashName(c.name)} ${dashNum(c.count)}`).join(' · ')}`);
+
+    // กระดานจับคู่การ์ด: สรุปสั้นๆ + ปุ่มไปแท็บกระดาน
+    const best = data.memory.best;
+    const memoryLine: HTMLElement = dashEl('p', 'dash-sub-summary', data.memory.saved === 0
+        ? 'ยังไม่มีใครบันทึกคะแนน'
+        : `บันทึกแล้ว ${dashNum(data.memory.saved)} คน · อันดับ 1 ตอนนี้: ${best?.playerName} (${best?.moves} ครั้ง · ${best?.seconds} วิ)`);
+    const toBoard: HTMLButtonElement = dashEl('button', 'admin-btn', '🏆 ไปที่กระดาน →');
+    toBoard.type = 'button';
+    toBoard.addEventListener('click', () => go('Scores'));
+
+    const results: HTMLElement = dashEl('div', 'dash-subs');
+    results.append(
+        dashSub('🧠 จริงหรือมั่ว?', ...dashTruth(data.truth)),
+        dashSub('🧬 แมวพันธุ์ไหนเหมาะกับคุณ · พันธุ์ที่ออกบ่อย', data.breedResults.length ? dashBars(data.breedResults, 'ครั้ง') : dashEmpty()),
+        dashSub('😼 แมวของคุณเป็นสายไหน · สายที่ออกบ่อย', dashBars(data.personalityResults, 'ครั้ง')),
+        dashSub('🃏 กระดานจับคู่การ์ด', memoryLine, toBoard),
+    );
     const articles: string[][] = data.articles.map((a) => {
         const total: number = a.up + a.down;
         return [dashName(a.article), dashNum(a.up), dashNum(a.down), total ? `${Math.round((a.up / total) * 100)}%` : '–'];
@@ -158,10 +244,12 @@ function renderOverview(data: OverviewData, go: (tab: string) => void): HTMLElem
         tiles,
         dashCard('คนเข้าเว็บ 14 วันล่าสุด', 'ชี้หรือแตะที่แท่งเพื่อดูตัวเลขของแต่ละวัน', dashDailyChart(data.daily, data.today)),
         pair,
-        dashCard('มินิเกม', 'เล่นจบ = จำนวนครั้งที่เห็นหน้าผลลัพธ์ใน 30 วันล่าสุด · ดาว = ตั้งแต่เริ่มเก็บ',
-            dashTable(['เกม', 'เล่นจบ', 'ดาวเฉลี่ย', 'คนให้ดาว'], games)),
+        dashCard('มินิเกม', 'เล่นจบ = ได้ผลลัพธ์ 1 ครั้ง (สุ่มชื่อ/แมวพูด นับทุกครั้งที่กดได้ผลใหม่) · เล่นจบและแชร์ = 30 วันล่าสุด · ดาว = ตั้งแต่เริ่มเก็บ',
+            dashTable(['เกม', 'เล่นจบ', 'แชร์', 'ดาวเฉลี่ย', 'คนให้ดาว'], games), shareLine),
+        dashCard('ผลลัพธ์เกม', '30 วันล่าสุด · เก็บแค่ผลรวม ไม่รู้ว่าใครได้ผลอะไร', results),
         dashCard('บทความ', 'บทความนี้มีประโยชน์ไหม? (เหตุผลตอนกด 👎 อ่านได้ในแท็บ 💬 ความเห็น)',
             dashTable(['บทความ', '👍', '👎', 'มีประโยชน์'], articles)),
+        dashCard('ถาม-ตอบที่คนกดเปิดอ่าน', '30 วันล่าสุด · ข้อที่เปิดบ่อย = เรื่องที่คนสงสัย', dashBars(data.faq, 'ครั้ง')),
         dashEl('p', 'dash-privacy', '🔒 นับแบบไม่เก็บตัวตน: ไม่มี IP ไม่มีชื่อ เก็บแค่ตัวเลขรวมรายวัน · "คน" = เบราว์เซอร์ที่เข้าเว็บในวันนั้น (เครื่องเดียวกันเข้าหลายรอบนับ 1)'),
     );
     return root;

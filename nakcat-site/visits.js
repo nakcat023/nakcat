@@ -1,7 +1,7 @@
 "use strict";
 // ตัวนับคนเข้าเว็บแบบไม่เก็บตัวตน: บอก API แค่ว่า "เปิดหน้าไหน / มือถือหรือคอม / วันนี้เพิ่งเข้าครั้งแรกไหม"
 // ไม่ส่งชื่อ ไม่ส่งอีเมล ไม่ฝังคุกกี้ติดตาม ฝั่ง API ก็เก็บแค่ตัวเลขรวมรายวัน (ตาราง DailyStats)
-// + นับว่าเกมไหนถูกเล่นจนเห็นผลลัพธ์กี่ครั้ง (ฟังจากเหตุการณ์ nakcat:game-finished ที่ gameRating() ใน index.html ส่งมา)
+// + ตัวนับเหตุการณ์อื่นๆ (เล่นเกมจบ ผลลัพธ์เกม กดแชร์ เปิดถาม-ตอบ) ที่ track() ใน index.html ส่งมาทางเหตุการณ์ nakcat:track
 // API_BASE (ที่อยู่ของ API) มาจาก src/api.ts
 // ไฟล์ต้นฉบับคือ src/visits.ts — แก้ที่นั่นแล้วสั่ง npm run build จะได้ nakcat-site/visits.js ใหม่
 (() => {
@@ -36,8 +36,9 @@
     }
     catch (e) { }
     send('/visits', { page, device, newVisitor });
-    document.addEventListener('nakcat:game-finished', (e) => {
-        const game = e.detail;
-        send('/game-plays', { game });
+    document.addEventListener('nakcat:track', (e) => {
+        const keys = e.detail;
+        if (keys.length > 0)
+            send('/events', { keys });
     });
 })();

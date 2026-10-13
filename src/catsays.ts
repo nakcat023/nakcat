@@ -15,6 +15,7 @@ interface ShareCard {
 declare function wrapLines(g: CanvasRenderingContext2D, text: string, maxWidth: number): string[];
 declare function gameRating(game: string): string;
 declare function shareBar(data: ShareCard): string;
+declare function track(...keys: string[]): void;
 
 // หน้าตาของ 1 ประโยคในคลัง
 interface CatLine {
@@ -190,6 +191,7 @@ interface CatLine {
 
     // สุ่มประโยคใหม่แล้วแสดงในกรอบคำพูด
     const speak = (): void => {
+        track('plays:cat-says'); // ได้ประโยคใหม่ 1 ครั้ง = เล่น 1 ครั้ง
         current = pickLine();
         currentName = cleanName(nameInput.value);
 

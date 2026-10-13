@@ -1,5 +1,5 @@
 // มินิเกมจับคู่การ์ดแมว และเครื่องสุ่มชื่อแมว
-// ใช้ breeds, shareBar, gameRating จากสคริปต์หลักใน index.html
+// ใช้ breeds, shareBar, gameRating, track จากสคริปต์หลักใน index.html
 (() => {
     const shuffle = (arr) => {
         const a = [...arr];
@@ -89,6 +89,7 @@
 
     function memoryResult() {
         const secs = Math.floor((Date.now() - memStart) / 1000);
+        track('plays:memory-match');
         const rank = memMoves <= 8 ? ['🧠', 'ความจำระดับเทพ', 'จำแม่นยิ่งกว่าแมวจำเวลาข้าว']
             : memMoves <= 12 ? ['😺', 'ความจำดีมาก', 'จับคู่คล่องสุดๆ อีกนิดเดียวก็ระดับเทพ']
             : ['😹', 'ขอฝึกอีกนิด', 'สนุกได้ก็พอ ลองอีกรอบ รับรองเร็วขึ้นแน่'];
@@ -154,6 +155,7 @@
     }
 
     function renderNames(pick) {
+        if (pick) track('plays:name-generator'); // ได้ชื่อใหม่ 1 ชื่อ = เล่น 1 ครั้ง
         const chips = [['all', '🎲 ทุกหมวด'], ...nameGroups.map((g) => [g.id, g.label])];
         nameBody.innerHTML = `
             <div class="name-chips" role="group" aria-label="เลือกหมวดชื่อ">
