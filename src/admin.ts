@@ -441,7 +441,7 @@ type AdminTab = 'Overview' | 'Messages' | 'Comments' | StoryStatus | 'Scores';
             list.replaceChildren(...stories.map(storyCard));
             updateCount();
         } catch (err) {
-            setMsg('ติดต่อ API ไม่ได้ 😿 เปิด API ไว้หรือยัง (cd api แล้ว dotnet run)');
+            setMsg('ติดต่อ API ไม่ได้ 😿 ลองรีเฟรชอีกครั้ง ถ้ายังไม่ได้ ให้เช็กว่า API บน Render ยังทำงานอยู่');
         }
     };
 
