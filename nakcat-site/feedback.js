@@ -21,8 +21,8 @@
         form.classList.add('is-done');
         status.className = 'feedback-status is-success';
         status.textContent = vote === 'up'
-            ? 'ขอบคุณที่บอกเรานะ 😻 จะเขียนเรื่องดีๆ แบบนี้อีก'
-            : 'ขอบคุณสำหรับความเห็นนะ 🐾 เราจะเอาไปปรับให้ดีขึ้น';
+            ? 'ขอบคุณที่บอกเรานะ จะเขียนเรื่องดีๆ แบบนี้อีก'
+            : 'ขอบคุณสำหรับความเห็นนะ เราจะเอาไปปรับให้ดีขึ้น';
     };
     let saved = null;
     try {
@@ -57,7 +57,7 @@
         }
         catch (err) {
             status.className = 'feedback-status is-error';
-            status.textContent = 'ส่งไม่สำเร็จ 😿 ลองกดอีกครั้งนะ';
+            status.textContent = 'ส่งไม่สำเร็จ ลองกดอีกครั้งนะ';
             voteBtns.forEach((b) => { b.disabled = false; });
             submitBtn.disabled = false;
         }

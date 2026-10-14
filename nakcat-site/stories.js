@@ -47,7 +47,7 @@
         const who = document.createElement('p');
         who.className = 'tale-who';
         const cat = document.createElement('strong');
-        cat.textContent = `🐱 ${s.catName}`;
+        cat.textContent = `แมว: ${s.catName}`;
         const meta = document.createElement('span');
         meta.textContent = `เล่าโดย ${s.authorName} · ${dateFormat.format(new Date(s.createdAt))}`;
         who.append(cat, meta, likeButton(s));
@@ -100,7 +100,7 @@
         list.replaceChildren(p);
     };
     const loadStories = async () => {
-        showListMessage('กำลังโหลดเรื่องเล่า... 🐾');
+        showListMessage('กำลังโหลดเรื่องเล่า...');
         try {
             const res = await fetch(`${api}/stories?sort=${sort}`);
             if (!res.ok)
@@ -113,7 +113,7 @@
             list.replaceChildren(...stories.map(storyCard));
         }
         catch (err) {
-            showListMessage('โหลดเรื่องเล่าไม่สำเร็จ 😿 ลองรีเฟรชหน้าอีกครั้งนะ');
+            showListMessage('โหลดเรื่องเล่าไม่สำเร็จ ลองรีเฟรชหน้าอีกครั้งนะ');
         }
     };
     // ===================== ฟอร์มส่งเรื่อง =====================
@@ -146,7 +146,7 @@
         if (honeypot.value) {
             form.reset();
             updateCounter();
-            setStatus('is-success', 'ได้รับเรื่องแล้ว 🐾');
+            setStatus('is-success', 'ได้รับเรื่องแล้ว');
             return;
         }
         submitBtn.disabled = true;
@@ -169,7 +169,7 @@
             }
         }
         catch (err) {
-            setStatus('is-error', 'ส่งไม่สำเร็จ 😿 เช็กอินเทอร์เน็ตแล้วลองใหม่อีกครั้งนะ');
+            setStatus('is-error', 'ส่งไม่สำเร็จ เช็กอินเทอร์เน็ตแล้วลองใหม่อีกครั้งนะ');
         }
         submitBtn.disabled = false;
         submitBtn.textContent = 'ส่งเรื่องเล่า';

@@ -53,13 +53,13 @@ interface FavChange {
             const card: Element | null = cell.querySelector('.gallery-card');
             const breed: string = breedOf(cell.querySelector('.fav-btn'));
             if (!card || !(breed in all)) return;
-            badge(card, (el) => card.append(el)).textContent = `❤️ ${all[breed].toLocaleString('th-TH')}`;
+            badge(card, (el) => card.append(el)).textContent = `♥ ${all[breed].toLocaleString('th-TH')}`;
         });
         // หน้าต่างข้อมูลพันธุ์: ใส่ข้างปุ่ม "บันทึกไว้"
         const pill: Element | null = dialogContent.querySelector('.fav-pill');
         const breed: string = breedOf(pill);
         if (pill && breed in all) {
-            badge(dialogContent, (el) => pill.after(el)).textContent = `❤️ ${all[breed].toLocaleString('th-TH')} คนชอบพันธุ์นี้`;
+            badge(dialogContent, (el) => pill.after(el)).textContent = `♥ ${all[breed].toLocaleString('th-TH')} คนชอบพันธุ์นี้`;
         }
     };
 

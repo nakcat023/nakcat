@@ -64,7 +64,7 @@ interface MemoryResult {
 
         const title: HTMLElement = document.createElement('h4');
         title.className = 'board-title';
-        title.textContent = '🏆 กระดานคะแนน 10 อันดับแรก';
+        title.textContent = 'กระดานคะแนน 10 อันดับแรก';
 
         const form: HTMLFormElement = document.createElement('form');
         form.className = 'board-form';
@@ -89,7 +89,7 @@ interface MemoryResult {
         list.className = 'board-list';
         const loading: HTMLLIElement = document.createElement('li');
         loading.className = 'board-empty';
-        loading.textContent = 'กำลังโหลดกระดานคะแนน... 🐾';
+        loading.textContent = 'กำลังโหลดกระดานคะแนน...';
         list.append(loading);
 
         board.replaceChildren(title, form, status, list);
@@ -115,7 +115,7 @@ interface MemoryResult {
                     form.remove(); // บันทึกได้ครั้งเดียวต่อ 1 รอบที่เล่น
                     status.className = 'board-status is-success';
                     status.textContent = saved.rank <= 10
-                        ? `🎉 คุณได้อันดับที่ ${saved.rank}!`
+                        ? `คุณได้อันดับที่ ${saved.rank}!`
                         : `บันทึกแล้ว! ตอนนี้อยู่อันดับที่ ${saved.rank} อีกนิดจะติด 10 อันดับแรก ลองอีกรอบนะ`;
                     renderList(list, saved.top, saved.id);
                     return;
@@ -125,7 +125,7 @@ interface MemoryResult {
                 status.textContent = data.message; // เช่น "ชื่อยาวเกิน 20 ตัวอักษร"
             } catch (err) {
                 status.className = 'board-status is-error';
-                status.textContent = 'บันทึกไม่สำเร็จ 😿 เช็กอินเทอร์เน็ตแล้วลองใหม่อีกครั้งนะ';
+                status.textContent = 'บันทึกไม่สำเร็จ เช็กอินเทอร์เน็ตแล้วลองใหม่อีกครั้งนะ';
             }
             saveBtn.disabled = false;
             saveBtn.textContent = 'บันทึกคะแนน';
@@ -136,7 +136,7 @@ interface MemoryResult {
             if (!res.ok) throw new Error(String(res.status));
             renderList(list, await res.json(), null);
         } catch (err) {
-            loading.textContent = 'โหลดกระดานคะแนนไม่สำเร็จ 😿';
+            loading.textContent = 'โหลดกระดานคะแนนไม่สำเร็จ';
         }
     });
 })();

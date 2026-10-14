@@ -16,13 +16,13 @@
     const siteThanks = (score) => {
         siteForm.classList.add('is-done');
         siteStatus.className = 'feedback-status is-success';
-        siteStatus.textContent = `${siteFaces[score] || '🐾'} ขอบคุณที่ให้คะแนนนะ ทุกความเห็นช่วยให้ nakcat ดีขึ้น`;
+        siteStatus.textContent = `${siteFaces[score] || ''} ขอบคุณที่ให้คะแนนนะ ทุกความเห็นช่วยให้ nakcat ดีขึ้น`;
     };
     // ===================== ค่าเฉลี่ยจาก API =====================
     const showSummary = (summary) => {
         siteSummary.textContent = summary.count === 0
-            ? '⭐ ยังไม่มีใครให้คะแนน มาเป็นคนแรกกัน!'
-            : `⭐ ${summary.average.toFixed(1)} จาก 5 · ให้คะแนนแล้ว ${summary.count.toLocaleString('th-TH')} คน`;
+            ? 'ยังไม่มีใครให้คะแนน มาเป็นคนแรกกัน!'
+            : `★ ${summary.average.toFixed(1)} จาก 5 · ให้คะแนนแล้ว ${summary.count.toLocaleString('th-TH')} คน`;
         siteSummary.hidden = false;
     };
     // ขอค่าเฉลี่ยจาก API มาแสดง (ไม่สำเร็จก็ซ่อนไว้เฉยๆ)
@@ -85,7 +85,7 @@
         }
         catch (err) {
             siteStatus.className = 'feedback-status is-error';
-            siteStatus.textContent = 'ส่งไม่สำเร็จ 😿 ลองกดอีกครั้งนะ';
+            siteStatus.textContent = 'ส่งไม่สำเร็จ ลองกดอีกครั้งนะ';
             siteSubmit.disabled = false;
         }
         siteSubmit.textContent = 'ส่งคะแนน';

@@ -1,6 +1,6 @@
 // เก็บไฟล์หลักไว้ในเครื่อง ให้เปิดเว็บ เล่นมินิเกม และดูเช็กลิสต์ได้แม้ไม่มีเน็ต
 // แก้ไฟล์ในเว็บเมื่อไร ให้เปลี่ยนเลขเวอร์ชันนี้ด้วย เครื่องผู้ใช้จะได้โหลดของใหม่
-const CACHE = 'nakcat-v22';
+const CACHE = 'nakcat-v23';
 
 const breeds = ['abyssinian', 'americanshort', 'australianmist', 'bengal', 'birman', 'british', 'burmilla', 'chinchilla',
     'exotic', 'khaomanee', 'korat', 'mainecoon', 'munchkin', 'norwegian', 'ocicat', 'persian', 'ragamuffin', 'ragdoll',
@@ -13,7 +13,7 @@ const CORE = [
     'article-sleep.html',
     'article-language.html',
     'article-home.html',
-    'style.css?v=15',
+    'style.css?v=16',
     'app.js',
     'feedback.js',
     'minigames.js',

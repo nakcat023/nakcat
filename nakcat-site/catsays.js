@@ -61,7 +61,7 @@
     // height = 1080 ได้สี่เหลี่ยมจัตุรัส (โพสต์ IG/Facebook), 1920 ได้ขนาดสตอรี่ (เนื้อหาเดิมวางไว้กลางรูป)
     async function makeImage(line, name, height = 1080) {
         try {
-            await Promise.all(['600 66px Kanit', '400 40px Kanit'].map((f) => document.fonts.load(f)));
+            await Promise.all(['600 66px Pridi', '400 40px "IBM Plex Sans Thai Looped"'].map((f) => document.fonts.load(f)));
         }
         catch (e) { }
         const canvas = document.createElement('canvas');
@@ -81,10 +81,10 @@
         // หัวรูป
         g.textAlign = 'center';
         g.fillStyle = INK;
-        g.font = '600 60px Kanit, sans-serif';
-        g.fillText('✦ nakcat', 540, 120);
+        g.font = '600 60px Pridi, sans-serif';
+        g.fillText('nakcat', 540, 120);
         g.fillStyle = MUTED;
-        g.font = '400 38px Kanit, sans-serif';
+        g.font = '400 38px "IBM Plex Sans Thai Looped", sans-serif';
         g.fillText('ถ้าแมวพูดได้วันเดียว ประโยคแรกคือ...', 540, 185);
         // กรอบคำพูด และหางที่ชี้ลงไปหาแมว
         g.fillStyle = '#fffdf9';
@@ -98,7 +98,7 @@
         g.closePath();
         g.fill();
         // ประโยคในกรอบ: วัดความสูงก่อน แล้ววางให้อยู่กลางกรอบ
-        g.font = '600 66px Kanit, sans-serif';
+        g.font = '600 66px Pridi, sans-serif';
         const lines = wrapLines(g, `“${line.text}”`, 760).slice(0, 4);
         const blockHeight = lines.length * 90 + (line.context ? 70 : 0);
         let y = 230 + (500 - blockHeight) / 2 + 68;
@@ -109,7 +109,7 @@
         });
         if (line.context) {
             g.fillStyle = MUTED;
-            g.font = '400 40px Kanit, sans-serif';
+            g.font = '400 40px "IBM Plex Sans Thai Looped", sans-serif';
             g.fillText(`(${line.context})`, 540, y - 10);
         }
         // แมวกับชื่อ (ชื่อยาวจะย่อตัวอักษรลงให้พอดี)
@@ -123,16 +123,16 @@
         g.textBaseline = 'alphabetic';
         const byText = `— ${name} กล่าว`;
         g.textAlign = 'left';
-        g.font = '600 60px Kanit, sans-serif';
+        g.font = '600 60px Pridi, sans-serif';
         const width = g.measureText(byText).width;
         if (width > 690)
-            g.font = `600 ${Math.floor((60 * 690) / width)}px Kanit, sans-serif`;
+            g.font = `600 ${Math.floor((60 * 690) / width)}px Pridi, sans-serif`;
         g.fillStyle = ORANGE;
         g.fillText(byText, 300, 905);
         // ท้ายรูป
         g.textAlign = 'center';
         g.fillStyle = INK;
-        g.font = '500 40px Kanit, sans-serif';
+        g.font = '500 40px "IBM Plex Sans Thai Looped", sans-serif';
         g.fillText('เล่นได้ที่ nakcat.netlify.app  #nakcat', 540, 1030);
         return new Promise((resolve, reject) => {
             canvas.toBlob((blob) => (blob ? resolve(blob) : reject(new Error('สร้างรูปไม่สำเร็จ'))), 'image/png');
@@ -172,12 +172,12 @@
         if (!reduceMotion) {
             bubble.animate([{ transform: 'scale(0.92)' }, { transform: 'scale(1)' }], { duration: 300, easing: 'ease-out' });
         }
-        speakBtn.textContent = 'พูดอีกประโยค 🐾';
+        speakBtn.textContent = 'พูดอีกประโยค';
         saveBtn.hidden = false;
         hint.textContent = '';
         // แถบแชร์แบบเดียวกับเกมอื่น (สร้างใหม่ทุกประโยค)
         const card = {
-            text: `ถ้า${currentName}พูดได้วันเดียว ประโยคแรกคือ “${current.text}” 😹 มาฟังแมวที่บ้านคุณพูดบ้าง`,
+            text: `ถ้า${currentName}พูดได้วันเดียว ประโยคแรกคือ “${current.text}” มาฟังแมวที่บ้านคุณพูดบ้าง`,
             emoji: '🐱',
             label: 'ถ้าแมวพูดได้วันเดียว',
             title: currentName,
@@ -202,7 +202,7 @@
         link.download = 'nakcat-catsays.png';
         link.click();
         setTimeout(() => URL.revokeObjectURL(link.href), 2000);
-        hint.textContent = '📸 บันทึกรูปแล้ว เอาไปลงโซเชียลได้เลย อย่าลืมแท็ก #nakcat นะ';
+        hint.textContent = 'บันทึกรูปแล้ว เอาไปลงโซเชียลได้เลย อย่าลืมแท็ก #nakcat นะ';
     };
     saveBtn.addEventListener('click', async () => {
         if (!current)
@@ -220,7 +220,7 @@
                 try {
                     await navigator.share({
                         files: [file],
-                        text: `ถ้า${name}พูดได้วันเดียว ประโยคแรกคือ “${line.text}” 😹 ลองเล่นที่ https://nakcat.netlify.app/#games #nakcat`,
+                        text: `ถ้า${name}พูดได้วันเดียว ประโยคแรกคือ “${line.text}” ลองเล่นที่ https://nakcat.netlify.app/#games #nakcat`,
                     });
                     hint.textContent = '';
                 }
@@ -237,7 +237,7 @@
             }
         }
         catch (err) {
-            hint.textContent = 'สร้างรูปไม่สำเร็จ 😿 ลองอีกครั้งนะ';
+            hint.textContent = 'สร้างรูปไม่สำเร็จ ลองอีกครั้งนะ';
         }
         saveBtn.disabled = false;
     });

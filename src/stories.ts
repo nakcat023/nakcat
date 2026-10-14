@@ -68,7 +68,7 @@ interface ApiMessage {
         const who: HTMLElement = document.createElement('p');
         who.className = 'tale-who';
         const cat: HTMLElement = document.createElement('strong');
-        cat.textContent = `🐱 ${s.catName}`;
+        cat.textContent = `แมว: ${s.catName}`;
         const meta: HTMLElement = document.createElement('span');
         meta.textContent = `เล่าโดย ${s.authorName} · ${dateFormat.format(new Date(s.createdAt))}`;
         who.append(cat, meta, likeButton(s));
@@ -123,7 +123,7 @@ interface ApiMessage {
     };
 
     const loadStories = async (): Promise<void> => {
-        showListMessage('กำลังโหลดเรื่องเล่า... 🐾');
+        showListMessage('กำลังโหลดเรื่องเล่า...');
         try {
             const res: Response = await fetch(`${api}/stories?sort=${sort}`);
             if (!res.ok) throw new Error(String(res.status));
@@ -134,7 +134,7 @@ interface ApiMessage {
             }
             list.replaceChildren(...stories.map(storyCard));
         } catch (err) {
-            showListMessage('โหลดเรื่องเล่าไม่สำเร็จ 😿 ลองรีเฟรชหน้าอีกครั้งนะ');
+            showListMessage('โหลดเรื่องเล่าไม่สำเร็จ ลองรีเฟรชหน้าอีกครั้งนะ');
         }
     };
 
@@ -171,7 +171,7 @@ interface ApiMessage {
         if (honeypot.value) {
             form.reset();
             updateCounter();
-            setStatus('is-success', 'ได้รับเรื่องแล้ว 🐾');
+            setStatus('is-success', 'ได้รับเรื่องแล้ว');
             return;
         }
         submitBtn.disabled = true;
@@ -192,7 +192,7 @@ interface ApiMessage {
                 setStatus('is-error', data.message); // เช่น "เล่าอีกนิดนะ อย่างน้อย 20 ตัวอักษร"
             }
         } catch (err) {
-            setStatus('is-error', 'ส่งไม่สำเร็จ 😿 เช็กอินเทอร์เน็ตแล้วลองใหม่อีกครั้งนะ');
+            setStatus('is-error', 'ส่งไม่สำเร็จ เช็กอินเทอร์เน็ตแล้วลองใหม่อีกครั้งนะ');
         }
         submitBtn.disabled = false;
         submitBtn.textContent = 'ส่งเรื่องเล่า';

@@ -45,13 +45,13 @@
             const breed = breedOf(cell.querySelector('.fav-btn'));
             if (!card || !(breed in all))
                 return;
-            badge(card, (el) => card.append(el)).textContent = `❤️ ${all[breed].toLocaleString('th-TH')}`;
+            badge(card, (el) => card.append(el)).textContent = `♥ ${all[breed].toLocaleString('th-TH')}`;
         });
         // หน้าต่างข้อมูลพันธุ์: ใส่ข้างปุ่ม "บันทึกไว้"
         const pill = dialogContent.querySelector('.fav-pill');
         const breed = breedOf(pill);
         if (pill && breed in all) {
-            badge(dialogContent, (el) => pill.after(el)).textContent = `❤️ ${all[breed].toLocaleString('th-TH')} คนชอบพันธุ์นี้`;
+            badge(dialogContent, (el) => pill.after(el)).textContent = `♥ ${all[breed].toLocaleString('th-TH')} คนชอบพันธุ์นี้`;
         }
     };
     // แกลเลอรีวาดการ์ดใหม่ทุกครั้งที่เปลี่ยนตัวกรอง / เปิดหน้าต่างพันธุ์ใหม่ ก็ใส่ป้ายใหม่ให้

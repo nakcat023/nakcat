@@ -36,7 +36,7 @@
         </button>
         <dialog class="fav-dialog" id="fav-dialog" aria-labelledby="fav-title">
             <button type="button" class="dialog-close" id="fav-close" aria-label="ปิด">✕</button>
-            <h3 id="fav-title">❤️ รายการโปรดของฉัน</h3>
+            <h3 id="fav-title">รายการโปรดของฉัน</h3>
             <div id="fav-list"></div>
             <p class="fav-note">บันทึกไว้ในเบราว์เซอร์ของเครื่องนี้เท่านั้น</p>
         </dialog>
@@ -59,9 +59,9 @@
     }
 
     const groups = [
-        ['article', '📖 บทความ'],
-        ['breed', '🐱 สายพันธุ์แมว'],
-        ['name', '🎲 ชื่อแมวที่ชอบ'],
+        ['article', 'บทความ'],
+        ['breed', 'สายพันธุ์แมว'],
+        ['name', 'ชื่อแมวที่ชอบ'],
     ];
 
     function renderFavList() {
@@ -127,7 +127,7 @@
             toast('เอาออกจากรายการโปรดแล้ว');
         } else {
             favs.push({ key, title, url: url || '', img: img || '' });
-            toast('บันทึกแล้ว ❤️ ดูได้ที่ปุ่มหัวใจมุมขวาล่าง');
+            toast('บันทึกแล้ว ดูได้ที่ปุ่มหัวใจมุมขวาล่าง');
             btn.classList.remove('is-pop');
             void btn.offsetWidth;
             btn.classList.add('is-pop');
@@ -157,7 +157,7 @@
         installEvent = e;
         const footer = document.querySelector('.footer-inner');
         if (!footer || document.querySelector('#install-app')) return;
-        footer.insertAdjacentHTML('beforeend', '<button type="button" class="install-btn" id="install-app">📲 ติดตั้ง nakcat เป็นแอป</button>');
+        footer.insertAdjacentHTML('beforeend', '<button type="button" class="install-btn" id="install-app">ติดตั้ง nakcat เป็นแอป</button>');
         document.querySelector('#install-app').addEventListener('click', async () => {
             if (!installEvent) return;
             installEvent.prompt();
@@ -176,58 +176,12 @@
             <svg viewBox="0 0 44 30">
                 <path class="btn-cat-tail" d="M30 27 Q41 25 40 15 Q39.5 10 36 11" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/>
                 <path d="M7 30 Q6 18 9 13 L10 4 L16 10 Q19 9 22 10 L28 4 L29 13 Q32 18 31 30Z" fill="currentColor"/>
-                <circle cx="15" cy="17" r="1.8" fill="#f0a47c"/>
-                <circle cx="23" cy="17" r="1.8" fill="#f0a47c"/>
+                <circle cx="15" cy="17" r="1.8" fill="#c98a68"/>
+                <circle cx="23" cy="17" r="1.8" fill="#c98a68"/>
             </svg>
         </span>`;
     document.querySelectorAll('.hero-actions .btn:not(.btn-ghost), #contact-submit, #site-rating-submit').forEach((btn) => {
         btn.classList.add('has-cat');
         btn.insertAdjacentHTML('beforeend', catSvg);
     });
-
-    // รอยเท้าแมวเดินตามการเลื่อนหน้าจอ
-    const pawLayer = document.createElement('div');
-    pawLayer.className = 'paw-trail';
-    pawLayer.setAttribute('aria-hidden', 'true');
-    document.body.appendChild(pawLayer);
-    let lastY = window.scrollY;
-    let travelled = 0;
-    let step = 0;
-    window.addEventListener('scroll', () => {
-        const y = window.scrollY;
-        travelled += Math.abs(y - lastY);
-        const down = y > lastY;
-        lastY = y;
-        if (travelled < 150) return;
-        travelled = 0;
-        step++;
-        const paw = document.createElement('span');
-        paw.className = 'trail-paw';
-        paw.textContent = '🐾';
-        paw.style.right = `${step % 2 ? 18 : 40}px`;
-        paw.style.top = `${down ? 58 + (step % 3) * 6 : 34 - (step % 3) * 6}%`;
-        paw.style.setProperty('--rot', down ? '180deg' : '0deg');
-        pawLayer.appendChild(paw);
-        setTimeout(() => paw.remove(), 1600);
-    }, { passive: true });
-
-    // คลิกแล้วมีรอยเท้า/ดอกไม้ลอยขึ้น
-    const bits = ['🐾', '🌸', '✨', '💕', '🐾'];
-    document.addEventListener('pointerdown', (e) => {
-        if (e.target.closest('input, textarea, select, dialog')) return;
-        if (document.querySelectorAll('.click-bit').length > 20) return;
-        for (let i = 0; i < 4; i++) {
-            const bit = document.createElement('span');
-            bit.className = 'click-bit';
-            bit.textContent = bits[Math.floor(Math.random() * bits.length)];
-            bit.style.left = `${e.clientX}px`;
-            bit.style.top = `${e.clientY}px`;
-            bit.style.setProperty('--dx', `${(Math.random() - 0.5) * 90}px`);
-            bit.style.setProperty('--dy', `${-50 - Math.random() * 60}px`);
-            bit.style.setProperty('--rot', `${(Math.random() - 0.5) * 80}deg`);
-            bit.style.animationDelay = `${i * 40}ms`;
-            document.body.appendChild(bit);
-            setTimeout(() => bit.remove(), 1000);
-        }
-    }, { passive: true });
 })();

@@ -14,13 +14,13 @@
         status.className = `form-note ${kind}`;
         status.textContent = message;
     };
-    const failMessage = 'ส่งไม่สำเร็จ 😿 ลองใหม่อีกครั้ง หรือทักมาทาง Instagram, Facebook หรือ TikTok ได้เลย';
+    const failMessage = 'ส่งไม่สำเร็จ ลองใหม่อีกครั้ง หรือทักมาทาง Instagram, Facebook หรือ TikTok ได้เลย';
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         // ช่องดักบอท: คนมองไม่เห็นช่องนี้ ถ้ามีค่าแปลว่าบอทกรอก ทำเป็นส่งสำเร็จแต่ไม่ส่งจริง
         if (honeypot.value) {
             form.reset();
-            setStatus('is-success', 'ส่งข้อความเรียบร้อยแล้ว ขอบคุณมากนะ 🐾');
+            setStatus('is-success', 'ส่งข้อความเรียบร้อยแล้ว ขอบคุณมากนะ');
             return;
         }
         if (!API_BASE) {
