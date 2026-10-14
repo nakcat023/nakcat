@@ -288,7 +288,7 @@
         const where = document.createElement('strong');
         where.textContent = c.kind === 'site'
             ? `⭐ ให้คะแนนเว็บ ${c.score}/5`
-            : `📖 ${dashName(c.topic)} · ${c.vote === 'up' ? '👍 มีประโยชน์' : '👎 ยังไม่ค่อย'}`;
+            : `📖 ${dashName(c.topic)} · ${c.vote === 'up' ? '👍 มีประโยชน์' : '👎 อาจจะยังน้า'}`;
         const when = document.createElement('span');
         when.textContent = dateFormat.format(new Date(c.createdAt));
         head.append(where, when);

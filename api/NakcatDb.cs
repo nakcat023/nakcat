@@ -111,7 +111,7 @@ public class ArticleFeedback
 {
     public int Id { get; set; }
     public string Article { get; set; } = "";   // รหัสบทความ เช่น "article-sleep"
-    public string Vote { get; set; } = "";      // "up" = มีประโยชน์ / "down" = ยังไม่ค่อย
+    public string Vote { get; set; } = "";      // "up" = มีประโยชน์ / "down" = อาจจะยังน้า
     public string? Comment { get; set; }        // เหตุผลตอนกด 👎 (ไม่กรอกก็ได้)
     public DateTime CreatedAt { get; set; }
 }
