@@ -1289,6 +1289,15 @@ footer .credits a { color: inherit; }
 .dialog-close:hover { color: var(--orange-dark); background: var(--peach); }
 #dialog-content:focus { outline: none; }
 
+/* ข้อมูลยาวกว่าจอ: ให้กรอบอยู่นิ่ง แล้วเลื่อนแค่เนื้อหาข้างใน
+   ปุ่ม ✕ จะได้อยู่มุมบนตลอด ไม่เลื่อนหายไปตอนอ่านลงไป */
+.breed-dialog[open],
+.fav-dialog[open] { display: flex; flex-direction: column; overflow: hidden; }
+#dialog-content,
+#fav-list { min-height: 0; overflow-y: auto; }
+.breed-dialog .dialog-close,
+.fav-dialog .dialog-close { z-index: 2; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15); }
+
 .breed-dialog h3 {
     margin: 12px 0 2px;
     color: var(--orange);
@@ -1575,8 +1584,9 @@ footer {
 }
 
 @media (max-width: 900px) {
+    /* minmax(0, 1fr): ถ้ามีอะไรข้างในกว้างเกิน จะไม่ดันทั้งคอลัมน์จนหน้าเลื่อนซ้ายขวาได้ */
     .contact-grid,
-    .age-grid { grid-template-columns: 1fr; gap: 40px; }
+    .age-grid { grid-template-columns: minmax(0, 1fr); gap: 40px; }
     .blog-content,
     .starter-grid { grid-template-columns: repeat(2, 1fr); }
     .about-grid { grid-template-columns: 1fr; gap: 40px; }
@@ -1637,6 +1647,11 @@ footer {
 
 @media (max-width: 420px) {
     .logo a { font-size: 1.35rem; }
+}
+
+/* จอแคบมาก (iPhone SE รุ่นแรก) ให้ช่องปีกับเดือนเรียงลงมาแทนอยู่คู่กัน */
+@media (max-width: 340px) {
+    .age-inputs { grid-template-columns: 1fr; }
 }
 
 /* ---------- Contact form status ---------- */
@@ -1971,6 +1986,12 @@ footer {
     padding: 0 10px;
     font-size: 0.9rem;
     white-space: nowrap;
+}
+
+/* มือถือจอแคบ: สามปุ่มเรียงแถวเดียวไม่พอ ให้เป็นสองปุ่มบน แล้ว TikTok เต็มแถวข้างล่าง */
+@media (max-width: 420px) {
+    .social-group { flex-wrap: wrap; }
+    .contact-actions .social-link { flex: 1 1 calc(50% - 4px); }
 }
 
 /* ฟอร์มติดต่อยืดลงให้ขอบล่างตรงกับฝั่งซ้าย โดยให้ช่องข้อความสูงขึ้นแทน */

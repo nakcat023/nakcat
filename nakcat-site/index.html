@@ -22,7 +22,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai+Looped:wght@400;500;600&family=Pridi:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=16">
+    <link rel="stylesheet" href="style.css?v=17">
 </head>
 <body>
     <nav>
@@ -440,7 +440,7 @@
                     </details>
                     <details data-faq="f6">
                         <summary>อาหารอะไรที่ห้ามให้แมวกิน?</summary>
-                        <p>ห้ามให้หัวหอม กระเทียม ช็อกโกแลต องุ่นและลูกเกด และเครื่องดื่มแอลกอฮอล์ ระวังดอกลิลลี่เป็นพิเศษ เพราะทุกส่วนของต้นเป็นพิษต่อไตแมวอย่างรุนแรง และแมวโตหลายตัวย่อยนมวัวไม่ได้ ถ้าสงสัยว่าน้องกินของเป็นพิษ ให้รีบพาไปพบสัตวแพทย์</p>
+                        <p>ห้ามให้หัวหอม กระเทียม ช็อกโกแลต องุ่นและลูกเกด และเครื่องดื่มแอลกอฮอล์ ระวังดอกลิลลี่เป็นพิเศษ เพราะทุกส่วนของต้นเป็นพิษต่อไตแมวอย่างรุนแรง และแมวโตหลายตัวย่อยนมวัวไม่ได้ ถ้าสงสัยว่าน้องกินของเป็นพิษ ให้รีบพาไปพบสัตวแพทย์ ของอันตรายอื่นในบ้าน อย่างยาของคนและน้ำมันหอมระเหย ดูได้ในบทความ <a href="article-home.html#dangers">บ้านที่แมวอยากอยู่</a></p>
                     </details>
                 </div>
             </div>
@@ -1267,8 +1267,11 @@
             if (card) openBreed(Number(card.dataset.index));
         });
         document.querySelector('#dialog-close').addEventListener('click', () => breedDialog.close());
+        // ปิดเมื่อแตะพื้นหลังมืดๆ นอกกรอบเท่านั้น แตะโดนขอบขาวในกรอบแล้วไม่ปิด
         breedDialog.addEventListener('click', (e) => {
-            if (e.target === breedDialog) breedDialog.close();
+            const r = breedDialog.getBoundingClientRect();
+            const outside = e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom;
+            if (e.target === breedDialog && outside) breedDialog.close();
         });
         renderGallery();
 

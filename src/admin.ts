@@ -397,6 +397,7 @@ type AdminTab = 'Overview' | 'Messages' | 'Comments' | StoryStatus | 'Scores';
     const getJson = async <T>(path: string): Promise<T | null> => {
         const res: Response = await callApi(path);
         if (res.status === 401) { showLogin('รหัสไม่ถูกต้อง ลองใหม่อีกครั้งนะ'); return null; }
+        if (res.status === 429) { setMsg('กดถี่ไปนิดนึง รอสักครู่แล้วลองใหม่นะ'); return null; }
         if (!res.ok) throw new Error(String(res.status));
         return res.json();
     };

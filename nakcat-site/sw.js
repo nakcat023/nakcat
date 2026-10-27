@@ -13,7 +13,7 @@ const CORE = [
     'article-sleep.html',
     'article-language.html',
     'article-home.html',
-    'style.css?v=16',
+    'style.css?v=17',
     'app.js',
     'feedback.js',
     'minigames.js',

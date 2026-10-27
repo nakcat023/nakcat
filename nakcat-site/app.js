@@ -97,7 +97,12 @@
     });
     document.querySelector('#fav-close').addEventListener('click', () => favDialog.close());
     favDialog.addEventListener('click', (e) => {
-        if (e.target === favDialog) { favDialog.close(); return; }
+        // ปิดเมื่อแตะพื้นหลังนอกกรอบเท่านั้น แตะโดนขอบขาวในกรอบแล้วไม่ปิด
+        if (e.target === favDialog) {
+            const r = favDialog.getBoundingClientRect();
+            if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) favDialog.close();
+            return;
+        }
         const remove = e.target.closest('[data-remove]');
         if (remove) {
             favs = favs.filter((f) => f.key !== remove.dataset.remove);
