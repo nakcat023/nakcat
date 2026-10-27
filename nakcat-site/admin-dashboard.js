@@ -9,6 +9,7 @@ const dashNames = {
     'article-sleep': 'ศิลปะการนอนของแมว',
     'article-language': 'ภาษาลับของเจ้าเหมียว',
     'article-home': 'บ้านที่แมวอยากอยู่',
+    'article-health': 'พาน้องไปหาหมอในปีแรก',
     'breed-match': '🧬 แมวพันธุ์ไหนเหมาะกับคุณ',
     'personality': '😼 แมวของคุณเป็นสายไหน',
     'true-or-false': '🧠 จริงหรือมั่ว?',

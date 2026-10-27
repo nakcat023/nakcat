@@ -600,7 +600,7 @@ footer .credits a { color: inherit; }
 
 .starter-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 22px;
 }
 
@@ -1490,7 +1490,11 @@ footer .credits a { color: inherit; }
     background: var(--warm);
 }
 
-.callout p:last-child { margin-bottom: 0; }
+.callout p:last-child,
+.callout ul:last-child { margin-bottom: 0; }
+
+/* บรรทัดแหล่งอ้างอิงท้ายบทความ ตัวเล็กและสีจางกว่าเนื้อหา */
+.article-sources { margin-top: 28px; color: var(--muted); font-size: 0.85rem; line-height: 1.7; }
 
 .sign-grid {
     display: grid;
@@ -2283,9 +2287,9 @@ footer {
     .mem-front small { font-size: 0.68rem; }
 }
 
-/* ---------- Blog: 4 บทความ ---------- */
+/* ---------- Blog: แถวละ 3 การ์ด (6 บทความ = 3+3 พอดี) ---------- */
 
-.blog-content { grid-template-columns: repeat(4, 1fr); gap: 22px; }
+.blog-content { grid-template-columns: repeat(3, 1fr); gap: 22px; }
 .blog-content .blog-item img { height: 200px; }
 
 .starter-guide {
@@ -2534,6 +2538,13 @@ footer {
 }
 
 .article-body .timeline-step h2 { margin: 4px 0 12px; }
+
+/* เส้นทางมือใหม่ในส่วน "ทำไมถึงทำเว็บนี้" (index.html #path): ไทม์ไลน์สั้นๆ ข้อละประโยคเดียว */
+.about-info h3 { margin: 0 0 4px; font-size: 1.15rem; font-weight: 600; }
+.path-steps { margin: 16px 0 0; }
+.path-steps .timeline-step { padding-bottom: 16px; color: var(--muted); line-height: 1.7; }
+.path-steps .timeline-step:last-child { padding-bottom: 0; }
+.path-steps a { color: var(--orange-dark); text-underline-offset: 3px; }
 .timeline-checks { padding-left: 0 !important; list-style: none; }
 .timeline-checks li { position: relative; padding-left: 28px; }
 .timeline-checks li::before { content: '✓'; position: absolute; left: 4px; color: #23663a; font-weight: 600; }

@@ -22,7 +22,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai+Looped:wght@400;500;600&family=Pridi:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=17">
+    <link rel="stylesheet" href="style.css?v=18">
 </head>
 <body>
     <nav>
@@ -73,6 +73,14 @@
                     <h2>ทำไมถึงทำเว็บนี้</h2>
                     <p>nakcat เป็นเว็บที่เราทำระหว่างรอวันได้พาแมวกลับบ้าน ในนี้มีเรื่องที่ควรรู้ก่อนเลี้ยง ตั้งแต่นิสัยแมวไปจนถึงการจัดบ้าน มีเช็กลิสต์ และมีมินิเกมที่ช่วยดูว่าแมวแบบไหนเข้ากับเรา ทั้งหมดเป็นสิ่งที่เราเรียนรู้ระหว่างทาง</p>
                     <p>แมวตัวหนึ่งอยู่กับเราได้ 15 ปีขึ้นไป และยังมีแมวจรอีกมากที่รอบ้าน</p>
+                    <h3 id="path">ถ้าเพิ่งเริ่ม ลองไล่ตามนี้</h3>
+                    <ol class="timeline path-steps">
+                        <li class="timeline-step">เริ่มจากหมวด <a href="#starter">ก่อนตัดสินใจ</a> ในเช็กลิสต์ ดูว่าที่พักให้เลี้ยงไหม และคนในบ้าน<span class="nowrap">โอเคด้วย</span>หรือเปล่า</li>
+                        <li class="timeline-step">ลอง <a href="#budget">คำนวณค่าเลี้ยง</a> ทั้งค่าของครั้งแรกและค่าใช้จ่ายรายเดือน ดูว่าเราจ่ายไหวไหม</li>
+                        <li class="timeline-step">จัดบ้านตามบทความ <a href="article-home.html">บ้านที่แมวอยากอยู่</a> ตาข่ายหน้าต่างกับการเก็บต้นไม้มีพิษควรเสร็จก่อนน้องมาถึง</li>
+                        <li class="timeline-step">วันที่รับน้องมา อ่าน <a href="article-first24.html">24 ชั่วโมงแรกเมื่อแมวมาถึงบ้าน</a> ไว้ก่อน จะได้ไม่ตกใจถ้าน้องหลบอยู่ทั้งวัน</li>
+                        <li class="timeline-step">ในสัปดาห์แรกๆ <a href="article-health.html">พาน้องไปตรวจสุขภาพครั้งแรก</a> แล้วฉีดวัคซีนกับถ่ายพยาธิตามที่หมอนัด</li>
+                    </ol>
                 </div>
             </div>
         </section>
@@ -93,6 +101,14 @@
                             <button type="button" class="fav-btn fav-corner" data-fav="article:first24" data-fav-title="24 ชั่วโมงแรกเมื่อแมวมาถึงบ้าน" data-fav-url="article-first24.html" data-fav-img="images/kitten-about.jpg" aria-pressed="false"><span class="fav-heart" aria-hidden="true">♡</span></button>
                         </div>
                         <div class="blog-item-body"><h3>24 ชั่วโมงแรกเมื่อแมวมาถึงบ้าน</h3><p>คู่มือทีละขั้นตอน วันแรกที่พาน้องเข้าบ้านต้องทำอะไรบ้าง ให้ทั้งแมวและคนไม่ตื่นตระหนก</p><a href="article-first24.html" class="link-more">อ่านต่อ</a></div>
+                    </article>
+                    <article class="blog-item reveal">
+                        <div class="blog-item-media">
+                            <img loading="lazy" src="images/kitten-vet.jpg" alt="ลูกแมวสีขาวกำลังให้หมอฟังเสียงหัวใจ">
+                            <span class="tag">สุขภาพ</span>
+                            <button type="button" class="fav-btn fav-corner" data-fav="article:health" data-fav-title="พาน้องไปหาหมอในปีแรก" data-fav-url="article-health.html" data-fav-img="images/kitten-vet.jpg" aria-pressed="false"><span class="fav-heart" aria-hidden="true">♡</span></button>
+                        </div>
+                        <div class="blog-item-body"><h3>พาน้องไปหาหมอในปีแรก</h3><p>ตรวจครั้งแรก วัคซีน ถ่ายพยาธิ และทำหมัน เรียงตามช่วงอายุที่หมอมักนัด</p><a href="article-health.html" class="link-more">อ่านต่อ</a></div>
                     </article>
                     <article class="blog-item reveal">
                         <div class="blog-item-media">
@@ -139,6 +155,13 @@
                 </div>
                 <div class="starter-grid">
                     <fieldset class="starter-group reveal">
+                        <legend>ก่อนตัดสินใจ</legend>
+                        <label><input type="checkbox" data-key="allowed"> ที่พักหรือคอนโดอนุญาตให้เลี้ยงแมว</label>
+                        <label><input type="checkbox" data-key="household"> คนในบ้านตกลงกันแล้ว และไม่มีใครแพ้แมวหนัก</label>
+                        <label><input type="checkbox" data-key="sitter"> มีคนช่วยดูน้องเวลาเราไปต่างจังหวัด</label>
+                        <label><input type="checkbox" data-key="fund"> กันเงินไว้ก้อนหนึ่งเป็นค่าหมอฉุกเฉิน</label>
+                    </fieldset>
+                    <fieldset class="starter-group reveal">
                         <legend>ของจำเป็น</legend>
                         <label><input type="checkbox" data-key="bowls"> ชามอาหารและชามน้ำ</label>
                         <label><input type="checkbox" data-key="food"> อาหารที่เหมาะกับวัยของน้อง</label>
@@ -148,19 +171,21 @@
                         <label><input type="checkbox" data-key="toys"> ของเล่น เช่น ไม้ตกแมว</label>
                     </fieldset>
                     <fieldset class="starter-group reveal">
-                        <legend>สุขภาพ</legend>
-                        <label><input type="checkbox" data-key="vet"> พาไปตรวจสุขภาพครั้งแรก</label>
-                        <label><input type="checkbox" data-key="vaccine"> ฉีดวัคซีนตามที่สัตวแพทย์นัด</label>
-                        <label><input type="checkbox" data-key="parasite"> ถ่ายพยาธิและป้องกันเห็บหมัด</label>
-                        <label><input type="checkbox" data-key="neuter"> ปรึกษาหมอเรื่องการทำหมัน</label>
-                        <label><input type="checkbox" data-key="chip"> ฝังไมโครชิปเผื่อน้องหลง</label>
-                    </fieldset>
-                    <fieldset class="starter-group reveal">
                         <legend>บ้านปลอดภัย</legend>
                         <label><input type="checkbox" data-key="net"> ติดมุ้งลวดหรือตาข่ายที่หน้าต่างและระเบียง</label>
                         <label><input type="checkbox" data-key="hazards"> เก็บสายไฟ ยา และของชิ้นเล็กที่กลืนได้</label>
                         <label><input type="checkbox" data-key="plants"> ไม่มีต้นไม้มีพิษ เช่น ดอกลิลลี่</label>
                         <label><input type="checkbox" data-key="hide"> จัดมุมสงบให้น้องได้หลบพัก</label>
+                    </fieldset>
+                    <!-- data-after = ทำหลังน้องมาถึงบ้าน ไม่นับตอนเช็กว่า "พร้อมรับน้อง" -->
+                    <fieldset class="starter-group reveal" data-after>
+                        <legend>เดือนแรกหลังรับน้อง</legend>
+                        <label><input type="checkbox" data-key="vet"> พาไปตรวจสุขภาพครั้งแรก</label>
+                        <label><input type="checkbox" data-key="vaccine"> ฉีดวัคซีนตามที่สัตวแพทย์นัด</label>
+                        <label><input type="checkbox" data-key="parasite"> ถ่ายพยาธิและป้องกันเห็บหมัด</label>
+                        <label><input type="checkbox" data-key="neuter"> ปรึกษาหมอเรื่องการทำหมัน</label>
+                        <label><input type="checkbox" data-key="chip"> ฝังไมโครชิปเผื่อน้องหลง</label>
+                        <a class="starter-guide" href="article-health.html">อ่านเรื่องพาน้องไปหาหมอในปีแรก</a>
                     </fieldset>
                 </div>
                 <button type="button" class="starter-reset" id="starter-reset">ล้างเช็กลิสต์</button>
@@ -172,9 +197,11 @@
                 <div class="budget-info reveal">
                     <h2>เลี้ยงแมว 1 ตัว<br>ต้องใช้เงินเท่าไร?</h2>
                     <p>เลือกเกรดอาหาร ทราย และของที่อยากเตรียม แล้วดูว่าต้องกันเงินไว้เดือนละประมาณเท่าไร</p>
-                    <div class="budget-startup">
+                    <!-- data-min / data-max = ผลรวมช่วงราคาในย่อหน้าแรกข้างล่าง (2,000–4,000 + 2,000–5,000) ต่อแมว 1 ตัว ใช้คำนวณบรรทัด "ปีแรก" ถ้าแก้ตัวเลขในย่อหน้า ต้องแก้ตรงนี้ด้วย -->
+                    <div class="budget-startup" id="budget-startup" data-min="4000" data-max="9000">
                         <strong>อย่าลืมค่าเริ่มต้น (จ่ายครั้งเดียว)</strong>
                         <p>กระบะทราย ชาม ที่ลับเล็บ กระเป๋าใส่แมว และของเล่น ราว 2,000–4,000 บาท บวกวัคซีนชุดแรกและทำหมันอีกราว 2,000–5,000 บาท แล้วแต่คลินิก</p>
+                        <p>ตัวเลขนี้ยังไม่รวมค่าตรวจสุขภาพครั้งแรก ยาถ่ายพยาธิ ยากันเห็บหมัด ค่าฝังไมโครชิป และตาข่ายกันตกที่หน้าต่างหรือระเบียง ราคาพวกนี้ต่างกันมากตามคลินิกและขนาดห้อง ควรถามราคาจริงก่อน</p>
                     </div>
                     <p class="budget-note">ราคาประมาณจากร้านค้าทั่วไปในไทย ปี 2026 ของจริงต่างกันไปตามแบรนด์ ร้าน และพื้นที่</p>
                 </div>
@@ -224,6 +251,7 @@
                         <p class="budget-result-label">ต้องเตรียมเงินเดือนละประมาณ</p>
                         <p class="budget-result-value"><span id="budget-total">0</span> บาท</p>
                         <p class="budget-year">หรือปีละราว <strong id="budget-year">0</strong> บาท</p>
+                        <p class="budget-year">ปีแรกถ้ารวมค่าเริ่มต้น ราว <strong id="budget-first-year">0</strong> บาท</p>
                         <ul class="budget-breakdown" id="budget-breakdown"></ul>
                     </div>
                 </form>
@@ -823,6 +851,10 @@
             budgetForm.querySelector('[data-cats="1"]').disabled = budgetCats >= MAX_CATS;
             document.querySelector('#budget-total').textContent = baht(total);
             document.querySelector('#budget-year').textContent = baht(total * 12);
+            // ปีแรก = ค่าเริ่มต้น (ช่วงราคาจาก #budget-startup) × จำนวนแมว + ค่าเลี้ยง 12 เดือน
+            const startup = document.querySelector('#budget-startup').dataset;
+            const firstYear = (startupCost) => baht(Number(startupCost) * budgetCats + total * 12);
+            document.querySelector('#budget-first-year').textContent = `${firstYear(startup.min)}–${firstYear(startup.max)}`;
             document.querySelector('#budget-breakdown').innerHTML = items.map(([label, v]) => `
                 <li>
                     <span>${label}</span>
@@ -842,6 +874,8 @@
 
         // เช็กลิสต์มือใหม่: จำสถานะไว้ในเบราว์เซอร์ของผู้ใช้
         const starterBoxes = document.querySelectorAll('.starter-group input[type="checkbox"]');
+        // ข้อที่ต้องทำก่อนรับน้อง = ทุกข้อ ยกเว้นหมวด data-after (เดือนแรกหลังรับน้อง)
+        const starterBefore = [...starterBoxes].filter((box) => !box.closest('[data-after]'));
         const starterKey = 'nakcat-starter';
         let starterSaved = {};
         try { starterSaved = JSON.parse(localStorage.getItem(starterKey)) || {}; } catch (e) {}
@@ -849,11 +883,13 @@
         function updateStarter() {
             const done = [...starterBoxes].filter((box) => box.checked).length;
             const total = starterBoxes.length;
+            const ready = starterBefore.every((box) => box.checked);
             document.querySelector('#starter-done').textContent = done;
             document.querySelector('#starter-total').textContent = total;
             document.querySelector('#starter-bar-fill').style.width = (done / total) * 100 + '%';
             document.querySelector('#starter-msg').textContent =
-                done === total ? 'พร้อมรับน้องกลับบ้านแล้ว' :
+                done === total ? 'ครบทุกข้อแล้ว' :
+                ready ? 'พร้อมรับน้องกลับบ้านแล้ว ที่เหลือไว้ทำหลังน้องมาถึง' :
                 done >= total / 2 ? 'มาได้ครึ่งทางแล้ว สู้ๆ' :
                 done > 0 ? 'เริ่มต้นได้ดี!' : 'เริ่มกันเลย!';
             const state = {};
