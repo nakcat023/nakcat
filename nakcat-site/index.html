@@ -22,7 +22,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai+Looped:wght@400;500;600&family=Pridi:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=18">
+    <link rel="stylesheet" href="style.css?v=19">
 </head>
 <body>
     <nav>
@@ -112,6 +112,14 @@
                     </article>
                     <article class="blog-item reveal">
                         <div class="blog-item-media">
+                            <img loading="lazy" src="images/cat-food.jpg" alt="แมวขาวดำตัวเล็กนั่งข้างชามอาหารเม็ด มองมาที่กล้อง">
+                            <span class="tag">อาหาร</span>
+                            <button type="button" class="fav-btn fav-corner" data-fav="article:food" data-fav-title="อาหารแมว กินอะไร วันละเท่าไร" data-fav-url="article-food.html" data-fav-img="images/cat-food.jpg" aria-pressed="false"><span class="fav-heart" aria-hidden="true">♡</span></button>
+                        </div>
+                        <div class="blog-item-body"><h3>อาหารแมว กินอะไร วันละเท่าไร</h3><p>อาหารแบบไหนเหมาะกับวัยของน้อง ให้วันละกี่มื้อ และเปลี่ยนยี่ห้อยังไงไม่ให้ท้องเสีย</p><a href="article-food.html" class="link-more">อ่านต่อ</a></div>
+                    </article>
+                    <article class="blog-item reveal">
+                        <div class="blog-item-media">
                             <img loading="lazy" src="images/cat-sleeping.jpg" alt="แมวลายนอนหลับรับแดดบนเตียง">
                             <span class="tag">การนอน</span>
                             <button type="button" class="fav-btn fav-corner" data-fav="article:sleep" data-fav-title="ศิลปะการนอนของแมว" data-fav-url="article-sleep.html" data-fav-img="images/cat-sleeping.jpg" aria-pressed="false"><span class="fav-heart" aria-hidden="true">♡</span></button>
@@ -169,6 +177,7 @@
                         <label><input type="checkbox" data-key="scratch"> ที่ลับเล็บ</label>
                         <label><input type="checkbox" data-key="carrier"> กระเป๋าใส่แมวสำหรับพาไปหาหมอ</label>
                         <label><input type="checkbox" data-key="toys"> ของเล่น เช่น ไม้ตกแมว</label>
+                        <a class="starter-guide" href="article-food.html">อ่านเรื่องเลือกอาหารให้ตรงวัย</a>
                     </fieldset>
                     <fieldset class="starter-group reveal">
                         <legend>บ้านปลอดภัย</legend>
@@ -196,7 +205,7 @@
             <div class="container budget-grid">
                 <div class="budget-info reveal">
                     <h2>เลี้ยงแมว 1 ตัว<br>ต้องใช้เงินเท่าไร?</h2>
-                    <p>เลือกเกรดอาหาร ทราย และของที่อยากเตรียม แล้วดูว่าต้องกันเงินไว้เดือนละประมาณเท่าไร</p>
+                    <p>เลือกเกรดอาหาร ทราย และของที่อยากเตรียม แล้วดูว่าต้องกันเงินไว้เดือนละประมาณเท่าไร ถ้ายังไม่รู้ว่าจะให้อาหารเม็ดหรืออาหารเปียกแค่ไหน ลองอ่าน<a href="article-food.html">อาหารแมว กินอะไร วันละเท่าไร</a></p>
                     <!-- data-min / data-max = ผลรวมช่วงราคาในย่อหน้าแรกข้างล่าง (2,000–4,000 + 2,000–5,000) ต่อแมว 1 ตัว ใช้คำนวณบรรทัด "ปีแรก" ถ้าแก้ตัวเลขในย่อหน้า ต้องแก้ตรงนี้ด้วย -->
                     <div class="budget-startup" id="budget-startup" data-min="4000" data-max="9000">
                         <strong>อย่าลืมค่าเริ่มต้น (จ่ายครั้งเดียว)</strong>
@@ -443,9 +452,25 @@
                     <div>
                         <h2>ถาม-ตอบเรื่องแมว</h2>
                     </div>
-                    <p>เรื่องที่ทาสแมวสงสัยกันบ่อย</p>
+                    <p>เรื่องที่คนกำลังจะรับแมวและทาสแมวสงสัยกันบ่อย</p>
                 </div>
                 <div class="faq-list reveal">
+                    <details data-faq="f7">
+                        <summary>ควรรับลูกแมวตอนอายุเท่าไร?</summary>
+                        <p>ลูกแมวควรอยู่กับแม่และพี่น้องจนอายุอย่างน้อย 8–9 สัปดาห์ ตามคำแนะนำของ Cats Protection องค์กรช่วยเหลือแมวของอังกฤษ ช่วงนี้ลูกแมวกำลังหย่านม และยังเรียนรู้ที่จะอยู่กับคนและแมวตัวอื่น ถ้าเป็นไปได้ ให้ไปดูลูกแมวกับแม่ที่บ้านเดิม และขอประวัติวัคซีนกับการถ่ายพยาธิมาด้วย วันแรกที่รับน้องมาต้องทำอะไรบ้าง ดูได้ใน<a href="article-first24.html">24 ชั่วโมงแรกเมื่อแมวมาถึงบ้าน</a></p>
+                    </details>
+                    <details data-faq="f8">
+                        <summary>อยู่คอนโดเลี้ยงแมวได้ไหม?</summary>
+                        <p>ได้ แมวอยู่ในห้องได้ทั้งชีวิต ถ้าห้องมีที่ให้น้องปีน หลบ และเล่น เรื่องแรกที่ต้องเช็กคือกฎของคอนโด ดูข้อบังคับของนิติบุคคลหรือถามนิติฯ ถ้าเช่าอยู่ให้ดูสัญญาเช่าด้วย เพราะคอนโดหลายแห่งห้ามเลี้ยงสัตว์ เรื่องที่สองคือหน้าต่างกับระเบียง ต้องติดมุ้งลวดหรือตาข่ายก่อนรับน้องเข้าห้อง แมวตกจากที่สูงบาดเจ็บหนักได้ วิธีจัดห้องให้น้องอยู่สบายดูได้ใน<a href="article-home.html">บ้านที่แมวอยากอยู่</a></p>
+                    </details>
+                    <details data-faq="f9">
+                        <summary><span>ไปต่างจังหวัด ทิ้งน้องไว้บ้าน<span class="nowrap">คนเดียว</span>ได้นานแค่ไหน?</span></summary>
+                        <p>แมวโตที่แข็งแรงอยู่ลำพังได้ราว 8–12 ชั่วโมง ถ้าจะไปเกิน 24 ชั่วโมง ควรมีคนมาดูอย่างน้อยวันละครั้ง ให้อาหาร เปลี่ยนน้ำ ตักกระบะทราย และดูว่าน้องปกติดีไหม อย่าทิ้งน้องไว้ทั้งสัปดาห์โดยเทอาหารเผื่อไว้ ส่วนลูกแมวที่หย่านมแล้วไม่ควรอยู่ลำพังเกิน 4 ชั่วโมง (ตัวเลขจาก<a href="https://www.petmd.com/cat/general-health/how-long-can-you-leave-a-cat-alone" target="_blank" rel="noopener">บทความของสัตวแพทย์ใน PetMD</a>) หาคนช่วยดูไว้ตั้งแต่ก่อนรับน้อง เป็นข้อหนึ่งใน<a href="#starter">เช็กลิสต์มือใหม่</a></p>
+                    </details>
+                    <details data-faq="f10">
+                        <summary>จำเป็นต้องทำหมันไหม?</summary>
+                        <p>ถ้าไม่ได้ตั้งใจให้น้องมีลูก ควรทำ แมวตัวเมียตั้งท้องได้ตั้งแต่อายุราว 5 เดือน สมาคมสัตวแพทย์แมวของอเมริกา (AAFP) จึงแนะนำให้ทำหมันภายในอายุ 5 เดือน หลังทำหมัน ตัวเมียจะไม่ติดสัดและไม่ร้องหาคู่ทั้งคืน ส่วนตัวผู้มักเลิกฉี่พ่นตามมุมบ้าน และหนีออกไปเที่ยวน้อยลง ขั้นตอนและการดูแลหลังผ่าตัดดูได้ใน<a href="article-health.html">พาน้องไปหาหมอในปีแรก</a></p>
+                    </details>
                     <details data-faq="f1">
                         <summary>ทำไมแมวชอบเอาเท้านวดผ้าห่ม?</summary>
                         <p>เป็นพฤติกรรมที่ติดมาตั้งแต่ตอนเป็นลูกแมวที่นวดท้องแม่ระหว่างกินนม แมวโตจึงมักนวดเวลารู้สึกผ่อนคลายและปลอดภัย นอกจากนี้อุ้งเท้ามีต่อมกลิ่น การนวดจึงเป็นการทิ้งกลิ่นบอกว่า "ที่นี่ของฉัน" ด้วย</p>

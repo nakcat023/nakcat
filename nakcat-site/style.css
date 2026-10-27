@@ -2110,6 +2110,10 @@ footer {
 .budget-startup p { margin: 6px 0 0; color: var(--muted); font-size: 0.95rem; line-height: 1.7; }
 .budget-info .budget-note { font-size: 0.85rem; }
 
+/* ลิงก์ข้างเครื่องคำนวณและในถาม-ตอบ ใช้สีเดียวกับลิงก์ในบทความ (ไม่งั้นเป็นสีน้ำเงินของเบราว์เซอร์) */
+.budget-info a,
+.faq-list a { color: var(--orange-dark); }
+
 .budget-card {
     display: grid;
     gap: 18px;

@@ -244,7 +244,7 @@ public static class Known
     // ต้องตรงกับ gameRating('...') ในหน้าเว็บ
     public static readonly string[] Games = ["breed-match", "personality", "true-or-false", "memory-match", "name-generator", "cat-says"];
     // ต้องตรงกับ <input name="article" value="..."> ในหน้าบทความ
-    public static readonly string[] Articles = ["article-first24", "article-sleep", "article-language", "article-home", "article-health"];
+    public static readonly string[] Articles = ["article-first24", "article-sleep", "article-language", "article-home", "article-health", "article-food"];
     // หน้าที่นับคนเข้า = หน้าแรก + ทุกบทความ (ไม่นับหน้าแอดมิน)
     public static readonly string[] Pages = ["index", .. Articles];
     // ผลลัพธ์ของเกม "แมวของคุณเป็นสายไหน" (ต้องตรงกับ quizResults ใน index.html)
@@ -252,7 +252,7 @@ public static class Known
     // รหัสคำถามเกม "จริงหรือมั่ว?" (ต้องตรงกับ id ใน truthFacts ใน index.html) จำนวนข้อ = คะแนนเต็ม
     public static readonly string[] TruthQuestions = ["t1", "t2", "t3", "t4", "t5", "t6", "t7", "t8", "t9", "t10"];
     // รหัสหัวข้อถาม-ตอบ (ต้องตรงกับ data-faq ใน index.html)
-    public static readonly string[] Faqs = ["f1", "f2", "f3", "f4", "f5", "f6"];
+    public static readonly string[] Faqs = ["f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8", "f9", "f10"];
     // ช่องทางแชร์ (ต้องตรงกับ data-via ของปุ่มแชร์)
     public static readonly string[] ShareChannels = ["facebook", "x", "story", "copy"];
 
