@@ -556,6 +556,16 @@
             document.dispatchEvent(new CustomEvent('nakcat:track', { detail: keys }));
         }
 
+        // สลับลำดับแบบ Fisher–Yates ทุกลำดับมีโอกาสออกเท่ากัน (minigames.js ใช้ด้วย)
+        function shuffle(arr) {
+            const a = [...arr];
+            for (let i = a.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [a[i], a[j]] = [a[j], a[i]];
+            }
+            return a;
+        }
+
         function shareBar(data) {
             const id = shareStore.push(data) - 1;
             return `
@@ -1326,7 +1336,7 @@
         let truthAnswers = []; // ['truth-right:t3', 'truth-wrong:t7', ...] ส่งให้หลังบ้านตอนจบเกม
 
         function startTruth() {
-            truthOrder = [...truthFacts].sort(() => Math.random() - 0.5);
+            truthOrder = shuffle(truthFacts);
             truthStep = 0;
             truthScore = 0;
             truthAnswers = [];

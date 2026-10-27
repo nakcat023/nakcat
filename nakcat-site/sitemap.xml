@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- รายชื่อหน้าที่อยากให้ Google รู้จัก เพิ่มบทความใหม่เมื่อไร ให้เพิ่ม <url> ที่นี่ด้วย -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url><loc>https://nakcat.netlify.app/</loc></url>
+    <url><loc>https://nakcat.netlify.app/article-first24.html</loc></url>
+    <url><loc>https://nakcat.netlify.app/article-sleep.html</loc></url>
+    <url><loc>https://nakcat.netlify.app/article-language.html</loc></url>
+    <url><loc>https://nakcat.netlify.app/article-home.html</loc></url>
+</urlset>

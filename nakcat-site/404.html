@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ไม่พบหน้านี้ | nakcat</title>
+    <meta name="robots" content="noindex">
+    <meta name="theme-color" content="#d96d3b">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27><rect width=%27100%27 height=%27100%27 rx=%2728%27 fill=%27%23fbe3d2%27/><text x=%2750%27 y=%2770%27 font-size=%2762%27 text-anchor=%27middle%27>🐱</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai+Looped:wght@400;500;600&family=Pridi:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Netlify ใช้หน้านี้กับทุกลิงก์ที่หาไม่เจอ รวมถึงลิงก์ที่ซ้อนโฟลเดอร์ เช่น /a/b ลิงก์ในหน้านี้จึงต้องขึ้นต้นด้วย / เสมอ -->
+    <link rel="stylesheet" href="/style.css?v=16">
+</head>
+<body>
+    <nav>
+        <div class="container nav-inner">
+            <div class="logo"><a href="/">nakcat</a></div>
+            <button class="menu-toggle" type="button" aria-label="เปิดเมนู" aria-expanded="false" aria-controls="site-menu">☰</button>
+            <ul class="menu" id="site-menu">
+                <li><a href="/#about">เกี่ยวกับ</a></li>
+                <li><a href="/#stories">บทความ</a></li>
+                <li><a href="/#starter">มือใหม่</a></li>
+                <li><a href="/#games">มินิเกม</a></li>
+                <li><a href="/#faq">ถาม-ตอบ</a></li>
+                <li><a href="/#contact" class="menu-cta">ติดต่อ</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main>
+        <header class="article-hero">
+            <div class="container article-wrap">
+                <span class="tag">404</span>
+                <h1>หน้านี้แมวคาบไปซ่อนแล้ว</h1>
+                <p class="article-lead">ไม่พบหน้าที่คุณกำลังหา ลิงก์อาจพิมพ์ผิด หรือหน้านี้ถูกย้ายไปแล้ว ลองกลับไปเริ่มที่หน้าแรก หรือเลือกอ่านบทความได้เลย</p>
+                <div class="hero-actions" style="margin-top: 28px;">
+                    <a href="/" class="btn">กลับหน้าแรก</a>
+                    <a href="/#stories" class="btn btn-ghost">ดูบทความทั้งหมด</a>
+                </div>
+            </div>
+        </header>
+    </main>
+
+    <footer>
+        <div class="container footer-inner">
+            <a href="/" class="footer-logo">nakcat</a>
+            <p>&copy; 2026 nakcat. สงวนลิขสิทธิ์.</p>
+        </div>
+    </footer>
+
+    <script>
+        const menuToggle = document.querySelector('.menu-toggle');
+        const siteMenu = document.querySelector('#site-menu');
+        menuToggle.addEventListener('click', () => {
+            const isOpen = siteMenu.classList.toggle('is-open');
+            menuToggle.setAttribute('aria-expanded', String(isOpen));
+            menuToggle.textContent = isOpen ? '✕' : '☰';
+        });
+    </script>
+</body>
+</html>

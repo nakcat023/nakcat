@@ -1,15 +1,6 @@
 // มินิเกมจับคู่การ์ดแมว และเครื่องสุ่มชื่อแมว
-// ใช้ breeds, shareBar, gameRating, track จากสคริปต์หลักใน index.html
+// ใช้ breeds, shareBar, gameRating, track, shuffle จากสคริปต์หลักใน index.html
 (() => {
-    const shuffle = (arr) => {
-        const a = [...arr];
-        for (let i = a.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [a[i], a[j]] = [a[j], a[i]];
-        }
-        return a;
-    };
-
     // ===================== จับคู่การ์ดแมว =====================
     const memoryBody = document.querySelector('#memory-body');
     let memOpen;

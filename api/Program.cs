@@ -30,6 +30,7 @@ builder.Services.AddCors(options =>
 // กันกดรัว / บอทยิงซ้ำ: ทุกปุ่มที่ "เขียน" ข้อมูล (ส่งเรื่อง ให้คะแนน กดถูกใจ บันทึกคะแนนเกม ส่งข้อความ)
 // รวมกันได้ไม่เกิน 60 ครั้งต่อนาทีต่อ 1 เครื่อง (นับจาก IP) เกินแล้วตอบ 429 ให้รอก่อน
 // ตัวนับคนเข้าเว็บ / เกมที่เล่นจบ แยกโควตาเป็นของตัวเอง (120 ครั้งต่อนาที) จะได้ไม่ไปกินโควตาปุ่มอื่น
+// ทุกเส้นทาง /admin ได้ไม่เกิน 30 ครั้งต่อนาที แอดมินที่กดใช้งานจริงไม่ถึง แต่คนที่สุ่มเดารหัสจะเดาได้ช้ามาก
 // (IP ใช้แค่นับโควตาในหน่วยความจำชั่วคราว ไม่ได้บันทึกลงฐานข้อมูล)
 builder.Services.AddRateLimiter(options =>
 {
@@ -42,6 +43,13 @@ builder.Services.AddRateLimiter(options =>
     options.AddPolicy("tracking", context => RateLimitPartition.GetFixedWindowLimiter(
         context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
         _ => new FixedWindowRateLimiterOptions { PermitLimit = 120, Window = TimeSpan.FromMinutes(1) }));
+    // เส้นทาง /admin อยู่ทั้งใน Program.cs และ InsightsEndpoints.cs จึงจำกัดรวมที่นี่ที่เดียว ไม่ต้องตามใส่ทีละเส้นทาง
+    options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(context =>
+        context.Request.Path.StartsWithSegments("/admin")
+            ? RateLimitPartition.GetFixedWindowLimiter(
+                context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+                _ => new FixedWindowRateLimiterOptions { PermitLimit = 30, Window = TimeSpan.FromMinutes(1) })
+            : RateLimitPartition.GetNoLimiter("not-admin"));
 });
 
 // บน Render มีเครื่องกลาง (proxy) รับคำขอแทนเรา IP จริงของคนเข้าเว็บจึงอยู่ใน header X-Forwarded-For

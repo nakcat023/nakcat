@@ -1,0 +1,10 @@
+# header ที่ Netlify แนบไปกับทุกหน้าและทุกไฟล์ของเว็บ
+# X-Frame-Options: ห้ามเว็บอื่นเอาหน้าเราไปซ้อนในกรอบ (กันหลอกให้กดปุ่มโดยไม่รู้ตัว)
+# X-Content-Type-Options: ให้เบราว์เซอร์เชื่อชนิดไฟล์ตามที่เราบอก ไม่เดาเอง
+# Referrer-Policy: กดลิงก์ออกไปเว็บอื่น บอกแค่ว่ามาจาก nakcat ไม่บอกว่ามาจากหน้าไหน
+# Permissions-Policy: เว็บนี้ไม่ใช้กล้อง ไมค์ และตำแหน่งที่อยู่ ปิดไว้เลย
+/*
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
