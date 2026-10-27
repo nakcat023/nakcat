@@ -30,6 +30,7 @@ const dashNames: Record<string, string> = {
     'article-home': 'บ้านที่แมวอยากอยู่',
     'article-health': 'พาน้องไปหาหมอในปีแรก',
     'article-food': 'อาหารแมว กินอะไร วันละเท่าไร',
+    'article-buy': 'ซื้อแมวพันธุ์จากฟาร์ม ดูอะไรก่อนจ่ายเงิน',
     'breed-match': '🧬 แมวพันธุ์ไหนเหมาะกับคุณ',
     'personality': '😼 แมวของคุณเป็นสายไหน',
     'true-or-false': '🧠 จริงหรือมั่ว?',

@@ -151,8 +151,9 @@
     syncFavButtons();
 
     // ===================== ติดตั้งเป็นแอป (PWA) =====================
+    // รอให้หน้าโหลดเสร็จก่อน ไฟล์ที่เก็บไว้ใช้ออฟไลน์จะได้ไม่แย่งเน็ตกับหน้าแรก
     if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
-        navigator.serviceWorker.register('sw.js').catch(() => {});
+        window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
     }
 
     // เบราว์เซอร์ที่รองรับจะส่งสัญญาณมา จึงค่อยโชว์ปุ่มติดตั้งใน footer

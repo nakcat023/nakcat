@@ -244,7 +244,7 @@ public static class Known
     // ต้องตรงกับ gameRating('...') ในหน้าเว็บ
     public static readonly string[] Games = ["breed-match", "personality", "true-or-false", "memory-match", "name-generator", "cat-says"];
     // ต้องตรงกับ <input name="article" value="..."> ในหน้าบทความ
-    public static readonly string[] Articles = ["article-first24", "article-sleep", "article-language", "article-home", "article-health", "article-food"];
+    public static readonly string[] Articles = ["article-first24", "article-sleep", "article-language", "article-home", "article-health", "article-food", "article-buy"];
     // หน้าที่นับคนเข้า = หน้าแรก + ทุกบทความ (ไม่นับหน้าแอดมิน)
     public static readonly string[] Pages = ["index", .. Articles];
     // ผลลัพธ์ของเกม "แมวของคุณเป็นสายไหน" (ต้องตรงกับ quizResults ใน index.html)

@@ -1102,6 +1102,61 @@ footer .credits a { color: inherit; }
     font-size: 0.88rem;
 }
 
+/* ---------- Breed fit notes & health ---------- */
+
+.fit-notes {
+    max-width: 420px;
+    margin: 6px auto 0;
+    text-align: left;
+}
+
+.quiz-result .fit-title {
+    margin: 14px 0 6px;
+    color: var(--ink);
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+.fit-notes ul {
+    display: grid;
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.fit-notes li {
+    position: relative;
+    padding-left: 24px;
+    color: var(--muted);
+    font-size: 0.92rem;
+    line-height: 1.6;
+}
+
+.fit-good li::before { content: '✓'; position: absolute; left: 4px; color: #23663a; font-weight: 600; }
+.fit-watch li::before { content: '!'; position: absolute; left: 8px; color: #9c2b22; font-weight: 600; }
+
+.breed-health {
+    max-width: 420px;
+    margin: 0 auto 22px;
+    padding: 14px 18px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    color: var(--muted);
+    font-size: 0.92rem;
+    text-align: left;
+}
+
+.quiz-result .breed-health p,
+.breed-health p { margin: 0 0 8px; max-width: none; line-height: 1.7; }
+.quiz-result .breed-health p:last-child,
+.breed-health p:last-child { margin-bottom: 0; }
+.breed-health strong { color: var(--ink); font-weight: 500; }
+.breed-health a { color: var(--orange-dark); }
+.quiz-result .breed-health .breed-health-src,
+.breed-health .breed-health-src { font-size: 0.78rem; line-height: 1.6; }
+.breed-dialog .breed-health { max-width: none; margin: 14px 0 0; }
+
 /* ---------- Result actions & share ---------- */
 
 .result-actions {
@@ -1713,6 +1768,9 @@ footer {
     text-align: left;
 }
 
+/* display: grid ด้านบนทับ hidden ของเบราว์เซอร์ กล่องเลยโผล่ตลอด ต้องซ่อนเองจนกว่าจะกดโหวตลง */
+.feedback-more[hidden] { display: none; }
+
 .feedback-more label { display: grid; gap: 6px; width: 100%; font-size: 0.95rem; }
 .feedback-more label span { color: var(--muted); font-size: 0.85rem; }
 
@@ -2291,10 +2349,12 @@ footer {
     .mem-front small { font-size: 0.68rem; }
 }
 
-/* ---------- Blog: แถวละ 3 การ์ด (6 บทความ = 3+3 พอดี) ---------- */
+/* ---------- Blog: แถวละ 3 การ์ด ---------- */
 
 .blog-content { grid-template-columns: repeat(3, 1fr); gap: 22px; }
 .blog-content .blog-item img { height: 200px; }
+/* การ์ดใบสุดท้ายที่เหลือใบเดียวในแถว (7 บทความ = 3+3+1) วางไว้ตรงกลาง ไม่ให้ชิดซ้ายโดดๆ */
+.blog-content > .blog-item:last-child:nth-child(3n+1) { grid-column: 2; }
 
 .starter-guide {
     display: inline-block;
@@ -2672,10 +2732,13 @@ footer {
 @media (max-width: 1100px) {
     .blog-content { grid-template-columns: repeat(2, 1fr); }
     .blog-content .blog-item img { height: 220px; }
+    .blog-content > .blog-item:last-child:nth-child(3n+1) { grid-column: auto; }
+    .blog-content > .blog-item:last-child:nth-child(odd) { grid-column: 1 / -1; justify-self: center; width: calc(50% - 11px); }
 }
 
 @media (max-width: 760px) {
     .blog-content { grid-template-columns: 1fr; }
+    .blog-content > .blog-item:last-child:nth-child(odd) { width: auto; justify-self: stretch; }
     .fav-fab { right: 14px; bottom: 72px; padding: 10px 15px; }
     .timeline-step { padding-left: 38px; }
 }

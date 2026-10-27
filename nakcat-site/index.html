@@ -22,7 +22,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai+Looped:wght@400;500;600&family=Pridi:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=19">
+    <link rel="stylesheet" href="style.css?v=20">
 </head>
 <body>
     <nav>
@@ -58,7 +58,7 @@
                     </ul>
                 </div>
                 <div class="hero-image reveal">
-                    <img src="images/hero-cat.jpg" alt="แมวสามสีมองกล้อง">
+                    <img src="images/hero-cat.jpg" alt="แมวสามสีมองกล้อง" fetchpriority="high">
                 </div>
             </div>
         </section>
@@ -94,6 +94,14 @@
                     <p>สิ่งที่เราจดไว้ระหว่างเตรียมตัวรับแมว</p>
                 </div>
                 <div class="blog-content">
+                    <article class="blog-item reveal">
+                        <div class="blog-item-media">
+                            <img loading="lazy" src="images/cat-mother.jpg" alt="แม่แมวลายสามสีนอนให้นมลูกแมวหลายตัวบนพื้นในบ้าน">
+                            <span class="tag">เลือกแมว</span>
+                            <button type="button" class="fav-btn fav-corner" data-fav="article:buy" data-fav-title="ซื้อแมวพันธุ์จากฟาร์ม ดูอะไรก่อนจ่ายเงิน" data-fav-url="article-buy.html" data-fav-img="images/cat-mother.jpg" aria-pressed="false"><span class="fav-heart" aria-hidden="true">♡</span></button>
+                        </div>
+                        <div class="blog-item-body"><h3>ซื้อแมวพันธุ์จากฟาร์ม ดูอะไรก่อนจ่ายเงิน</h3><p>ฟาร์มแบบไหนน่าไว้ใจ ไปดูลูกแมวต้องเช็กอะไร ควรได้เอกสารอะไร และโอนมัดจำยังไงไม่ให้โดนโกง</p><a href="article-buy.html" class="link-more">อ่านต่อ</a></div>
+                    </article>
                     <article class="blog-item reveal">
                         <div class="blog-item-media">
                             <img loading="lazy" src="images/kitten-about.jpg" alt="ลูกแมวหูใหญ่มองไปด้านข้าง">
@@ -168,6 +176,7 @@
                         <label><input type="checkbox" data-key="household"> คนในบ้านตกลงกันแล้ว และไม่มีใครแพ้แมวหนัก</label>
                         <label><input type="checkbox" data-key="sitter"> มีคนช่วยดูน้องเวลาเราไปต่างจังหวัด</label>
                         <label><input type="checkbox" data-key="fund"> กันเงินไว้ก้อนหนึ่งเป็นค่าหมอฉุกเฉิน</label>
+                        <a class="starter-guide" href="article-buy.html">ถ้าจะซื้อแมวพันธุ์ อ่านเรื่องเลือกฟาร์มก่อนจ่ายเงิน</a>
                     </fieldset>
                     <fieldset class="starter-group reveal">
                         <legend>ของจำเป็น</legend>
@@ -323,7 +332,7 @@
                 <div class="quiz-card reveal" id="breed-match" role="tabpanel" aria-labelledby="tab-breed">
                     <div class="quiz-head">
                         <h2>นิสัยคุณเหมาะกับแมวพันธุ์ไหน?</h2>
-                        <p>ตอบ 6 ข้อตามไลฟ์สไตล์จริงของคุณ แล้วเราจะจับคู่กับแมว 22 สายพันธุ์ที่นิสัยต่างกัน</p>
+                        <p>ตอบ 9 ข้อตามไลฟ์สไตล์และบ้านจริงของคุณ แล้วเราจะจับคู่กับแมว 22 สายพันธุ์ที่นิสัยต่างกัน</p>
                     </div>
                     <div class="quiz-body" id="breed-body" aria-live="polite"></div>
                 </div>
@@ -980,6 +989,7 @@
                     </div>`;
                 document.querySelector('#quiz-restart').addEventListener('click', () => {
                     quizStep = 0; quizScore = {}; renderQuiz();
+                    bringIntoView(quizBody);
                 });
                 return;
             }
@@ -996,6 +1006,7 @@
                     quizScore[btn.dataset.type] = (quizScore[btn.dataset.type] || 0) + 1;
                     quizStep++;
                     renderQuiz();
+                    bringIntoView(quizBody);
                 });
             });
         }
@@ -1003,8 +1014,9 @@
 
         // ----- เกม: นิสัยคุณเหมาะกับแมวพันธุ์ไหน -----
         // แต่ละคำตอบให้คะแนนด้านต่างๆ ของผู้เล่น (0 = น้อย, 2 = มาก)
-        // energy = พลังงาน/เวลาเล่น, attention = อยากให้แมวติดแค่ไหน,
-        // grooming = พร้อมแปรงขนแค่ไหน, vocal = รับเสียงร้องได้แค่ไหน, space = พื้นที่บ้าน
+        // energy = พลังงาน/เวลาเล่น, attention = อยากให้แมวติดแค่ไหน และมีคนอยู่บ้านแค่ไหน,
+        // grooming = พร้อมแปรงขนแค่ไหน, vocal = รับเสียงร้องได้แค่ไหน, space = พื้นที่บ้าน,
+        // cool = ห้องเย็นแค่ไหน, busy = บ้านคึกคักแค่ไหน (เด็ก สัตว์อื่น แขก)
         const breedQuestions = [
             { q: 'วันหยุดในฝันของคุณคือ...', dim: 'energy', a: [
                 ['นอนดูซีรีส์อยู่บ้านทั้งวัน', 0], ['ออกไปคาเฟ่ เดินเล่นสบายๆ', 1], ['ออกกำลังกาย หรือออกไปผจญภัย', 2]] },
@@ -1012,165 +1024,294 @@
                 ['ไม่ถึง 15 นาที', 0], ['ราวครึ่งชั่วโมง', 1], ['เกินชั่วโมง เล่นได้เรื่อยๆ', 2]] },
             { q: 'คุณอยากให้แมวติดคุณแค่ไหน?', dim: 'attention', a: [
                 ['ต่างคนต่างมีโลกส่วนตัว', 0], ['มาอ้อนบ้างก็พอ', 1], ['อยากมีเงาเดินตามทั้งวัน', 2]] },
+            { q: 'วันธรรมดา บ้านไม่มีคนอยู่วันละกี่ชั่วโมง?', dim: 'attention', a: [
+                ['เกิน 8 ชั่วโมง', 0], ['ราว 4–8 ชั่วโมง', 1], ['ไม่ค่อยห่าง มีคนอยู่บ้านเกือบทั้งวัน', 2]] },
             { q: 'ถ้าต้องดูแลขนหรือผิวแมวเป็นประจำ (แปรงขน เช็ดตัว) คุณจะ...', dim: 'grooming', a: [
                 ['ไม่ไหว ขอแบบดูแลง่ายๆ', 0], ['สัปดาห์ละ 1–2 ครั้งโอเค', 1], ['ชอบเลย ได้ผ่อนคลายไปด้วย', 2]] },
             { q: 'ถ้าแมวร้องคุยกับคุณทั้งวัน คุณรู้สึก...', dim: 'vocal', a: [
                 ['ขอความเงียบดีกว่า', 0], ['ร้องบ้างก็น่ารักดี', 1], ['ชอบมาก จะคุยตอบทุกคำ', 2]] },
             { q: 'บ้านของคุณเป็นแบบไหน?', dim: 'space', a: [
                 ['คอนโดหรือห้องขนาดเล็ก', 0], ['บ้านหรือห้องขนาดกลาง', 1], ['บ้านกว้าง มีที่ให้วิ่งและปีนเยอะ', 2]] },
+            { q: 'ห้องที่แมวจะอยู่ ช่วงบ่ายหน้าร้อนเป็นแบบไหน?', dim: 'cool', a: [
+                ['ไม่มีแอร์ ร้อนอบอ้าว', 0], ['มีพัดลม เปิดแอร์บางเวลา', 1], ['เปิดแอร์ เย็นสบายเกือบทั้งวัน', 2]] },
+            { q: 'ในบ้านมีเด็กเล็กหรือสัตว์เลี้ยงตัวอื่นไหม?', dim: 'busy', a: [
+                ['ไม่มี อยู่กันเงียบๆ', 0], ['มีแขกหรือคนเข้าออกบ้าง', 1], ['มีเด็กเล็ก หรือมีหมาแมวอยู่แล้ว', 2]] },
         ];
 
         // ความต้องการของแมวแต่ละพันธุ์ในแต่ละด้าน (0–2)  ·  รูปจาก Wikimedia Commons (credit = ช่างภาพ · สัญญาอนุญาต)
+        // cool = ต้องการอากาศเย็นแค่ไหน (PDSA: แมวขนยาวและหน้าแบนเสี่ยงโรคลมแดด) · busy = รับบ้านคึกคักได้แค่ไหน (ยิ่งมากยิ่งรับได้)
+        // health / ask / src = สุขภาพที่ควรรู้ ผลตรวจที่ควรขอดูก่อนซื้อ และแหล่งอ้างอิง (คีย์ใน healthSources ด้านล่าง)
         const breeds = [
             { name: 'อะบิสซิเนียน', en: 'Abyssinian', img: 'images/breeds/abyssinian.jpg',
               credit: 'Karin Langner-Bahmann · CC BY-SA 3.0', source: 'https://commons.wikimedia.org/wiki/File:Gustav_chocolate.jpg',
-              need: { energy: 2, attention: 1.5, grooming: 0, vocal: 0.5, space: 2 },
+              need: { energy: 2, attention: 1.5, grooming: 0, vocal: 0.5, space: 2, cool: 0, busy: 1.5 },
               tags: ['ปราดเปรียว', 'ช่างสงสัย', 'ชอบปีน'],
               text: 'ขี้เล่น ปีนป่ายเก่ง อยากรู้อยากเห็นทุกเรื่อง ชอบอยู่ใกล้คนแต่ไม่ใช่สายนั่งตัก',
-              care: 'ต้องการคอนโดแมวหรือที่สูงให้ปีน และเวลาเล่นทุกวัน ถ้าเบื่อจะหาเรื่องสนุกเองในบ้าน' },
+              care: 'ต้องการคอนโดแมวหรือที่สูงให้ปีน และเวลาเล่นทุกวัน ถ้าเบื่อจะหาเรื่องสนุกเองในบ้าน',
+              health: 'เป็นพันธุ์ที่เสี่ยงโรคจอประสาทตาเสื่อม (PRA) ซึ่งทำให้ตาบอด และมีโรคโลหิตจางจากขาดเอนไซม์ PK ที่ถ่ายทอดทางพันธุกรรม ทั้งสองโรคตรวจยีนได้แล้ว',
+              ask: 'ผลตรวจยีน PRA และ PK deficiency ของพ่อแม่', src: ['iccPra', 'mizzou'] },
             { name: 'บริติช ช็อตแฮร์', en: 'British Shorthair', img: 'images/breeds/british.jpg',
               credit: 'BritishEmpire · CC BY-SA 3.0', source: 'https://commons.wikimedia.org/wiki/File:Mystica_from_British_Empire_Cattery.jpg',
-              need: { energy: 0.5, attention: 0, grooming: 1, vocal: 0, space: 0 },
+              need: { energy: 0.5, attention: 0, grooming: 1, vocal: 0, space: 0, cool: 1, busy: 1 },
               tags: ['อิสระ', 'ใจเย็น', 'เลี้ยงง่าย'],
               text: 'ตุ๊กตาหมีสุดสุขุม รักอิสระ อยู่บ้านคนเดียวได้สบาย ชอบอยู่ใกล้ๆ แต่ไม่ค่อยชอบถูกอุ้มนาน',
-              care: 'แปรงขนสัปดาห์ละครั้ง และระวังน้ำหนักเกิน เพราะเป็นพันธุ์ที่ขยับตัวน้อยและอ้วนง่าย' },
+              care: 'แปรงขนสัปดาห์ละครั้ง และระวังน้ำหนักเกิน เพราะเป็นพันธุ์ที่ขยับตัวน้อยและอ้วนง่าย',
+              health: 'เป็นพันธุ์ที่พบโรคหัวใจ HCM (กล้ามเนื้อหัวใจหนา) ได้บ่อยกว่าแมวทั่วไป และพบโรคไตถุงน้ำ (PKD) ได้บ้าง',
+              ask: 'ผลอัลตราซาวด์หัวใจ (echo) และผลตรวจ PKD ของพ่อแม่', src: ['cornellHcm', 'cornellPkd'] },
             { name: 'เอ็กซอติก ช็อตแฮร์', en: 'Exotic Shorthair', img: 'images/breeds/exotic.jpg',
               credit: 'Tcm1707 · CC BY-SA 4.0', source: 'https://commons.wikimedia.org/wiki/File:Ginger_Exotic_Shorthair.jpg',
-              need: { energy: 0.5, attention: 1, grooming: 1, vocal: 0, space: 0 },
+              need: { energy: 0.5, attention: 1, grooming: 1, vocal: 0, space: 0, cool: 2, busy: 1 },
               tags: ['หน้าแบน', 'ขี้อ้อนเบาๆ', 'เงียบ'],
               text: 'นิสัยใจเย็นแบบเปอร์เซียแต่ขนสั้นกว่า ชอบอยู่ใกล้เจ้าของ เสียงเบา เหมาะกับคอนโด',
-              care: 'ขนหนานุ่มแปรงสัปดาห์ละ 1–2 ครั้ง พันธุ์หน้าแบนควรเช็ดคราบน้ำตาและระวังอากาศร้อน' },
+              care: 'ขนหนานุ่มแปรงสัปดาห์ละ 1–2 ครั้ง พันธุ์หน้าแบนควรเช็ดคราบน้ำตาและระวังอากาศร้อน',
+              health: 'หน้าแบนทำให้หลายตัวหายใจลำบาก น้ำตาไหลตลอด และมีปัญหาตากับฟัน ยิ่งหน้าแบนมากยิ่งเสี่ยงมาก และมีโรคไตถุงน้ำ (PKD) ที่ตรวจยีนได้เหมือนเปอร์เซีย',
+              ask: 'ผลตรวจยีน PKD ของพ่อแม่ และเลือกตัวที่จมูกไม่บี้มาก หายใจเงียบ ไม่มีเสียงครืดคราด', src: ['iccBrachy', 'mizzou'] },
             { name: 'ขาวมณี', en: 'Khao Manee', img: 'images/breeds/khaomanee.jpg',
               credit: 'Octavio.hgc · CC BY-SA 4.0', source: 'https://commons.wikimedia.org/wiki/File:Khaomanee_cat.jpg',
-              need: { energy: 1.5, attention: 2, grooming: 0, vocal: 1.5, space: 1 },
+              need: { energy: 1.5, attention: 2, grooming: 0, vocal: 1.5, space: 1, cool: 0, busy: 1.5 },
               tags: ['แมวไทย', 'ขาวทั้งตัว', 'ช่างคุย'],
               text: 'แมวไทยขนขาวล้วน หลายตัวมีตาสองสี ขี้เล่น ฉลาด ติดเจ้าของ และชอบส่งเสียงคุยด้วย',
-              care: 'ขนสั้นดูแลง่าย แต่ต้องการเพื่อนเล่น แมวขาวบางตัวอาจมีปัญหาการได้ยิน ควรให้หมอตรวจ' },
+              care: 'ขนสั้นดูแลง่าย แต่ต้องการเพื่อนเล่นและเวลาเล่นด้วยกันทุกวัน',
+              health: 'แมวขาวล้วนหูหนวกแต่กำเนิดได้บ่อยกว่าแมวสีอื่น ตาฟ้าทั้งสองข้างยิ่งเสี่ยง ส่วนตัวที่ตาสองสีอาจหูหนวกข้างเดียว คือข้างที่ตาเป็นสีฟ้า และมักดูไม่ออกเพราะท่าทางปกติ',
+              ask: 'ให้หมอตรวจการได้ยิน โดยเฉพาะตัวที่ตาฟ้าหรือตาสองสี', src: ['cornellDeaf'] },
             { name: 'โคราช (สีสวาด)', en: 'Korat', img: 'images/breeds/korat.jpg',
               credit: 'Desaix83 จากภาพของ Heikki Siltala · CC BY 3.0', source: 'https://commons.wikimedia.org/wiki/File:Korat_Fond_Blanc.jpg',
-              need: { energy: 1.5, attention: 2, grooming: 0, vocal: 0.5, space: 1 },
+              need: { energy: 1.5, attention: 2, grooming: 0, vocal: 0.5, space: 1, cool: 0, busy: 0.5 },
               tags: ['แมวไทย', 'ผูกพัน', 'ขนสั้น'],
               text: 'แมวมงคลขนสีเงินอมฟ้าของไทย ผูกพันกับครอบครัวมาก ฉลาด ขี้เล่น แต่ไม่ค่อยส่งเสียงดัง',
-              care: 'ขนสั้นดูแลง่าย ชอบบ้านที่สงบ อาจตกใจเสียงดัง และต้องการเวลาอยู่ใกล้ชิดกับเจ้าของ' },
+              care: 'ขนสั้นดูแลง่าย ชอบบ้านที่สงบ อาจตกใจเสียงดัง และต้องการเวลาอยู่ใกล้ชิดกับเจ้าของ',
+              health: 'มีโรคทางระบบประสาทที่ถ่ายทอดทางพันธุกรรม (gangliosidosis GM1 และ GM2) พบไม่บ่อย แต่ตรวจยีนได้แล้ว',
+              ask: 'ผลตรวจยีน GM1 และ GM2 ของพ่อแม่', src: ['mizzou'] },
             { name: 'เมนคูน', en: 'Maine Coon', img: 'images/breeds/mainecoon.jpg',
               credit: 'Alix devil · CC BY-SA 4.0', source: 'https://commons.wikimedia.org/wiki/File:M%C3%A2le_Black_Silver_Blotched_Tabby.jpeg',
-              need: { energy: 1.5, attention: 1.5, grooming: 2, vocal: 1, space: 2 },
+              need: { energy: 1.5, attention: 1.5, grooming: 2, vocal: 1, space: 2, cool: 1.5, busy: 2 },
               tags: ['ตัวใหญ่ใจดี', 'เป็นมิตร', 'ขนยาว'],
               text: 'ยักษ์ใจดีแห่งโลกแมว ตัวใหญ่แต่ขี้เล่นและเข้ากับทุกคนในบ้าน ชอบส่งเสียงจิ๊บๆ คุยด้วย',
-              care: 'ตัวใหญ่จึงต้องการพื้นที่และคอนโดแมวที่แข็งแรง ขนยาวควรแปรงหลายครั้งต่อสัปดาห์' },
+              care: 'ตัวใหญ่จึงต้องการพื้นที่และคอนโดแมวที่แข็งแรง ขนยาวควรแปรงหลายครั้งต่อสัปดาห์',
+              health: 'เป็นพันธุ์ที่พบโรคหัวใจ HCM ได้บ่อย และเจอยีนที่เกี่ยวข้องแล้ว นอกจากนี้ยังมีโรคกล้ามเนื้อลีบจากไขสันหลัง (SMA) ที่ตรวจยีนได้',
+              ask: 'ผลตรวจยีน HCM และ SMA ของพ่อแม่ และผลอัลตราซาวด์หัวใจ (echo) ถ้ามี', src: ['cornellHcm', 'mizzou', 'iccInherited'] },
             { name: 'มันช์กิ้น', en: 'Munchkin', img: 'images/breeds/munchkin.jpg',
               credit: 'Sg0668commons · CC BY 3.0', source: 'https://commons.wikimedia.org/wiki/File:Longhairedmunchkin.jpg',
-              need: { energy: 1.5, attention: 1.5, grooming: 0.5, vocal: 0.5, space: 0.5 },
+              need: { energy: 1.5, attention: 1.5, grooming: 0.5, vocal: 0.5, space: 0.5, cool: 0.5, busy: 1.5 },
               tags: ['ขาสั้น', 'ขี้เล่น', 'เป็นมิตร'],
               text: 'แมวขาสั้นที่วิ่งเร็วกว่าที่คิด ชอบเล่นและเป็นมิตรกับคนในบ้าน',
-              care: 'ขาสั้นมาจากการกลายพันธุ์ทางพันธุกรรม ควรจัดบ้านให้ขึ้นลงง่าย คุมน้ำหนัก และตรวจกระดูกข้อต่อสม่ำเสมอ' },
+              care: 'จัดบ้านให้ขึ้นลงง่าย มีขั้นหรือทางลาดไปที่สูง คุมน้ำหนัก และตรวจกระดูกข้อต่อสม่ำเสมอ',
+              health: 'ขาสั้นมาจากภาวะกระดูกอ่อนเจริญผิดปกติ (chondrodystrophy) ซึ่ง iCatCare เห็นว่าไม่ควรเพาะพันธุ์ลักษณะแบบนี้ และเป็นพันธุ์ที่เสี่ยงโรคจอประสาทตาเสื่อม (PRA)',
+              ask: 'ถามว่าพ่อแม่ตรวจตาหรือตรวจยีน PRA หรือยัง และดูว่าลูกแมวเดิน วิ่ง กระโดดได้คล่อง', src: ['iccConformation', 'iccPra'] },
             { name: 'นอร์วีเจียน ฟอเรสต์', en: 'Norwegian Forest', img: 'images/breeds/norwegian.jpg',
               credit: 'Gangburgondes · CC BY-SA 3.0', source: 'https://commons.wikimedia.org/wiki/File:Dalaja-Doll-norv%C3%A9gien-ambre-blotched-tabby_avec-blanc_2008_(cropped).jpg',
-              need: { energy: 1.5, attention: 1, grooming: 2, vocal: 0.5, space: 2 },
+              need: { energy: 1.5, attention: 1, grooming: 2, vocal: 0.5, space: 2, cool: 1.5, busy: 1.5 },
               tags: ['ขนยาวสองชั้น', 'นักปีน', 'ใจเย็น'],
               text: 'ขนฟูหนา ตัวใหญ่ แข็งแรง ชอบปีนที่สูง เป็นมิตรแต่ก็มีโลกส่วนตัว',
-              care: 'ขนสองชั้นต้องแปรงหลายครั้งต่อสัปดาห์ ช่วงผลัดขนยิ่งต้องบ่อยขึ้น และควรมีที่ปีนสูงๆ' },
+              care: 'ขนสองชั้นต้องแปรงหลายครั้งต่อสัปดาห์ ช่วงผลัดขนยิ่งต้องบ่อยขึ้น และควรมีที่ปีนสูงๆ',
+              health: 'มีโรคสะสมไกลโคเจน (GSD IV) ที่ถ่ายทอดทางพันธุกรรม พบไม่บ่อยแต่รุนแรง และตรวจยีนได้แล้ว',
+              ask: 'ผลตรวจยีน GSD IV ของพ่อแม่', src: ['mizzou'] },
             { name: 'โอซีแคท', en: 'Ocicat', img: 'images/breeds/ocicat.jpg',
               credit: 'Heikki Siltala · CC BY 3.0', source: 'https://commons.wikimedia.org/wiki/File:Topspot_La_Colombina_(Liina)_OCI_c_24_female_kitten_EX1.JPG',
-              need: { energy: 2, attention: 2, grooming: 0, vocal: 1, space: 1.5 },
+              need: { energy: 2, attention: 2, grooming: 0, vocal: 1, space: 1.5, cool: 0, busy: 1.5 },
               tags: ['ลายจุด', 'ฉลาด', 'เหมือนหมา'],
               text: 'หน้าตาเหมือนแมวป่าแต่นิสัยแสนเชื่อง ฉลาด ฝึกเล่นคาบของได้ ติดคนแบบน้องหมา',
-              care: 'ไม่ชอบอยู่คนเดียวนาน ต้องการเกมฝึกสมองและเวลาเล่นด้วยกันทุกวัน' },
+              care: 'ไม่ชอบอยู่คนเดียวนาน ต้องการเกมฝึกสมองและเวลาเล่นด้วยกันทุกวัน',
+              health: 'เป็นพันธุ์ที่เสี่ยงโรคจอประสาทตาเสื่อม (PRA) ซึ่งทำให้ตาบอด',
+              ask: 'ผลตรวจยีน PRA ของพ่อแม่', src: ['iccPra'] },
             { name: 'เปอร์เซีย', en: 'Persian', img: 'images/breeds/persian.jpg',
               credit: 'Lajoma · CC BY-SA 3.0', source: 'https://commons.wikimedia.org/wiki/File:Persialainen.jpg',
-              need: { energy: 0, attention: 1, grooming: 2, vocal: 0, space: 0 },
+              need: { energy: 0, attention: 1, grooming: 2, vocal: 0, space: 0, cool: 2, busy: 0.5 },
               tags: ['สงบ', 'เสียงเบา', 'ขนยาว'],
               text: 'ชอบความสงบ นอนนิ่งๆ ข้างคุณได้ทั้งวัน และไม่ค่อยส่งเสียงดัง',
-              care: 'ขนยาวต้องแปรงทุกวันไม่ให้พันกัน และพันธุ์หน้าแบนควรเช็ดคราบน้ำตาและสังเกตการหายใจเป็นประจำ' },
+              care: 'ขนยาวต้องแปรงทุกวันไม่ให้พันกัน และพันธุ์หน้าแบนควรเช็ดคราบน้ำตาและสังเกตการหายใจเป็นประจำ',
+              health: 'หน้าแบนทำให้หลายตัวหายใจลำบาก น้ำตาไหลตลอด และมีปัญหาตากับฟัน ยิ่งหน้าแบนมากยิ่งเสี่ยงมาก เป็นพันธุ์ที่พบโรคไตถุงน้ำ (PKD) บ่อยที่สุด และพบโรคหัวใจ HCM ได้บ่อยด้วย',
+              ask: 'ผลตรวจยีน PKD ของพ่อแม่ และเลือกตัวที่จมูกไม่บี้มาก หายใจเงียบ ไม่มีเสียงครืดคราด', src: ['iccBrachy', 'cornellPkd', 'cornellHcm'] },
             { name: 'แร็กดอลล์', en: 'Ragdoll', img: 'images/breeds/ragdoll.jpg',
               credit: 'Simone Johnsson · CC BY-SA 2.0', source: 'https://commons.wikimedia.org/wiki/File:Ragdoll_from_Gatil_Ragbelas.jpg',
-              need: { energy: 1, attention: 2, grooming: 1.5, vocal: 0, space: 1 },
+              need: { energy: 1, attention: 2, grooming: 1.5, vocal: 0, space: 1, cool: 1, busy: 2 },
               tags: ['ขี้อ้อน', 'อ่อนโยน', 'ติดคน'],
               text: 'แมวสายกอด อุ้มแล้วตัวอ่อนเหมือนตุ๊กตา ชอบเดินตามเจ้าของไปทุกห้อง และเป็นมิตรกับทุกคน',
-              care: 'ขนยาวปานกลาง แปรงสัปดาห์ละ 2–3 ครั้ง และไม่ชอบอยู่คนเดียวนานๆ ควรมีคนอยู่บ้านบ่อย' },
+              care: 'ขนยาวปานกลาง แปรงสัปดาห์ละ 2–3 ครั้ง และไม่ชอบอยู่คนเดียวนานๆ ควรมีคนอยู่บ้านบ่อย',
+              health: 'เป็นพันธุ์ที่พบโรคหัวใจ HCM ได้บ่อย และเจอยีนที่เกี่ยวข้องในสายแร็กดอลล์แล้ว',
+              ask: 'ผลตรวจยีน HCM ของพ่อแม่ และผลอัลตราซาวด์หัวใจ (echo) ถ้ามี', src: ['cornellHcm', 'mizzou'] },
             { name: 'รัสเซียนบลู', en: 'Russian Blue', img: 'images/breeds/russianblue.jpg',
               credit: 'Anna Utekhina · CC BY-SA 3.0', source: 'https://commons.wikimedia.org/wiki/File:Russian_blue_kitten_(cropped).jpg',
-              need: { energy: 1, attention: 1, grooming: 0.5, vocal: 0, space: 0.5 },
+              need: { energy: 1, attention: 1, grooming: 0.5, vocal: 0, space: 0.5, cool: 0.5, busy: 0.5 },
               tags: ['สุภาพ', 'ขี้อายคนแปลกหน้า', 'เงียบ'],
               text: 'ขนสีเทาอมฟ้า เงียบ ชอบกิจวัตรเดิมๆ ขี้อายกับคนแปลกหน้าแต่ผูกพันกับเจ้าของมาก',
-              care: 'ขนสั้นหนาแปรงสัปดาห์ละครั้ง ชอบบ้านสงบและเวลาอาหารที่ตรงเวลา' },
+              care: 'ขนสั้นหนาแปรงสัปดาห์ละครั้ง ชอบบ้านสงบและเวลาอาหารที่ตรงเวลา',
+              health: 'มีโรคต่อมไทรอยด์ทำงานน้อยแต่กำเนิดที่ถ่ายทอดทางพันธุกรรม พบไม่บ่อย และตรวจยีนได้แล้ว',
+              ask: 'ถามว่าพ่อแม่ตรวจยีนไทรอยด์ (TPO) หรือยัง', src: ['mizzou'] },
             { name: 'เบงกอล', en: 'Bengal', img: 'images/breeds/bengal.jpg',
               credit: 'Lightburst · CC BY-SA 4.0', source: 'https://commons.wikimedia.org/wiki/File:Paintedcats_Red_Star_standing.jpg',
-              need: { energy: 2, attention: 1.5, grooming: 0, vocal: 1, space: 2 },
+              need: { energy: 2, attention: 1.5, grooming: 0, vocal: 1, space: 2, cool: 0, busy: 1.5 },
               tags: ['พลังเยอะ', 'นักกีฬา', 'ชอบปีน'],
               text: 'เสือดาวตัวจิ๋วสายแอ็กทีฟ วิ่ง กระโดด ปีนป่ายไม่หยุด บางตัวชอบเล่นน้ำด้วย',
-              care: 'ต้องการพื้นที่ปีนและเวลาเล่นหนักๆ ทุกวัน ถ้าพลังงานไม่ได้ปล่อยออกจะเริ่มป่วนบ้าน' },
+              care: 'ต้องการพื้นที่ปีนและเวลาเล่นหนักๆ ทุกวัน ถ้าพลังงานไม่ได้ปล่อยออกจะเริ่มป่วนบ้าน',
+              health: 'เป็นพันธุ์ที่เสี่ยงโรคจอประสาทตาเสื่อม (PRA) ซึ่งทำให้ตาบอด และมีโรคโลหิตจางจากขาดเอนไซม์ PK ทั้งสองโรคตรวจยีนได้แล้ว',
+              ask: 'ผลตรวจยีน PRA (PRA-b) และ PK deficiency ของพ่อแม่', src: ['iccPra', 'mizzou'] },
             { name: 'ชินชิลล่า', en: 'Chinchilla Persian', img: 'images/breeds/chinchilla.jpg',
               credit: 'Gourdo 1 · Public domain', source: 'https://commons.wikimedia.org/wiki/File:Chinchilla_Persian_cat_with_sea-green_eyes.jpg',
-              need: { energy: 0.5, attention: 1, grooming: 2, vocal: 0, space: 0 },
+              need: { energy: 0.5, attention: 1, grooming: 2, vocal: 0, space: 0, cool: 2, busy: 0.5 },
               tags: ['ขนเงินยาว', 'อ่อนหวาน', 'ชิล'],
               text: 'เปอร์เซียสีขาวเงินปลายขนประกาย นิสัยอ่อนโยน ใจเย็น ชอบมุมสงบในบ้าน',
-              care: 'ขนยาวต้องแปรงทุกวัน และเช็ดรอบดวงตาเป็นประจำ ควรอยู่ในบ้านที่อากาศไม่ร้อนเกินไป' },
+              care: 'ขนยาวต้องแปรงทุกวัน และเช็ดรอบดวงตาเป็นประจำ ควรอยู่ในบ้านที่อากาศไม่ร้อนเกินไป',
+              health: 'คือแมวเปอร์เซียสีชินชิลล่า จึงเสี่ยงแบบเดียวกับเปอร์เซีย ทั้งโรคไตถุงน้ำ (PKD) และปัญหาหายใจกับตาถ้าหน้าแบนมาก',
+              ask: 'ผลตรวจยีน PKD ของพ่อแม่ และเลือกตัวที่จมูกไม่บี้มาก หายใจเงียบ ไม่มีเสียงครืดคราด', src: ['cornellPkd', 'iccBrachy'] },
             { name: 'เบอร์มิลล่า', en: 'Burmilla', img: 'images/breeds/burmilla.jpg',
               credit: 'David Johnson · CC BY-SA 3.0', source: 'https://commons.wikimedia.org/wiki/File:Male_Burmilla_cat.jpeg',
-              need: { energy: 1.5, attention: 1.5, grooming: 0.5, vocal: 0.5, space: 1 },
+              need: { energy: 1.5, attention: 1.5, grooming: 0.5, vocal: 0.5, space: 1, cool: 0, busy: 2 },
               tags: ['ร่าเริง', 'เข้ากับทุกคน', 'ปรับตัวเก่ง'],
               text: 'แมวอารมณ์ดี ขี้เล่นพอประมาณ ชอบเข้าสังคม และเข้ากับครอบครัวได้ง่าย',
-              care: 'ดูแลขนง่าย แต่ต้องการเพื่อนเล่นและความสนใจ ไม่ควรถูกทิ้งไว้คนเดียวทั้งวัน' },
+              care: 'ดูแลขนง่าย แต่ต้องการเพื่อนเล่นและความสนใจ ไม่ควรถูกทิ้งไว้คนเดียวทั้งวัน',
+              health: 'มีเชื้อสายแมวเบอร์มีส จึงอาจได้โรคโพแทสเซียมในเลือดต่ำที่ถ่ายทอดทางพันธุกรรม (ทำให้กล้ามเนื้ออ่อนแรง) ซึ่งตรวจยีนได้แล้ว',
+              ask: 'ผลตรวจยีนโพแทสเซียมต่ำ (hypokalemia) ของพ่อแม่', src: ['mizzou'] },
             { name: 'เบอร์แมน', en: 'Birman', img: 'images/breeds/birman.jpg',
               credit: 'Kristin Kokkersvold · ใช้ได้อย่างเสรี', source: 'https://commons.wikimedia.org/wiki/File:Birmanstrofe.jpg',
-              need: { energy: 1, attention: 1.5, grooming: 1, vocal: 0.5, space: 1 },
+              need: { energy: 1, attention: 1.5, grooming: 1, vocal: 0.5, space: 1, cool: 1, busy: 1.5 },
               tags: ['ถุงเท้าขาว', 'อ่อนโยน', 'ตาสีฟ้า'],
               text: 'ตาฟ้า เท้าขาวเหมือนใส่ถุงเท้า นิสัยอ่อนโยน ชอบอยู่ใกล้คน',
-              care: 'ขนกึ่งยาวแต่ไม่ค่อยพันกัน แปรงสัปดาห์ละ 1–2 ครั้งก็พอ' },
+              care: 'ขนกึ่งยาวแต่ไม่ค่อยพันกัน แปรงสัปดาห์ละ 1–2 ครั้งก็พอ',
+              health: 'มีโรคขนบางแต่กำเนิด (hypotrichosis) ที่ถ่ายทอดทางพันธุกรรม ลูกแมวที่เป็นจะเห็นได้ตั้งแต่เกิดและอายุสั้น ตรวจยีนได้แล้ว',
+              ask: 'ถามว่าพ่อแม่ตรวจยีน hypotrichosis หรือยัง', src: ['mizzou'] },
             { name: 'อเมริกัน ช็อตแฮร์', en: 'American Shorthair', img: 'images/breeds/americanshort.jpg',
               credit: 'odin_aka_zero-one · CC BY-SA 3.0', source: 'https://commons.wikimedia.org/wiki/File:Jewelkatz_Romeo_Of_Stalker-Bars.jpg',
-              need: { energy: 1, attention: 1, grooming: 0.5, vocal: 0.5, space: 1 },
+              need: { energy: 1, attention: 1, grooming: 0.5, vocal: 0.5, space: 1, cool: 0, busy: 2 },
               tags: ['เลี้ยงง่าย', 'สมดุล', 'ครอบครัว'],
               text: 'แมวสายกลางที่สุด ไม่ติดเกิน ไม่เมินเกิน ขี้เล่นพอดี ปรับตัวเก่ง เหมาะกับมือใหม่',
-              care: 'ขนสั้นดูแลง่าย ชอบกินจึงต้องคุมอาหารและชวนเล่นให้ได้ขยับตัว' },
+              care: 'ขนสั้นดูแลง่าย ชอบกินจึงต้องคุมอาหารและชวนเล่นให้ได้ขยับตัว',
+              health: 'มีรายงานโรคไตถุงน้ำ (PKD) ในพันธุ์นี้ และตรวจยีนได้แล้ว',
+              ask: 'ผลตรวจยีน PKD ของพ่อแม่', src: ['mizzou'] },
             { name: 'ออสเตรเลียน มิสท์', en: 'Australian Mist', img: 'images/breeds/australianmist.jpg',
               credit: 'Regis2007 · CC BY-SA 3.0', source: 'https://commons.wikimedia.org/wiki/File:Australian_Mist.jpg',
-              need: { energy: 1, attention: 1.5, grooming: 0, vocal: 0.5, space: 0.5 },
+              need: { energy: 1, attention: 1.5, grooming: 0, vocal: 0.5, space: 0.5, cool: 0, busy: 2 },
               tags: ['ใจดี', 'ชอบให้อุ้ม', 'อยู่ในบ้านได้ดี'],
               text: 'แมวนิสัยดี ยอมให้อุ้มให้กอด อดทนกับเด็ก และมีความสุขกับชีวิตในบ้าน',
-              care: 'ขนสั้นดูแลง่าย ชอบมีคนอยู่ด้วย เหมาะกับบ้านที่มีคนอยู่บ่อย' },
+              care: 'ขนสั้นดูแลง่าย ชอบมีคนอยู่ด้วย เหมาะกับบ้านที่มีคนอยู่บ่อย',
+              health: 'มีเชื้อสายแมวเบอร์มีส จึงอาจได้โรคโพแทสเซียมในเลือดต่ำที่ถ่ายทอดทางพันธุกรรม (ทำให้กล้ามเนื้ออ่อนแรง) ซึ่งตรวจยีนได้แล้ว',
+              ask: 'ผลตรวจยีนโพแทสเซียมต่ำ (hypokalemia) ของพ่อแม่', src: ['mizzou'] },
             { name: 'แร็กามัฟฟิน', en: 'RagaMuffin', img: 'images/breeds/ragamuffin.jpg',
               credit: 'Iris Preyler-Hamertinger · CC BY-SA 3.0', source: 'https://commons.wikimedia.org/wiki/File:20050922AmarilloRes.jpg',
-              need: { energy: 0.5, attention: 2, grooming: 1.5, vocal: 0, space: 1 },
+              need: { energy: 0.5, attention: 2, grooming: 1.5, vocal: 0, space: 1, cool: 1, busy: 1.5 },
               tags: ['สายกอด', 'นุ่มนิ่ม', 'ใจเย็น'],
               text: 'ญาติสนิทของแร็กดอลล์ ตัวใหญ่ ขนนุ่ม ชอบให้อุ้มให้กอด และสงบเสงี่ยมมาก',
-              care: 'ขนยาวปานกลางแปรงสัปดาห์ละ 2–3 ครั้ง กินเก่งจึงต้องคุมน้ำหนัก' },
+              care: 'ขนยาวปานกลางแปรงสัปดาห์ละ 2–3 ครั้ง กินเก่งจึงต้องคุมน้ำหนัก',
+              health: '',
+              ask: '', src: [] },
             { name: 'สก็อตติช โฟลด์', en: 'Scottish Fold', img: 'images/breeds/scottishfold.jpg',
               credit: 'Heikki Siltala · CC BY 3.0', source: 'https://commons.wikimedia.org/wiki/File:Scottish_Fold_-_CFF_cat_show_Heinola_2008-05-03_IMG_7882.JPG',
-              need: { energy: 1, attention: 1.5, grooming: 0.5, vocal: 0, space: 0.5 },
+              need: { energy: 1, attention: 1.5, grooming: 0.5, vocal: 0, space: 0.5, cool: 0.5, busy: 1 },
               tags: ['หูพับ', 'ใจเย็น', 'เงียบ'],
               text: 'แมวหูพับหน้ากลม นิสัยใจเย็น ชอบอยู่ใกล้เจ้าของ และเสียงเบา',
-              care: 'ยีนหูพับส่งผลต่อกระดูกอ่อนทั้งตัว เสี่ยงข้อต่ออักเสบและเจ็บปวด ต้องตรวจข้อต่อกับหมอสม่ำเสมอ และควรเลือกจากฟาร์มที่ใส่ใจสุขภาพจริง' },
+              care: 'จัดบ้านให้ขึ้นลงง่าย คุมน้ำหนักไม่ให้ข้อรับภาระ และพาตรวจข้อต่อกับหมอสม่ำเสมอ',
+              health: 'ยีนที่ทำให้หูพับทำให้กระดูกและกระดูกอ่อนทั้งตัวผิดปกติด้วย (osteochondrodysplasia) ทำให้ข้ออักเสบและเจ็บ บางตัวเป็นน้อย บางตัวเป็นมากและแย่ลงตามอายุ iCatCare เห็นว่าไม่ควรเพาะพันธุ์ต่อ',
+              ask: 'ผลตรวจยีน PKD ของพ่อแม่ และหลังรับมาให้สังเกตอาการเจ็บ เช่น เดินแข็ง ไม่ยอมกระโดด นอนขดตัวไม่สบาย', src: ['iccFold', 'mizzou'] },
             { name: 'วิเชียรมาศ', en: 'Siamese', img: 'images/breeds/siamese.jpg',
               credit: 'Meekahoo · CC BY-SA 3.0', source: 'https://commons.wikimedia.org/wiki/File:Siamese_cat_Vaillante.JPG',
-              need: { energy: 2, attention: 2, grooming: 0, vocal: 2, space: 1 },
+              need: { energy: 2, attention: 2, grooming: 0, vocal: 2, space: 1, cool: 0, busy: 1.5 },
               tags: ['ช่างคุย', 'ฉลาด', 'แมวไทย'],
               text: 'แมวไทยช่างเจรจา ฉลาด ขี้เล่น และอยากมีส่วนร่วมในทุกเรื่องของคุณ พร้อมส่งเสียงคุยตอบตลอด',
-              care: 'ขนสั้นดูแลง่าย แต่ต้องการเวลาและการเล่นเยอะ ถ้าเหงาจะร้องเรียกและอาจเครียดได้' },
+              care: 'ขนสั้นดูแลง่าย แต่ต้องการเวลาและการเล่นเยอะ ถ้าเหงาจะร้องเรียกและอาจเครียดได้',
+              health: 'เป็นพันธุ์ที่เสี่ยงโรคจอประสาทตาเสื่อม (PRA) ซึ่งตรวจยีนได้แล้ว และ iCatCare ระบุว่าวิเชียรมาศกับพันธุ์ใกล้ชิดเป็นโรคหอบหืดได้',
+              ask: 'ผลตรวจยีน PRA ของพ่อแม่', src: ['iccPra', 'mizzou', 'iccInherited'] },
             { name: 'สฟิงซ์', en: 'Sphynx', img: 'images/breeds/sphynx.jpg',
               credit: 'Dmitry Makeev · CC BY-SA 4.0', source: 'https://commons.wikimedia.org/wiki/File:Sphynx_-_cat._img_031.jpg',
-              need: { energy: 2, attention: 2, grooming: 1.5, vocal: 1, space: 1 },
+              need: { energy: 2, attention: 2, grooming: 1.5, vocal: 1, space: 1, cool: 0.5, busy: 1.5 },
               tags: ['ไร้ขน', 'ติดคนมาก', 'ขี้เล่น'],
               text: 'แมวไร้ขนสุดซน ติดคนมาก ชอบซุกหาความอุ่น และอยากเป็นจุดสนใจตลอดเวลา',
-              care: 'ไม่มีขนแต่ผิวมัน ต้องอาบน้ำเช็ดตัวเป็นประจำ ระวังแดดแรงและอากาศเย็น' },
+              care: 'ไม่มีขนแต่ผิวมัน ต้องอาบน้ำเช็ดตัวเป็นประจำ ระวังแดดแรงและอากาศเย็น',
+              health: 'iCatCare ระบุว่าโรคหัวใจ HCM น่าจะถ่ายทอดทางพันธุกรรมในพันธุ์นี้ และเป็นโรคผิวหนังกับหูอักเสบจากยีสต์ได้บ่อย ส่วนคนแพ้แมวก็ยังแพ้สฟิงซ์ได้ เพราะแมวทุกตัวสร้างสารก่อภูมิแพ้ในน้ำลายและที่ผิวหนัง ความยาวขนไม่ได้ทำให้แพ้มากหรือน้อยลง',
+              ask: 'ผลอัลตราซาวด์หัวใจ (echo) ของพ่อแม่', src: ['iccSphynx', 'acaai'] },
         ];
 
         const breedBody = document.querySelector('#breed-body');
         let breedStep = 0;
         let answers = {};
 
-        // ยิ่งความต้องการของแมวกับไลฟ์สไตล์ผู้เล่นห่างกัน ยิ่งเสียคะแนน
-        // ด้านขน เสียง และพื้นที่ หักหนักเมื่อแมวต้องการ "มากกว่า" ที่ผู้เล่นให้ได้ และหักเบาๆ เมื่อน้อยกว่า
+        // ช่องว่างแต่ละด้าน: บวก = แมวต้องการมากกว่าที่ผู้เล่นให้ได้ (busy: บ้านคึกคักกว่าที่แมวรับได้)
+        function fitGaps(breed, user) {
+            const gaps = {};
+            ['energy', 'attention', 'grooming', 'vocal', 'space', 'cool'].forEach((dim) => { gaps[dim] = breed.need[dim] - user[dim]; });
+            gaps.busy = user.busy - breed.need.busy;
+            return gaps;
+        }
+
+        // ยิ่งห่างกันยิ่งเสียคะแนน: over = ตัวคูณเมื่อแมวต้องการมากกว่า, under = เมื่อน้อยกว่า
+        // ขน เสียง พื้นที่ ให้เกินไม่เป็นไรมาก ส่วนห้องร้อนกับบ้านคึกคักหักเฉพาะด้านที่แมวลำบาก
+        const fitRules = {
+            energy: { over: 1.5, under: 1.5 },
+            attention: { over: 1.5, under: 1.5 },
+            grooming: { over: 1.5, under: 0.6 },
+            vocal: { over: 1.5, under: 0.6 },
+            space: { over: 1.5, under: 0.6 },
+            cool: { over: 2, under: 0 },
+            busy: { over: 1.5, under: 0 },
+        };
+        const maxPenalty = Object.values(fitRules).reduce((sum, r) => sum + 2 * Math.max(r.over, r.under), 0);
+
         function matchScore(breed, user) {
-            let penalty = 0;
-            penalty += Math.abs(breed.need.energy - user.energy) * 1.5;
-            penalty += Math.abs(breed.need.attention - user.attention) * 1.5;
-            ['grooming', 'vocal', 'space'].forEach((dim) => {
-                const diff = breed.need[dim] - user[dim];
-                penalty += diff > 0 ? diff * 1.5 : -diff * 0.6;
-            });
-            return Math.max(0, Math.round(100 - (penalty / 15) * 100));
+            const gaps = fitGaps(breed, user);
+            const penalty = Object.keys(fitRules).reduce((sum, dim) =>
+                sum + (gaps[dim] > 0 ? gaps[dim] * fitRules[dim].over : -gaps[dim] * fitRules[dim].under), 0);
+            return Math.max(0, Math.round(100 - (penalty / maxPenalty) * 100));
+        }
+
+        // อธิบายผล: ด้านที่เข้ากัน และด้านที่ห่างกันตั้งแต่ 1 ขั้นซึ่งต้องเตรียมเพิ่ม
+        const fitText = {
+            energy: { good: 'ระดับพลังงานพอดีกับเวลาเล่นที่คุณมี', over: 'พลังเยอะกว่าเวลาเล่นที่คุณมี ต้องมีของเล่นและที่ปีนให้ใช้พลังเอง', under: 'ค่อนข้างนิ่ง อาจไม่ซนพอให้คุณเล่นด้วยทั้งวัน' },
+            attention: { good: 'ติดคนในระดับที่คุณต้องการ และเข้ากับเวลาที่คุณอยู่บ้าน', over: 'ติดคนมากกว่าเวลาที่คุณอยู่บ้าน ถ้าอยู่ลำพังนานๆ อาจเหงาและเครียด', under: 'รักอิสระ อาจไม่มาอ้อนบ่อยอย่างที่คุณหวัง' },
+            grooming: { good: 'การดูแลขนไม่เกินเวลาที่คุณให้ได้', over: 'ต้องดูแลขนหรือผิวบ่อยกว่าที่คุณบอกไว้' },
+            vocal: { good: 'เสียงร้องอยู่ในระดับที่คุณรับได้', over: 'ร้องคุยเยอะกว่าที่คุณบอกว่ารับได้' },
+            space: { good: 'บ้านคุณมีที่พอสำหรับพันธุ์นี้', over: 'ต้องการที่วิ่งและปีนมากกว่าบ้านคุณ ควรเพิ่มคอนโดแมวหรือชั้นติดผนัง' },
+            cool: { good: 'อากาศในห้องไม่หนักเกินไปสำหรับพันธุ์นี้', over: 'ทนร้อนได้น้อย ห้องร้อนอบอ้าวเสี่ยงโรคลมแดด ต้องมีแอร์หรือมุมที่เย็นพอ' },
+            busy: { good: 'นิสัยรับมือกับคนและสัตว์ในบ้านคุณได้', over: 'ชอบบ้านที่สงบกว่าบ้านคุณ ต้องมีมุมให้หลบ และค่อยๆ ให้ทำความรู้จักกับเด็กหรือสัตว์ตัวอื่น' },
+        };
+
+        function fitNotes(breed, user) {
+            const gaps = fitGaps(breed, user);
+            const dims = Object.keys(fitText);
+            const watch = dims.filter((d) => gaps[d] >= 1 || (gaps[d] <= -1 && fitText[d].under))
+                .map((d) => (gaps[d] > 0 ? fitText[d].over : fitText[d].under));
+            const good = dims.filter((d) => Math.abs(gaps[d]) <= 0.5 || (gaps[d] < 0 && !fitText[d].under))
+                .sort((a, b) => Math.abs(gaps[a]) - Math.abs(gaps[b]))
+                .slice(0, 3)
+                .map((d) => fitText[d].good);
+            return { good, watch };
+        }
+
+        // แหล่งอ้างอิงเรื่องสุขภาพ (คีย์ที่ใช้ใน src ของแต่ละพันธุ์)
+        const healthSources = {
+            cornellHcm: ['Cornell: Cardiomyopathy', 'https://vet.cornell.edu/departments-centers-and-institutes/cornell-feline-health-center/health-information/feline-health-topics/cardiomyopathy'],
+            cornellPkd: ['Cornell: Polycystic Kidney Disease', 'https://www.vet.cornell.edu/departments-centers-and-institutes/cornell-feline-health-center/health-information/feline-health-topics/polycystic-kidney-disease'],
+            cornellDeaf: ['Cornell: Deafness', 'https://www.vet.cornell.edu/departments-centers-and-institutes/cornell-feline-health-center/health-information/health-topics/deafness'],
+            mizzou: ['University of Missouri: ยีนที่ควรตรวจในแต่ละพันธุ์', 'https://cvm.missouri.edu/research/feline-genetics-and-comparative-medicine-laboratory/what-breeds-need-what-genetic-tests'],
+            iccPra: ['iCatCare: PRA', 'https://icatcare.org/articles/progressive-retinal-atrophy-pra-in-cats'],
+            iccBrachy: ['iCatCare: Persian cats and brachycephaly', 'https://icatcare.org/articles/persian-cats-and-brachycephaly'],
+            iccFold: ['iCatCare: Scottish Fold osteochondrodysplasia', 'https://icatcare.org/articles/scottish-fold-osteochondrodysplasia'],
+            iccInherited: ['iCatCare: Inherited disorders in cats', 'https://icatcare.org/articles/inherited-disorders-in-cats'],
+            iccConformation: ['iCatCare: Conformational health in cat breeding', 'https://icatcare.org/position-statements/feline-conformational-health-and-welfare-in-cat-breeding'],
+            iccSphynx: ['iCatCare: Sphynx', 'https://icatcare.org/articles/sphynx'],
+            acaai: ['ACAAI: Pet allergies', 'https://acaai.org/allergies/allergic-conditions/pet-allergies/'],
+        };
+
+        // กล่องสุขภาพที่ควรรู้ ใช้ทั้งในผลเกมและหน้าต่างข้อมูลพันธุ์
+        function healthBlock(b) {
+            const sources = b.src.map((key) => `<a href="${healthSources[key][1]}" target="_blank" rel="noopener">${healthSources[key][0]}</a>`).join(' · ');
+            return `
+                <div class="breed-health">
+                    <p><strong>สุขภาพที่ควรรู้:</strong> ${b.health || 'แหล่งข้อมูลที่เราใช้ยังไม่ระบุโรคทางพันธุกรรมเฉพาะของพันธุ์นี้ แต่ยังต้องขอสมุดวัคซีนและพาตรวจสุขภาพเหมือนแมวทุกตัว'}</p>
+                    ${b.ask ? `<p><strong>ก่อนจ่ายเงิน ขอดู:</strong> ${b.ask}</p>` : ''}
+                    <p class="breed-health-more"><a href="article-buy.html">อ่านวิธีเลือกฟาร์มและเช็กเอกสาร</a></p>
+                    ${sources ? `<p class="breed-health-src">ที่มา: ${sources}</p>` : ''}
+                </div>`;
+        }
+
+        // เกมสร้างกล่องใหม่ทุกครั้งที่ตอบ จึงต้องพาจอและโฟกัสกลับมาที่กล่องเกมเอง
+        // (มือถือ: ผลยาวมาก กดเล่นอีกครั้งแล้วกล่องเกมอยู่เหนือจอ · คีย์บอร์ด: โฟกัสหลุดไปที่ body)
+        // minigames.js ใช้ด้วย
+        function bringIntoView(box, target) {
+            const r = box.getBoundingClientRect();
+            if (r.top < 0 || r.top > innerHeight * 0.6) box.scrollIntoView({ block: 'start' });
+            const el = target || box.querySelector('h3');
+            if (!el) return;
+            if (!target) el.tabIndex = -1;
+            el.focus({ preventScroll: true });
         }
 
         function userProfile() {
@@ -1191,6 +1332,7 @@
                 .map((b) => ({ ...b, score: matchScore(b, user) }))
                 .sort((a, b) => b.score - a.score);
             const top = ranked[0];
+            const notes = fitNotes(top, user);
             track('plays:breed-match', `result:breed-match:${top.en}`);
             breedBody.innerHTML = `
                 <div class="quiz-result breed-result">
@@ -1201,7 +1343,14 @@
                     <p class="breed-en">${top.en} · <span class="match-badge">เข้ากัน ${top.score}%</span></p>
                     <ul class="cat-meta breed-tags">${top.tags.map((t) => `<li>${t}</li>`).join('')}</ul>
                     <p>${top.text}</p>
+                    <div class="fit-notes">
+                        ${notes.good.length ? `<p class="fit-title">ทำไมถึงเข้ากับคุณ</p>
+                        <ul class="fit-good">${notes.good.map((t) => `<li>${t}</li>`).join('')}</ul>` : ''}
+                        ${notes.watch.length ? `<p class="fit-title">เรื่องที่ต้องเตรียมเพิ่ม</p>
+                        <ul class="fit-watch">${notes.watch.map((t) => `<li>${t}</li>`).join('')}</ul>` : ''}
+                    </div>
                     <p class="quiz-result-tip"><strong>ต้องเตรียมตัว:</strong> ${top.care}</p>
+                    ${healthBlock(top)}
                     <div class="breed-runnerups">
                         <p>อันดับรองลงมา</p>
                         ${ranked.slice(1, 4).map((b) => `
@@ -1221,6 +1370,7 @@
                 </div>`;
             document.querySelector('#breed-restart').addEventListener('click', () => {
                 breedStep = 0; answers = {}; renderBreed();
+                bringIntoView(breedBody);
             });
         }
 
@@ -1243,10 +1393,11 @@
                     answers[breedStep] = { dim: item.dim, value: Number(btn.dataset.value) };
                     breedStep++;
                     renderBreed();
+                    bringIntoView(breedBody);
                 });
             });
             const back = document.querySelector('#breed-back');
-            if (back) back.addEventListener('click', () => { breedStep--; renderBreed(); });
+            if (back) back.addEventListener('click', () => { breedStep--; renderBreed(); bringIntoView(breedBody); });
         }
 
         renderBreed();
@@ -1264,7 +1415,7 @@
         ];
         const traitLabels = [
             ['energy', 'พลังงาน'], ['attention', 'ติดคน'], ['grooming', 'ดูแลขน/ผิว'],
-            ['vocal', 'ช่างคุย'], ['space', 'ต้องการพื้นที่'],
+            ['vocal', 'ช่างคุย'], ['space', 'ต้องการพื้นที่'], ['cool', 'ต้องการที่เย็น'], ['busy', 'รับบ้านคึกคักได้'],
         ];
         const filterBox = document.querySelector('#gallery-filters');
         const galleryGrid = document.querySelector('#gallery-grid');
@@ -1312,7 +1463,8 @@
                             <span class="trait-bar"><span style="width:${(b.need[key] / 2) * 100}%"></span></span>
                         </div>`).join('')}
                 </div>
-                <p class="quiz-result-tip"><strong>ต้องเตรียมตัว:</strong> ${b.care}</p>`;
+                <p class="quiz-result-tip"><strong>ต้องเตรียมตัว:</strong> ${b.care}</p>
+                ${healthBlock(b)}`;
             breedDialog.showModal();
             document.querySelector('#dialog-content').focus();
         }
@@ -1427,7 +1579,7 @@
                         ${shareBar({ text: `ฉันตอบเรื่องแมวถูก ${truthScore}/${total} ข้อ ได้ฉายา "${rank[1]}" ${rank[0]} มาลองแข่งกันไหม?`, emoji: rank[0], label: 'เกมจริงหรือมั่ว? ฉันตอบถูก', title: `${truthScore}/${total} ข้อ`, sub: `ฉายา "${rank[1]}" · ${rank[2]}` })}
                         ${gameRating('true-or-false')}
                     </div>`;
-                document.querySelector('#truth-restart').addEventListener('click', startTruth);
+                document.querySelector('#truth-restart').addEventListener('click', () => { startTruth(); bringIntoView(truthBody); });
                 return;
             }
             const item = truthOrder[truthStep];
@@ -1454,9 +1606,12 @@
                         <p class="${correct ? 'is-right' : 'is-miss'}">${correct ? 'ถูกต้อง!' : 'ยังไม่ใช่'} คำตอบคือ <strong>${item.a ? 'จริง' : 'มั่ว'}</strong></p>
                         <p>${item.why}</p>
                         <button type="button" class="btn" id="truth-next">${truthStep + 1 < truthOrder.length ? 'ข้อต่อไป' : 'ดูผลคะแนน'}</button>`;
+                    // ปุ่มที่กดถูกปิดไปแล้ว ย้ายโฟกัสไปปุ่มข้อต่อไปแทน ไม่ให้หลุดไปที่ body
+                    document.querySelector('#truth-next').focus();
                     document.querySelector('#truth-next').addEventListener('click', () => {
                         truthStep++;
                         renderTruth();
+                        bringIntoView(truthBody);
                     });
                 });
             });

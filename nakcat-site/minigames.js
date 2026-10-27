@@ -31,7 +31,7 @@
                         <span class="mem-inner">
                             <span class="mem-back" aria-hidden="true">🐾</span>
                             <span class="mem-front">
-                                <img src="${b.img}" alt="">
+                                <img src="${b.img}" alt="" loading="lazy" decoding="async">
                                 <small>${b.name}</small>
                             </span>
                         </span>
@@ -97,7 +97,10 @@
                 ${shareBar({ text: `ฉันจับคู่การ์ดแมวครบ 6 คู่ใน ${memMoves} ครั้ง ได้ฉายา "${rank[1]}" ${rank[0]} มาแข่งความจำกัน!`, emoji: rank[0], label: 'จับคู่การ์ดแมว ครบใน', title: `${memMoves} ครั้ง`, sub: `ฉายา "${rank[1]}" · ใช้เวลา ${secs} วินาที` })}
                 ${gameRating('memory-match')}
             </div>`;
-        memoryBody.querySelector('#mem-restart').addEventListener('click', renderMemory);
+        memoryBody.querySelector('#mem-restart').addEventListener('click', () => {
+            renderMemory();
+            bringIntoView(memoryBody, memoryBody.querySelector('.mem-card'));
+        });
         // กระดานคะแนน (leaderboard.js) รอฟังเหตุการณ์นี้ แล้วเติมลงกล่อง #mem-board
         document.dispatchEvent(new CustomEvent('nakcat:memory-done', { detail: { moves: memMoves, seconds: secs } }));
     }
@@ -164,11 +167,16 @@
                 <button type="button" class="btn" id="name-roll">${pick ? 'สุ่มอีกชื่อ' : 'สุ่มชื่อเลย'}</button>
             </div>
             ${pick ? `<div class="quiz-result">${shareBar({ text: `ได้ชื่อแมวว่า "${pick.name}" (${pick.note}) ลองสุ่มชื่อแมวของคุณดู`, emoji: '🐱', label: 'ชื่อแมวของฉันคือ', title: pick.name, sub: pick.note })}${gameRating('name-generator')}</div>` : ''}`;
+        // กล่องถูกสร้างใหม่ทุกครั้ง จึงคืนโฟกัสให้ปุ่มเดิมที่เพิ่งกด
         nameBody.querySelectorAll('[data-group]').forEach((btn) => btn.addEventListener('click', () => {
             nameGroup = btn.dataset.group;
             renderNames(pickName());
+            nameBody.querySelector(`[data-group="${nameGroup}"]`).focus();
         }));
-        nameBody.querySelector('#name-roll').addEventListener('click', () => renderNames(pickName()));
+        nameBody.querySelector('#name-roll').addEventListener('click', () => {
+            renderNames(pickName());
+            nameBody.querySelector('#name-roll').focus();
+        });
     }
 
     renderNames(null);

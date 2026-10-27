@@ -1,10 +1,13 @@
 // เก็บไฟล์หลักไว้ในเครื่อง ให้เปิดเว็บ เล่นมินิเกม และดูเช็กลิสต์ได้แม้ไม่มีเน็ต
 // แก้ไฟล์ในเว็บเมื่อไร ให้เปลี่ยนเลขเวอร์ชันนี้ด้วย เครื่องผู้ใช้จะได้โหลดของใหม่
-const CACHE = 'nakcat-v27';
+const CACHE = 'nakcat-v28';
 
 const breeds = ['abyssinian', 'americanshort', 'australianmist', 'bengal', 'birman', 'british', 'burmilla', 'chinchilla',
     'exotic', 'khaomanee', 'korat', 'mainecoon', 'munchkin', 'norwegian', 'ocicat', 'persian', 'ragamuffin', 'ragdoll',
     'russianblue', 'scottishfold', 'siamese', 'sphynx'];
+
+// รูปย่อในกล่อง อ่านต่อ ท้ายบทความ
+const thumbs = ['cat-eyes', 'cat-sleeping', 'cat-window', 'kitten-about', 'kitten-vet'];
 
 const CORE = [
     './',
@@ -15,7 +18,8 @@ const CORE = [
     'article-home.html',
     'article-health.html',
     'article-food.html',
-    'style.css?v=19',
+    'article-buy.html',
+    'style.css?v=20',
     'app.js',
     'feedback.js',
     'minigames.js',
@@ -36,9 +40,11 @@ const CORE = [
     'images/cat-sleeping.jpg',
     'images/cat-eyes.jpg',
     'images/cat-window.jpg',
+    'images/cat-mother.jpg',
     'images/icon-192.png',
     'images/icon-512.png',
     ...breeds.map((b) => `images/breeds/${b}.jpg`),
+    ...thumbs.map((t) => `images/thumbs/${t}.jpg`),
 ];
 
 self.addEventListener('install', (e) => {
