@@ -18,7 +18,7 @@ interface FavChange {
 (() => {
     const grid = document.querySelector<HTMLElement>('#gallery-grid');
     const dialogContent = document.querySelector<HTMLElement>('#dialog-content');
-    if (!grid || !dialogContent || !API_BASE) return;
+    if (!grid || !dialogContent) return;
     const api: string = API_BASE;
 
     // พันธุ์ที่เครื่องนี้ "นับหัวใจให้แล้ว" กันนับซ้ำเวลากดเปิด-ปิดหรือรีเฟรชหน้า

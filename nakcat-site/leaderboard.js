@@ -4,8 +4,6 @@
 // API_BASE (ที่อยู่ของ API) มาจาก src/api.ts
 // ไฟล์ต้นฉบับคือ src/leaderboard.ts — แก้ที่นั่นแล้วสั่ง npm run build จะได้ nakcat-site/leaderboard.js ใหม่
 (() => {
-    if (!API_BASE)
-        return;
     const api = API_BASE;
     const NAME_KEY = 'nakcat-player-name'; // จำชื่อไว้ เล่นรอบหน้าไม่ต้องพิมพ์ใหม่
     const medals = ['🥇', '🥈', '🥉'];

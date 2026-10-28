@@ -61,11 +61,6 @@ type AdminTab = 'Overview' | 'Messages' | 'Comments' | StoryStatus | 'Scores';
     const list = document.querySelector<HTMLElement>('#admin-list');
     if (!loginForm || !keyInput || !loginMsg || !panel || !logoutBtn || !msg || !list) return;
 
-    if (!API_BASE) {
-        loginMsg.textContent = 'ยังไม่ได้ตั้งที่อยู่ API (ดู src/api.ts)';
-        loginForm.querySelector('button')?.setAttribute('disabled', '');
-        return;
-    }
     const api: string = API_BASE;
 
     // จำรหัสไว้เฉพาะแท็บนี้ (sessionStorage): ปิดเบราว์เซอร์แล้วต้องใส่ใหม่
@@ -402,13 +397,18 @@ type AdminTab = 'Overview' | 'Messages' | 'Comments' | StoryStatus | 'Scores';
         return res.json();
     };
 
+    // กดสลับแท็บเร็วๆ ตอน API ช้า: คำตอบของแท็บเก่าห้ามมาวาดทับแท็บที่เปิดอยู่
+    // ทุกรอบที่โหลดได้เลขใหม่ ถ้าตอบกลับมาแล้วเลขไม่ใช่ล่าสุด = มีแท็บอื่นเปิดแทนแล้ว ให้ทิ้งไป
+    let loadSeq: number = 0;
+
     const loadTab = async (): Promise<void> => {
+        const mine: number = ++loadSeq;
         list.replaceChildren();
         setMsg('กำลังโหลด... (ถ้า API หลับอยู่ อาจรอเกือบ 1 นาที)');
         try {
             if (current === 'Overview') {
                 const data = await getJson<OverviewData>('/admin/overview');
-                if (!data) return;
+                if (!data || mine !== loadSeq) return;
                 setBadges(data.pendingStories, data.unreadMessages);
                 list.replaceChildren(renderOverview(data, (tab) => selectTab(tab as AdminTab)));
                 setMsg(`อัปเดตล่าสุด ${dateFormat.format(new Date())}`);
@@ -416,14 +416,14 @@ type AdminTab = 'Overview' | 'Messages' | 'Comments' | StoryStatus | 'Scores';
             }
             if (current === 'Messages') {
                 const messages = await getJson<AdminMessage[]>('/admin/messages');
-                if (!messages) return;
+                if (!messages || mine !== loadSeq) return;
                 list.replaceChildren(...messages.map(messageCard));
                 updateCount();
                 return;
             }
             if (current === 'Comments') {
                 const comments = await getJson<AdminCommentItem[]>('/admin/comments');
-                if (!comments) return;
+                if (!comments || mine !== loadSeq) return;
                 list.replaceChildren(...comments.map(commentCard));
                 updateCount();
                 return;
@@ -433,15 +433,17 @@ type AdminTab = 'Overview' | 'Messages' | 'Comments' | StoryStatus | 'Scores';
                 const res: Response = await fetch(`${api}/memory-scores`);
                 if (!res.ok) throw new Error(String(res.status));
                 const scores: AdminScore[] = await res.json();
+                if (mine !== loadSeq) return;
                 list.replaceChildren(...scores.map((s, i) => scoreCard(s, i + 1)));
                 updateCount();
                 return;
             }
             const stories = await getJson<AdminStory[]>(`/admin/stories?status=${current}`);
-            if (!stories) return;
+            if (!stories || mine !== loadSeq) return;
             list.replaceChildren(...stories.map(storyCard));
             updateCount();
         } catch (err) {
+            if (mine !== loadSeq) return;
             setMsg('ติดต่อ API ไม่ได้ 😿 ลองรีเฟรชอีกครั้ง ถ้ายังไม่ได้ ให้เช็กว่า API บน Render ยังทำงานอยู่');
         }
     };

@@ -15,7 +15,7 @@
     <meta property="og:locale" content="th_TH">
     <meta name="twitter:card" content="summary_large_image">
     <link rel="canonical" href="https://nakcat.netlify.app/">
-    <meta name="theme-color" content="#d96d3b">
+    <meta name="theme-color" content="#fbf8f2">
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="images/icon-192.png">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27><rect width=%27100%27 height=%27100%27 rx=%2728%27 fill=%27%23fbe3d2%27/><text x=%2750%27 y=%2770%27 font-size=%2762%27 text-anchor=%27middle%27>🐱</text></svg>">
@@ -417,7 +417,7 @@
             </dialog>
         </section>
 
-        <!-- เรื่องเล่าจากทาสแมว: ข้อมูลมาจาก API (โฟลเดอร์ api) ส่วนนี้ซ่อนไว้จนกว่า stories.js จะเจอ API -->
+        <!-- เรื่องเล่าจากทาสแมว: ข้อมูลมาจาก API (โฟลเดอร์ api) ซ่อนไว้จนกว่า stories.js จะทำงาน (ปิด JavaScript = ไม่เห็นส่วนนี้) -->
         <section class="tales" id="tales" hidden>
             <div class="container">
                 <div class="section-heading reveal">
@@ -517,13 +517,13 @@
                 <form class="contact-form reveal" id="contact-form">
                     <p class="hidden-field"><label>อย่ากรอกช่องนี้ <input name="bot-field" tabindex="-1" autocomplete="off"></label></p>
                     <label>ชื่อ
-                        <input type="text" name="name" placeholder="ชื่อของคุณ" required>
+                        <input type="text" name="name" maxlength="60" placeholder="ชื่อของคุณ" required>
                     </label>
                     <label>อีเมล
-                        <input type="email" name="email" placeholder="you@example.com" required>
+                        <input type="email" name="email" maxlength="120" placeholder="you@example.com" required>
                     </label>
                     <label>ข้อความ
-                        <textarea name="message" placeholder="เล่าให้เราฟังหน่อย..." required></textarea>
+                        <textarea name="message" maxlength="2000" placeholder="เล่าให้เราฟังหน่อย..." required></textarea>
                     </label>
                     <div class="contact-actions">
                         <button type="submit" class="btn" id="contact-submit">ส่งข้อความ</button>
@@ -571,7 +571,7 @@
                     </fieldset>
                     <div class="site-rating-more">
                         <label><span>ชอบอะไร หรืออยากให้เพิ่มอะไร? <small>(ไม่กรอกก็ได้)</small></span>
-                            <textarea name="comment" rows="2" placeholder="เช่น อยากได้เกมเพิ่ม อยากให้เขียนเรื่องอาหารแมว..."></textarea>
+                            <textarea name="comment" rows="2" maxlength="1000" placeholder="เช่น อยากได้เกมเพิ่ม อยากให้เขียนเรื่องอาหารแมว..."></textarea>
                         </label>
                         <p class="form-note site-rating-note">ความเห็นนี้ส่งแบบไม่ระบุชื่อ เราจึงตอบกลับไม่ได้ ถ้าอยากให้ตอบ ส่งทาง<a href="#contact-form">ฟอร์มส่งข้อความ</a>แทนนะ</p>
                         <button type="submit" class="btn" id="site-rating-submit" disabled>ส่งคะแนน</button>
@@ -684,18 +684,15 @@
             c.width = 1080;
             c.height = 1920;
             const g = c.getContext('2d');
-            const bg = g.createLinearGradient(0, 0, 1080, 1920);
-            bg.addColorStop(0, '#fde2cc');
-            bg.addColorStop(1, '#f6bf98');
-            g.fillStyle = bg;
+            g.fillStyle = '#f1e3cf'; // พื้นพีชเรียบ สีเดียวกับ --peach ใน style.css
             g.fillRect(0, 0, 1080, 1920);
-            g.fillStyle = '#fffdf9';
+            g.fillStyle = '#fbf8f2';
             g.beginPath();
             g.roundRect(90, 300, 900, 1260, 60);
             g.fill();
             g.textAlign = 'center';
             g.textBaseline = 'alphabetic';
-            g.fillStyle = '#20242b';
+            g.fillStyle = '#221f1b';
             g.font = '600 72px Pridi, sans-serif';
             g.fillText('nakcat', 540, 200);
 
@@ -723,7 +720,7 @@
                 g.drawImage(photo, 540 - w / 2, top + (size - h) * 0.3, w, h);
                 g.restore();
             } else {
-                g.fillStyle = '#fbe3d2';
+                g.fillStyle = '#f1e3cf';
                 g.beginPath();
                 g.arc(540, top + 190, 190, 0, Math.PI * 2);
                 g.fill();
@@ -733,22 +730,22 @@
                 g.textBaseline = 'alphabetic';
             }
             let y = top + visualH + 90;
-            g.fillStyle = '#6d747d';
+            g.fillStyle = '#6b645a';
             g.font = '400 46px "IBM Plex Sans Thai Looped", sans-serif';
             g.fillText(label, 540, y);
             y += 130;
-            g.fillStyle = '#d96d3b';
+            g.fillStyle = '#b8532a';
             g.font = '600 104px Pridi, sans-serif';
             titleLines.forEach((line, i) => { g.fillText(line, 540, y); if (i < titleLines.length - 1) y += 120; });
             y += 30;
-            g.fillStyle = '#20242b';
+            g.fillStyle = '#221f1b';
             g.font = '400 46px "IBM Plex Sans Thai Looped", sans-serif';
             subLines.forEach((line) => { y += 72; g.fillText(line, 540, y); });
             g.font = '500 46px "IBM Plex Sans Thai Looped", sans-serif';
-            g.fillStyle = '#20242b';
+            g.fillStyle = '#221f1b';
             g.fillText('มาเล่นด้วยกันที่ nakcat.netlify.app', 540, 1700);
             g.font = '600 64px Pridi, sans-serif';
-            g.fillStyle = '#d96d3b';
+            g.fillStyle = '#b8532a';
             g.fillText('#nakcat', 540, 1800);
             return new Promise((resolve, reject) => {
                 try { c.toBlob(resolve, 'image/png'); } catch (err) { reject(err); }
@@ -850,7 +847,6 @@
             // onSlowApi กับ API_WAKING มาจาก api.js: API หลับอยู่ก็ขึ้นข้อความบอกให้รอ
             const stopNotice = onSlowApi(() => { status.textContent = API_WAKING; });
             try {
-                if (!API_BASE) throw new Error('no api');
                 const res = await fetch(`${API_BASE}/game-ratings`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },

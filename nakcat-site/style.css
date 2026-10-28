@@ -403,7 +403,7 @@ nav {
 .contact-form textarea:focus {
     border-color: var(--orange);
     outline: none;
-    box-shadow: 0 0 0 4px rgba(217, 109, 59, 0.15);
+    box-shadow: 0 0 0 4px rgba(184, 83, 42, 0.15);
 }
 
 .contact-form .btn { justify-self: start; cursor: pointer; }
@@ -531,7 +531,7 @@ nav {
 
 footer .credits {
     flex-basis: 100%;
-    color: #7d838c;
+    color: #a9aeb5;
     font-size: 0.78rem;
 }
 
@@ -653,7 +653,7 @@ footer .credits a { color: inherit; }
 .starter-group label:has(input:checked) {
     color: var(--muted);
     text-decoration: line-through;
-    text-decoration-color: rgba(217, 109, 59, 0.6);
+    text-decoration-color: rgba(184, 83, 42, 0.6);
 }
 
 .starter-reset {
@@ -768,7 +768,7 @@ footer .credits a { color: inherit; }
 
 .step-btn:focus-visible {
     outline: none;
-    box-shadow: 0 0 0 3px rgba(217, 109, 59, 0.6);
+    box-shadow: 0 0 0 3px rgba(184, 83, 42, 0.6);
 }
 
 .step-btn:disabled {
@@ -1045,7 +1045,7 @@ footer .credits a { color: inherit; }
 
 .photo-credit {
     margin: 14px 0 0 !important;
-    color: #9a9fa6;
+    color: var(--muted);
     font-size: 0.72rem;
 }
 
@@ -1294,11 +1294,10 @@ footer .credits a { color: inherit; }
     transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease;
 }
 
-.gallery-card:hover,
-.gallery-card:focus-visible {
-    border-color: rgba(217, 109, 59, 0.5);
-    outline: none;
-}
+.gallery-card:hover { border-color: rgba(184, 83, 42, 0.5); }
+
+/* กรอบหนาแบบเดียวกับการ์ดเกมจับคู่ คนใช้คีย์บอร์ดจะเห็นว่าอยู่ที่การ์ดไหน */
+.gallery-card:focus-visible { outline: 3px solid var(--orange); outline-offset: 3px; }
 
 .gallery-card img {
     width: 100%;
@@ -1423,7 +1422,7 @@ footer .credits a { color: inherit; }
 }
 
 .faq details[open] {
-    border-color: rgba(217, 109, 59, 0.45);
+    border-color: rgba(184, 83, 42, 0.45);
     box-shadow: var(--shadow-sm);
 }
 
@@ -1632,8 +1631,14 @@ footer {
 .footer-inner p { margin: 0; }
 .footer-logo { color: white; font-size: 1.3rem; }
 
+/* คนที่ตั้งเครื่องให้ลดภาพเคลื่อนไหว: ปิดเด้ง พลิกการ์ด หางกระดิก (ของยังเปลี่ยนสถานะได้ แค่ไม่ขยับ) */
 @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
 }
 
 /* ---------- Responsive ---------- */
@@ -1814,7 +1819,7 @@ footer {
 .rating-star {
     padding: 2px 4px;
     border: 0;
-    color: var(--line);
+    color: var(--muted); /* ต้องเข้มพอให้ดูกดได้ บนมือถือไม่มี hover มาช่วย */
     background: none;
     font-size: 2rem;
     line-height: 1;
@@ -1825,7 +1830,7 @@ footer {
 /* ไล่สีดาวตั้งแต่ดวงแรกจนถึงดวงที่ชี้อยู่ */
 .rating-stars:hover .rating-star,
 .rating-star:focus-visible { color: var(--orange); }
-.rating-stars .rating-star:hover ~ .rating-star { color: var(--line); }
+.rating-stars .rating-star:hover ~ .rating-star { color: var(--muted); }
 .rating-star:disabled { cursor: wait; }
 .rating .rating-status:not(:empty) { margin-top: 8px; }
 
@@ -1944,7 +1949,7 @@ footer {
 .tale-form textarea:focus {
     border-color: var(--orange);
     outline: none;
-    box-shadow: 0 0 0 4px rgba(217, 109, 59, 0.15);
+    box-shadow: 0 0 0 4px rgba(184, 83, 42, 0.15);
 }
 
 .tale-count { justify-self: end; margin: -8px 0 0; color: #6b4a3a; font-size: 0.8rem; }
@@ -2522,7 +2527,7 @@ footer {
 
 .fav-remove:hover { color: #9c2b22; background: #fbe4e1; }
 .fav-empty { margin: 8px 0; color: var(--muted); line-height: 1.8; text-align: center; }
-.fav-note { margin: 18px 0 0; color: #9a9fa6; font-size: 0.8rem; text-align: center; }
+.fav-note { margin: 18px 0 0; color: var(--muted); font-size: 0.8rem; text-align: center; }
 
 .toast {
     position: fixed;
@@ -2665,7 +2670,7 @@ footer {
 .catsays-form input:focus {
     border-color: var(--orange);
     outline: none;
-    box-shadow: 0 0 0 4px rgba(217, 109, 59, 0.15);
+    box-shadow: 0 0 0 4px rgba(184, 83, 42, 0.15);
 }
 
 #catsays .btn { cursor: pointer; }
@@ -2800,7 +2805,7 @@ footer {
     font: inherit;
 }
 
-.board-form input:focus { border-color: var(--orange); outline: none; box-shadow: 0 0 0 4px rgba(217, 109, 59, 0.15); }
+.board-form input:focus { border-color: var(--orange); outline: none; box-shadow: 0 0 0 4px rgba(184, 83, 42, 0.15); }
 .board .btn { padding: 10px 18px; white-space: nowrap; }
 .board .btn:disabled { opacity: 0.6; cursor: wait; }
 .quiz-result .board-status { margin: 0 0 12px; font-weight: 500; text-align: center; }

@@ -24,10 +24,6 @@
             setStatus('is-success', 'ส่งข้อความเรียบร้อยแล้ว ขอบคุณมากนะ');
             return;
         }
-        if (!API_BASE) {
-            setStatus('is-error', failMessage);
-            return;
-        }
         submitBtn.disabled = true;
         submitBtn.textContent = 'กำลังส่ง...';
         status.className = 'form-note';

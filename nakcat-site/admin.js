@@ -14,11 +14,6 @@
     const list = document.querySelector('#admin-list');
     if (!loginForm || !keyInput || !loginMsg || !panel || !logoutBtn || !msg || !list)
         return;
-    if (!API_BASE) {
-        loginMsg.textContent = 'ยังไม่ได้ตั้งที่อยู่ API (ดู src/api.ts)';
-        loginForm.querySelector('button')?.setAttribute('disabled', '');
-        return;
-    }
     const api = API_BASE;
     // จำรหัสไว้เฉพาะแท็บนี้ (sessionStorage): ปิดเบราว์เซอร์แล้วต้องใส่ใหม่
     const KEY_STORE = 'nakcat-admin-key';
@@ -361,13 +356,17 @@
             throw new Error(String(res.status));
         return res.json();
     };
+    // กดสลับแท็บเร็วๆ ตอน API ช้า: คำตอบของแท็บเก่าห้ามมาวาดทับแท็บที่เปิดอยู่
+    // ทุกรอบที่โหลดได้เลขใหม่ ถ้าตอบกลับมาแล้วเลขไม่ใช่ล่าสุด = มีแท็บอื่นเปิดแทนแล้ว ให้ทิ้งไป
+    let loadSeq = 0;
     const loadTab = async () => {
+        const mine = ++loadSeq;
         list.replaceChildren();
         setMsg('กำลังโหลด... (ถ้า API หลับอยู่ อาจรอเกือบ 1 นาที)');
         try {
             if (current === 'Overview') {
                 const data = await getJson('/admin/overview');
-                if (!data)
+                if (!data || mine !== loadSeq)
                     return;
                 setBadges(data.pendingStories, data.unreadMessages);
                 list.replaceChildren(renderOverview(data, (tab) => selectTab(tab)));
@@ -376,7 +375,7 @@
             }
             if (current === 'Messages') {
                 const messages = await getJson('/admin/messages');
-                if (!messages)
+                if (!messages || mine !== loadSeq)
                     return;
                 list.replaceChildren(...messages.map(messageCard));
                 updateCount();
@@ -384,7 +383,7 @@
             }
             if (current === 'Comments') {
                 const comments = await getJson('/admin/comments');
-                if (!comments)
+                if (!comments || mine !== loadSeq)
                     return;
                 list.replaceChildren(...comments.map(commentCard));
                 updateCount();
@@ -396,17 +395,21 @@
                 if (!res.ok)
                     throw new Error(String(res.status));
                 const scores = await res.json();
+                if (mine !== loadSeq)
+                    return;
                 list.replaceChildren(...scores.map((s, i) => scoreCard(s, i + 1)));
                 updateCount();
                 return;
             }
             const stories = await getJson(`/admin/stories?status=${current}`);
-            if (!stories)
+            if (!stories || mine !== loadSeq)
                 return;
             list.replaceChildren(...stories.map(storyCard));
             updateCount();
         }
         catch (err) {
+            if (mine !== loadSeq)
+                return;
             setMsg('ติดต่อ API ไม่ได้ 😿 ลองรีเฟรชอีกครั้ง ถ้ายังไม่ได้ ให้เช็กว่า API บน Render ยังทำงานอยู่');
         }
     };

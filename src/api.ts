@@ -2,9 +2,12 @@
 // ต้องโหลดไฟล์นี้ (api.js) ก่อนไฟล์อื่นที่ใช้ API_BASE
 // ไฟล์ต้นฉบับคือ src/api.ts — แก้ที่นั่นแล้วสั่ง npm run build จะได้ nakcat-site/api.js ใหม่
 
-// เว็บจริง (Netlify): ใช้ API บน Render / เปิดในเครื่อง: ใช้ API ที่รัน dotnet run ไว้ (localhost:5080)
+// เปิดในเครื่อง (Live Server หรือเปิดไฟล์ตรง ๆ): ใช้ API ที่รัน dotnet run ไว้ (localhost:5080)
+// ที่อื่นทั้งหมด (Netlify และโดเมนที่อาจเพิ่มทีหลัง): ใช้ API บน Render
+// ถ้าเพิ่มโดเมนใหม่ ต้องเพิ่มใน AllowedOrigins ของ API ด้วย ไม่งั้น API จะไม่ยอมตอบ
 // API บน Render แบบฟรีจะหลับถ้าไม่มีคนใช้ 15 นาที ครั้งแรกที่เรียกอาจรอเกือบ 1 นาที
-const API_BASE: string | null = location.hostname === 'nakcat.netlify.app' ? 'https://nakcat-api.onrender.com' : 'http://localhost:5080';
+const isLocal: boolean = ['localhost', '127.0.0.1', ''].includes(location.hostname);
+const API_BASE: string = isLocal ? 'http://localhost:5080' : 'https://nakcat-api.onrender.com';
 
 // ข้อความบอกคนใช้ตอน API ยังหลับอยู่ (ใช้คู่กับ onSlowApi)
 //   = ช่องว่างที่ห้ามตัดบรรทัด กันจอมือถือตัด "1" กับ "นาที" ไว้คนละบรรทัด

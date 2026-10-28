@@ -16,9 +16,6 @@
     const sortButtons = document.querySelectorAll('.tales-sort [data-sort]');
     if (!section || !list || !form || !catInput || !authorInput || !storyInput || !honeypot || !counter || !submitBtn || !status)
         return;
-    // เว็บจริงยังไม่มี API: ปล่อยส่วนนี้ซ่อนไว้ (ใน HTML ใส่ hidden ไว้ตั้งแต่แรก)
-    if (!API_BASE)
-        return;
     const api = API_BASE;
     section.hidden = false;
     const dateFormat = new Intl.DateTimeFormat('th-TH', { day: 'numeric', month: 'short', year: 'numeric' });
@@ -108,14 +105,21 @@
         }
         list.replaceChildren(p);
     };
+    // กดสลับ ล่าสุด/ยอดนิยม เร็วๆ ตอน API ช้า: คำตอบของรอบเก่าห้ามมาทับรอบใหม่
+    // ทุกรอบที่โหลดได้เลขใหม่ ถ้าตอบกลับมาแล้วเลขไม่ใช่ล่าสุด ให้ทิ้งไป
+    let loadSeq = 0;
     const loadStories = async () => {
+        const mine = ++loadSeq;
         showListMessage('กำลังโหลดเรื่องเล่า...');
-        const stopNotice = onSlowApi(() => showListMessage(API_WAKING));
+        const stopNotice = onSlowApi(() => { if (mine === loadSeq)
+            showListMessage(API_WAKING); });
         try {
             const res = await fetch(`${api}/stories?sort=${sort}`);
             if (!res.ok)
                 throw new Error(String(res.status));
             const stories = await res.json();
+            if (mine !== loadSeq)
+                return;
             if (stories.length === 0) {
                 showListMessage('ยังไม่มีเรื่องเล่า มาเป็นคนแรกที่เล่าเรื่องน้องกัน!');
                 return;
@@ -123,7 +127,8 @@
             list.replaceChildren(...stories.map(storyCard));
         }
         catch (err) {
-            showListMessage('โหลดเรื่องเล่าไม่สำเร็จ', true);
+            if (mine === loadSeq)
+                showListMessage('โหลดเรื่องเล่าไม่สำเร็จ', true);
         }
         finally {
             stopNotice();

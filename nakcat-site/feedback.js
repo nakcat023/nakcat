@@ -39,18 +39,23 @@
         status.className = 'feedback-status';
         status.textContent = 'กำลังส่ง...';
         const stopNotice = onSlowApi(() => { status.textContent = API_WAKING; });
+        let failText = 'ส่งไม่สำเร็จ ลองกดอีกครั้งนะ';
         try {
             // ช่องดักบอท: มีค่า = บอทกรอก ข้ามการส่งจริงไปเลย
             if (!honeypot.value) {
-                if (!API_BASE)
-                    throw new Error('no api');
                 const res = await fetch(`${API_BASE}/article-feedback`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ article: articleInput.value, vote: voteInput.value, comment: comment.value }),
                 });
-                if (!res.ok)
+                if (!res.ok) {
+                    // API บอกเหตุผลมาด้วย (เช่น ความเห็นยาวเกิน หรือกดถี่ไป) ใช้อันนั้นแทนข้อความกลางๆ
+                    try {
+                        failText = (await res.json()).message ?? failText;
+                    }
+                    catch (e) { }
                     throw new Error(String(res.status));
+                }
             }
             try {
                 localStorage.setItem(storeKey, voteInput.value);
@@ -60,7 +65,7 @@
         }
         catch (err) {
             status.className = 'feedback-status is-error';
-            status.textContent = 'ส่งไม่สำเร็จ ลองกดอีกครั้งนะ';
+            status.textContent = failText;
             voteBtns.forEach((b) => { b.disabled = false; });
             submitBtn.disabled = false;
         }

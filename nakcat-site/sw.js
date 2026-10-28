@@ -66,20 +66,44 @@ self.addEventListener('fetch', (e) => {
     if (url.origin !== location.origin && !isFont) return;
 
     // หน้าเว็บ: เอาของใหม่จากเน็ตก่อน ถ้าออฟไลน์ค่อยใช้ที่เก็บไว้
+    // Netlify เปลี่ยนลิงก์เป็น /article-x (ไม่มี .html) แต่ที่เก็บไว้ตอนติดตั้งคือ article-x.html เลยต้องลองทั้งสองแบบ
     if (req.mode === 'navigate') {
         e.respondWith(
             fetch(req)
                 .then((res) => {
-                    const copy = res.clone();
-                    caches.open(CACHE).then((cache) => cache.put(req, copy));
+                    if (res.ok) {
+                        const copy = res.clone();
+                        caches.open(CACHE).then((cache) => cache.put(req, copy));
+                    }
                     return res;
                 })
-                .catch(() => caches.match(req, { ignoreSearch: true }).then((hit) => hit || caches.match('index.html')))
+                .catch(() =>
+                    caches.match(req, { ignoreSearch: true })
+                        .then((hit) => hit || caches.match(url.pathname + '.html'))
+                        .then((hit) => hit || caches.match('index.html'))
+                )
         );
         return;
     }
 
-    // รูป สไตล์ สคริปต์ ฟอนต์: ใช้ที่เก็บไว้ทันที แล้วแอบอัปเดตเบื้องหลัง
+    // สคริปต์กับสไตล์ของเว็บ: เอาจากเน็ตก่อน ไม่งั้นหน้าใหม่จะได้สคริปต์ของรอบก่อน
+    // ออฟไลน์ค่อยใช้ที่เก็บไว้ (ห้ามตกไปที่ index.html เพราะจะได้ HTML ไปแทนสคริปต์)
+    if (url.origin === location.origin && /\.(js|css)$/.test(url.pathname)) {
+        e.respondWith(
+            fetch(req)
+                .then((res) => {
+                    if (res.ok) {
+                        const copy = res.clone();
+                        caches.open(CACHE).then((cache) => cache.put(req, copy));
+                    }
+                    return res;
+                })
+                .catch(() => caches.match(req))
+        );
+        return;
+    }
+
+    // รูป ฟอนต์: ใช้ที่เก็บไว้ทันที แล้วแอบอัปเดตเบื้องหลัง
     e.respondWith(
         caches.match(req).then((hit) => {
             const fresh = fetch(req)

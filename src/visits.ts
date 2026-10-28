@@ -5,7 +5,6 @@
 // ไฟล์ต้นฉบับคือ src/visits.ts — แก้ที่นั่นแล้วสั่ง npm run build จะได้ nakcat-site/visits.js ใหม่
 
 (() => {
-    if (!API_BASE) return;
     const api: string = API_BASE;
 
     // ส่งแบบไม่รอผล: นับไม่ได้ก็ไม่เป็นไร ไม่ให้กระทบการใช้เว็บ

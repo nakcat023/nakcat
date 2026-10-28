@@ -36,7 +36,6 @@ interface RatingSummary {
 
     // ขอค่าเฉลี่ยจาก API มาแสดง (ไม่สำเร็จก็ซ่อนไว้เฉยๆ)
     const loadSummary = async (): Promise<void> => {
-        if (!API_BASE) return;
         try {
             const res: Response = await fetch(`${API_BASE}/ratings/summary`);
             if (!res.ok) return;
@@ -69,21 +68,25 @@ interface RatingSummary {
         siteStatus.className = 'feedback-status';
         siteStatus.textContent = '';
         const stopNotice = onSlowApi(() => { siteStatus.textContent = API_WAKING; });
+        let failText: string = 'ส่งไม่สำเร็จ ลองกดอีกครั้งนะ';
         try {
-            if (!API_BASE) throw new Error('no api');
             const res: Response = await fetch(`${API_BASE}/ratings`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ score: Number(score), comment }),
             });
-            if (!res.ok) throw new Error(String(res.status));
+            if (!res.ok) {
+                // API บอกเหตุผลมาด้วย (เช่น ความเห็นยาวเกิน หรือกดถี่ไป) ใช้อันนั้นแทนข้อความกลางๆ
+                try { failText = (await res.json()).message ?? failText; } catch (e) {}
+                throw new Error(String(res.status));
+            }
             const summary: RatingSummary = await res.json();
             showSummary(summary);
             try { localStorage.setItem(siteKey, score); } catch (err) {}
             siteThanks(score);
         } catch (err) {
             siteStatus.className = 'feedback-status is-error';
-            siteStatus.textContent = 'ส่งไม่สำเร็จ ลองกดอีกครั้งนะ';
+            siteStatus.textContent = failText;
             siteSubmit.disabled = false;
         } finally {
             stopNotice();

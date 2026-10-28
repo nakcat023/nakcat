@@ -26,7 +26,6 @@ interface MemoryResult {
 }
 
 (() => {
-    if (!API_BASE) return;
     const api: string = API_BASE;
     const NAME_KEY: string = 'nakcat-player-name'; // จำชื่อไว้ เล่นรอบหน้าไม่ต้องพิมพ์ใหม่
     const medals: string[] = ['🥇', '🥈', '🥉'];

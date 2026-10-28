@@ -54,9 +54,9 @@
         return name === '' ? DEFAULT_NAME : name;
     }
     // ===================== วาดรูปสำหรับแชร์ =====================
-    const INK = '#20242b';
-    const MUTED = '#6d747d';
-    const ORANGE = '#d96d3b';
+    const INK = '#221f1b';
+    const MUTED = '#6b645a';
+    const ORANGE = '#b8532a';
     // วาดรูปกว้าง 1080 แล้วส่งกลับเป็นไฟล์รูป
     // height = 1080 ได้สี่เหลี่ยมจัตุรัส (โพสต์ IG/Facebook), 1920 ได้ขนาดสตอรี่ (เนื้อหาเดิมวางไว้กลางรูป)
     async function makeImage(line, name, height = 1080) {
@@ -70,11 +70,8 @@
         const g = canvas.getContext('2d');
         if (!g)
             throw new Error('เบราว์เซอร์นี้วาดรูปไม่ได้');
-        // พื้นหลังไล่สีส้มพีช
-        const bg = g.createLinearGradient(0, 0, 1080, height);
-        bg.addColorStop(0, '#fde2cc');
-        bg.addColorStop(1, '#f6bf98');
-        g.fillStyle = bg;
+        // พื้นหลังสีพีชเรียบ (สีเดียวกับ --peach ใน style.css)
+        g.fillStyle = '#f1e3cf';
         g.fillRect(0, 0, 1080, height);
         // เลื่อนจุดเริ่มวาดลงมา ให้เนื้อหาขนาด 1080×1080 อยู่กลางรูป (รูปจัตุรัสเลื่อน 0)
         g.translate(0, (height - 1080) / 2);
@@ -87,7 +84,7 @@
         g.font = '400 38px "IBM Plex Sans Thai Looped", sans-serif';
         g.fillText('ถ้าแมวพูดได้วันเดียว ประโยคแรกคือ...', 540, 185);
         // กรอบคำพูด และหางที่ชี้ลงไปหาแมว
-        g.fillStyle = '#fffdf9';
+        g.fillStyle = '#fbf8f2';
         g.beginPath();
         g.roundRect(90, 230, 900, 500, 56);
         g.fill();
@@ -113,7 +110,7 @@
             g.fillText(`(${line.context})`, 540, y - 10);
         }
         // แมวกับชื่อ (ชื่อยาวจะย่อตัวอักษรลงให้พอดี)
-        g.fillStyle = '#fbe3d2';
+        g.fillStyle = '#fbf8f2';
         g.beginPath();
         g.arc(190, 885, 78, 0, Math.PI * 2);
         g.fill();
