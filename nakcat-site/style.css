@@ -1910,6 +1910,9 @@ footer {
     text-align: center;
 }
 
+/* ปุ่ม "ลองอีกครั้ง" ตอนโหลดเรื่องเล่าไม่สำเร็จ: ขึ้นบรรทัดใหม่ อยู่กลางกล่อง */
+.tales-empty .tales-retry { display: flex; width: fit-content; margin: 14px auto 0; padding: 10px 18px; }
+
 .tale-form {
     display: grid;
     gap: 14px;

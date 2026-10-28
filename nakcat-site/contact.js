@@ -30,6 +30,7 @@
         submitBtn.disabled = true;
         submitBtn.textContent = 'กำลังส่ง...';
         status.className = 'form-note';
+        const stopNotice = onSlowApi(() => { status.textContent = API_WAKING; });
         try {
             const res = await fetch(`${API_BASE}/contact`, {
                 method: 'POST',
@@ -43,6 +44,9 @@
         }
         catch (err) {
             setStatus('is-error', failMessage);
+        }
+        finally {
+            stopNotice();
         }
         submitBtn.disabled = false;
         submitBtn.textContent = 'ส่งข้อความ';

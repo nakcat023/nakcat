@@ -66,6 +66,9 @@ interface RatingSummary {
         if (honeypot) { siteThanks(score); return; }
         siteSubmit.disabled = true;
         siteSubmit.textContent = 'กำลังส่ง...';
+        siteStatus.className = 'feedback-status';
+        siteStatus.textContent = '';
+        const stopNotice = onSlowApi(() => { siteStatus.textContent = API_WAKING; });
         try {
             if (!API_BASE) throw new Error('no api');
             const res: Response = await fetch(`${API_BASE}/ratings`, {
@@ -82,6 +85,8 @@ interface RatingSummary {
             siteStatus.className = 'feedback-status is-error';
             siteStatus.textContent = 'ส่งไม่สำเร็จ ลองกดอีกครั้งนะ';
             siteSubmit.disabled = false;
+        } finally {
+            stopNotice();
         }
         siteSubmit.textContent = 'ส่งคะแนน';
     });

@@ -22,7 +22,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai+Looped:wght@400;500;600&family=Pridi:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=20">
+    <link rel="stylesheet" href="style.css?v=21">
 </head>
 <body>
     <nav>
@@ -845,6 +845,10 @@
             const status = box.querySelector('.rating-status');
             const buttons = box.querySelectorAll('.rating-star');
             buttons.forEach((b) => { b.disabled = true; });
+            status.className = 'rating-status';
+            status.textContent = 'กำลังส่ง...';
+            // onSlowApi กับ API_WAKING มาจาก api.js: API หลับอยู่ก็ขึ้นข้อความบอกให้รอ
+            const stopNotice = onSlowApi(() => { status.textContent = API_WAKING; });
             try {
                 if (!API_BASE) throw new Error('no api');
                 const res = await fetch(`${API_BASE}/game-ratings`, {
@@ -862,6 +866,8 @@
                 status.className = 'rating-status is-error';
                 status.textContent = 'ส่งไม่สำเร็จ ลองกดอีกครั้งนะ';
                 buttons.forEach((b) => { b.disabled = false; });
+            } finally {
+                stopNotice();
             }
         });
 

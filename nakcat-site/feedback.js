@@ -36,6 +36,9 @@
     const send = async () => {
         voteBtns.forEach((b) => { b.disabled = true; });
         submitBtn.disabled = true;
+        status.className = 'feedback-status';
+        status.textContent = 'กำลังส่ง...';
+        const stopNotice = onSlowApi(() => { status.textContent = API_WAKING; });
         try {
             // ช่องดักบอท: มีค่า = บอทกรอก ข้ามการส่งจริงไปเลย
             if (!honeypot.value) {
@@ -60,6 +63,9 @@
             status.textContent = 'ส่งไม่สำเร็จ ลองกดอีกครั้งนะ';
             voteBtns.forEach((b) => { b.disabled = false; });
             submitBtn.disabled = false;
+        }
+        finally {
+            stopNotice();
         }
     };
     // 👍 ส่งทันที / 👎 เปิดช่องให้บอกเหตุผล (ไม่บังคับกรอก)

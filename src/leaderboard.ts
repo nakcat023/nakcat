@@ -104,6 +104,7 @@ interface MemoryResult {
             saveBtn.textContent = 'กำลังบันทึก...';
             status.className = 'board-status';
             status.textContent = '';
+            const stopNotice = onSlowApi(() => { status.textContent = API_WAKING; });
             try {
                 const res: Response = await fetch(`${api}/memory-scores`, {
                     method: 'POST',
@@ -125,18 +126,23 @@ interface MemoryResult {
                 status.textContent = data.message; // เช่น "ชื่อยาวเกิน 20 ตัวอักษร"
             } catch (err) {
                 status.className = 'board-status is-error';
-                status.textContent = 'บันทึกไม่สำเร็จ เช็กอินเทอร์เน็ตแล้วลองใหม่อีกครั้งนะ';
+                status.textContent = 'บันทึกไม่สำเร็จ ลองใหม่อีกครั้งนะ';
+            } finally {
+                stopNotice();
             }
             saveBtn.disabled = false;
             saveBtn.textContent = 'บันทึกคะแนน';
         });
 
+        const stopNotice = onSlowApi(() => { loading.textContent = API_WAKING; });
         try {
             const res: Response = await fetch(`${api}/memory-scores`);
             if (!res.ok) throw new Error(String(res.status));
             renderList(list, await res.json(), null);
         } catch (err) {
             loading.textContent = 'โหลดกระดานคะแนนไม่สำเร็จ';
+        } finally {
+            stopNotice();
         }
     });
 })();

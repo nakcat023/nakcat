@@ -93,14 +93,24 @@
         show();
         return btn;
     };
-    const showListMessage = (message) => {
+    // retry = ใส่ปุ่ม "ลองอีกครั้ง" ไว้ใต้ข้อความ (ใช้ตอนโหลดไม่สำเร็จ)
+    const showListMessage = (message, retry = false) => {
         const p = document.createElement('p');
         p.className = 'tales-empty';
         p.textContent = message;
+        if (retry) {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'btn btn-ghost tales-retry';
+            btn.textContent = 'ลองอีกครั้ง';
+            btn.addEventListener('click', () => { loadStories(); });
+            p.append(btn);
+        }
         list.replaceChildren(p);
     };
     const loadStories = async () => {
         showListMessage('กำลังโหลดเรื่องเล่า...');
+        const stopNotice = onSlowApi(() => showListMessage(API_WAKING));
         try {
             const res = await fetch(`${api}/stories?sort=${sort}`);
             if (!res.ok)
@@ -113,7 +123,10 @@
             list.replaceChildren(...stories.map(storyCard));
         }
         catch (err) {
-            showListMessage('โหลดเรื่องเล่าไม่สำเร็จ ลองรีเฟรชหน้าอีกครั้งนะ');
+            showListMessage('โหลดเรื่องเล่าไม่สำเร็จ', true);
+        }
+        finally {
+            stopNotice();
         }
     };
     // ===================== ฟอร์มส่งเรื่อง =====================
@@ -152,6 +165,7 @@
         submitBtn.disabled = true;
         submitBtn.textContent = 'กำลังส่ง...';
         setStatus('', '');
+        const stopNotice = onSlowApi(() => setStatus('', API_WAKING));
         try {
             const res = await fetch(`${api}/stories`, {
                 method: 'POST',
@@ -169,7 +183,10 @@
             }
         }
         catch (err) {
-            setStatus('is-error', 'ส่งไม่สำเร็จ เช็กอินเทอร์เน็ตแล้วลองใหม่อีกครั้งนะ');
+            setStatus('is-error', 'ส่งไม่สำเร็จ ลองใหม่อีกครั้งนะ');
+        }
+        finally {
+            stopNotice();
         }
         submitBtn.disabled = false;
         submitBtn.textContent = 'ส่งเรื่องเล่า';
