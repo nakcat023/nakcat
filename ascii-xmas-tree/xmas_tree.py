@@ -41,7 +41,6 @@ HORIZON = 34                  # แถวที่ท้องฟ้าจบ �
 CX = COLS // 2                # แกนกลางต้นคริสต์มาส
 TREE_TOP, TREE_BASE = 11, 51  # แถวยอดต้นกับแถวโคนต้น
 STAR_CY = 8                   # แถวกลางของดาวบนยอด
-MOON_Y, MOON_X, MOON_R = 7.0, 18.0, 4.3
 
 # ตัวอักษรทั้งหมดที่ใช้ในฉาก ตำแหน่งในสตริงคือเลขที่เก็บใน chars (ช่องว่าง = 0 = ไม่วาดอะไร)
 CHARSET = "".join(dict.fromkeys(
@@ -175,18 +174,6 @@ def build_background(rng):
     chars[sky & (rng.random((ROWS, COLS)) < 0.18)] = CI["."]
     cols[sky] = sky_col[sky]
 
-    # พระจันทร์มุมซ้ายบน มีแสงจาง ๆ รอบดวง
-    d = np.hypot((XX - MOON_X) / ASPECT, YY - MOON_Y)
-    halo = (d >= MOON_R) & (d < MOON_R + 3)
-    chars[halo] = CI["."]
-    cols[halo] = np.array([0.55, 0.50, 0.30]) * ((MOON_R + 3 - d[halo]) / 3 * 0.8)[:, None]
-    disc = d < MOON_R
-    crater = disc & (rng.random((ROWS, COLS)) < 0.22)
-    chars[disc] = CI["@"]
-    chars[crater] = CI["%"]
-    moon_shade = (1 - 0.35 * (d / MOON_R) ** 2) * np.where(crater, 0.75, 1.0)
-    cols[disc] = np.array([1.0, 0.93, 0.62]) * moon_shade[disc][:, None]
-
     # พื้นหิมะ ใช้คลื่น sin หลายชั้นปนสุ่มทำเป็นลอนหิมะ แล้วเลือกตัวอักษรตามความสว่าง
     ground = YY >= HORIZON
     depth = np.clip((YY - HORIZON) / (ROWS - HORIZON), 0, 1)[..., None]
@@ -211,13 +198,11 @@ def build_background(rng):
 
 
 def build_sky_stars(rng, n=55):
-    """ดาวบนฟ้าที่กะพริบ (ไม่ให้ทับพระจันทร์ และเว้นแถวบนสุดไว้ให้ข้อความนับถอยหลัง)"""
-    ys = rng.integers(3, HORIZON - 8, n * 3)
-    xs = rng.integers(0, COLS, n * 3)
-    ok = np.hypot((xs - MOON_X) / ASPECT, ys - MOON_Y) > MOON_R + 4
-    ys, xs = ys[ok][:n], xs[ok][:n]
-    return dict(y=ys, x=xs, ch=rng.choice(to_idx(".+*"), len(ys), p=[0.6, 0.3, 0.1]),
-                phase=rng.uniform(0, 2 * np.pi, len(ys)), speed=rng.uniform(1, 3, len(ys)))
+    """ดาวบนฟ้าที่กะพริบ (เว้นแถวบนสุดไว้ให้ข้อความนับถอยหลัง)"""
+    ys = rng.integers(3, HORIZON - 8, n)
+    xs = rng.integers(0, COLS, n)
+    return dict(y=ys, x=xs, ch=rng.choice(to_idx(".+*"), n, p=[0.6, 0.3, 0.1]),
+                phase=rng.uniform(0, 2 * np.pi, n), speed=rng.uniform(1, 3, n))
 
 
 # ------------------------------------------------------------------ ต้นคริสต์มาส (สร้างครั้งเดียว)
@@ -501,7 +486,7 @@ SANTA_COLORS = {"r": (0.95, 0.2, 0.2), "w": (1.0, 0.95, 0.9), "g": (1.0, 0.78, 0
 
 
 class Santa:
-    """ซานต้าบินผ่านฟ้าเป็นครั้งคราว เส้นทางตัดหน้าพระจันทร์พอดี"""
+    """ซานต้าบินผ่านฟ้าเป็นครั้งคราว"""
     SPEED = 13.0   # คอลัมน์ต่อวินาที
 
     def __init__(self, rng, first=9.0):

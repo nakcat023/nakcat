@@ -20,7 +20,6 @@
     const HORIZON = 34;               // แถวที่ท้องฟ้าจบ พื้นหิมะเริ่ม
     const CX = COLS >> 1;             // แกนกลางต้นคริสต์มาส
     const TREE_TOP = 11, TREE_BASE = 51, STAR_CY = 8;
-    const MOON_Y = 7, MOON_X = 18, MOON_R = 4.3;
     canvas.width = W;
     canvas.height = H;
 
@@ -247,16 +246,6 @@
                     const k = row / HORIZON;
                     const ch = rnd() < 0.18 ? CI['.'] : 0;
                     bgPut(i, ch, 0.03 + 0.05 * k, 0.04 + 0.09 * k, 0.1 + 0.22 * k);
-                    // พระจันทร์มุมซ้ายบน มีแสงจาง ๆ รอบดวง
-                    const d = Math.hypot((col - MOON_X) / ASPECT, row - MOON_Y);
-                    if (d < MOON_R) {
-                        const crater = rnd() < 0.22;
-                        const s = (1 - 0.35 * (d / MOON_R) ** 2) * (crater ? 0.75 : 1);
-                        bgPut(i, crater ? CI['%'] : CI['@'], s, 0.93 * s, 0.62 * s);
-                    } else if (d < MOON_R + 3) {
-                        const s = ((MOON_R + 3 - d) / 3) * 0.8;
-                        bgPut(i, CI['.'], 0.55 * s, 0.5 * s, 0.3 * s);
-                    }
                 } else {
                     // พื้นหิมะ ใช้คลื่น sin หลายชั้นปนสุ่มทำเป็นลอน แล้วเลือกตัวอักษรตามความสว่าง
                     const depth = clamp01((row - HORIZON) / (ROWS - HORIZON));
@@ -283,14 +272,13 @@
         }
     }
 
-    // ดาวบนฟ้าที่กะพริบ (ไม่ให้ทับพระจันทร์ และเว้นแถวบนสุดไว้ให้ข้อความนับถอยหลัง)
+    // ดาวบนฟ้าที่กะพริบ (เว้นแถวบนสุดไว้ให้ข้อความนับถอยหลัง)
     type SkyStar = { i: number; ch: number; phase: number; speed: number };
     function buildSkyStars(n = 55): SkyStar[] {
         const list: SkyStar[] = [];
         const kinds = idx('.+*');
         while (list.length < n) {
             const row = randInt(3, HORIZON - 9), col = randInt(0, COLS - 1);
-            if (Math.hypot((col - MOON_X) / ASPECT, row - MOON_Y) <= MOON_R + 4) continue;
             list.push({ i: row * COLS + col, ch: pick(kinds, [0.6, 0.3, 0.1]), phase: uniform(0, Math.PI * 2), speed: uniform(1, 3) });
         }
         return list;
@@ -571,7 +559,7 @@
         }
         santa.x += 13 * dt;   // คอลัมน์ต่อวินาที
         const p = (santa.x + SANTA_W) / (COLS + SANTA_W);
-        santa.y = 8 - 4.5 * p + 0.5 * Math.sin(t * 4);   // ไต่ขึ้นช้า ๆ และโยกขึ้นลงนิดหน่อย ผ่านหน้าพระจันทร์พอดี
+        santa.y = 8 - 4.5 * p + 0.5 * Math.sin(t * 4);   // ไต่ขึ้นช้า ๆ และโยกขึ้นลงนิดหน่อย
         for (let k = 0; k < 2; k++) {   // ฝุ่นวิเศษสีทองโปรยตามหลังเลื่อน
             sparks.push({ x: santa.x + uniform(0, 2), y: santa.y + 2.5, vx: uniform(-3, -1), vy: uniform(0.5, 2), age: 0,
                 life: uniform(0.8, 1.4), c: GOLD, kind: 2, drag: 1.5, grav: 2 });
