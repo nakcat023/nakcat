@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ต้นคริสต์มาสตัวอักษร | nakcat</title>
+    <meta name="description" content="ต้นคริสต์มาสที่วาดด้วยตัวอักษรล้วน ๆ มีไฟกะพริบ ดาวบนยอด กล่องของขวัญ หิมะตก และพลุให้กดจุดเล่น">
+    <meta property="og:title" content="ต้นคริสต์มาสตัวอักษร | nakcat">
+    <meta property="og:description" content="ต้นคริสต์มาสที่วาดด้วยตัวอักษรล้วน ๆ มีไฟกะพริบ ดาวบนยอด กล่องของขวัญ หิมะตก และพลุให้กดจุดเล่น">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://nakcat.netlify.app/xmas.html">
+    <meta property="og:site_name" content="nakcat">
+    <meta property="og:locale" content="th_TH">
+    <meta name="theme-color" content="#fbf8f2">
+    <link rel="canonical" href="https://nakcat.netlify.app/xmas.html">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="images/icon-192.png">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27><rect width=%27100%27 height=%27100%27 rx=%2728%27 fill=%27%23fbe3d2%27/><text x=%2750%27 y=%2770%27 font-size=%2762%27 text-anchor=%27middle%27>🐱</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai+Looped:wght@400;500;600&family=Pridi:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=21">
+    <style>
+        /* ใช้แค่หน้านี้ เลยไม่ย้ายไปไว้ใน style.css */
+        .xmas-wrap { max-width: 1000px; }
+        .xmas-frame {
+            margin-top: 28px;
+            background: #05070f;
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+        .xmas-frame canvas {
+            display: block;
+            width: 100%;
+            height: auto;
+            aspect-ratio: 952 / 720;
+            cursor: crosshair;
+            touch-action: manipulation;
+        }
+        .xmas-controls {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 12px;
+            margin-top: 16px;
+        }
+        .xmas-hint { margin: 0; color: var(--muted); font-size: 0.95rem; }
+        .xmas-frame noscript p { margin: 0; padding: 24px; color: #dfe6ff; }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="container nav-inner">
+            <div class="logo"><a href="index.html">nakcat</a></div>
+            <button class="menu-toggle" type="button" aria-label="เปิดเมนู" aria-expanded="false" aria-controls="site-menu">☰</button>
+            <ul class="menu" id="site-menu">
+                <li><a href="index.html#about">เกี่ยวกับ</a></li>
+                <li><a href="index.html#stories">บทความ</a></li>
+                <li><a href="index.html#starter">มือใหม่</a></li>
+                <li><a href="index.html#games">มินิเกม</a></li>
+                <li><a href="index.html#faq">ถาม-ตอบ</a></li>
+                <li><a href="index.html#contact" class="menu-cta">ติดต่อ</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main>
+        <header class="article-hero">
+            <div class="container xmas-wrap">
+                <a href="index.html#games" class="back-link">← กลับไปหน้ามินิเกม</a><br>
+                <span class="tag">ของเล่นท้ายปี</span>
+                <h1>ต้นคริสต์มาสตัวอักษร</h1>
+                <p class="article-lead">ทั้งภาพนี้ไม่มีรูปเลยสักรูป วาดด้วยตัวอักษรล้วน ๆ ทั้งต้นไม้ ไฟกะพริบ กล่องของขวัญ หิมะ และป่าสนข้างหลัง บนฟ้ามีนับถอยหลังถึงคริสต์มาสกับปีใหม่ ถึงเวลาเมื่อไรพลุจะจุดรัวเลย รอดูดี ๆ อาจเห็นซานต้าบินผ่านพระจันทร์ด้วย</p>
+
+                <div class="xmas-frame">
+                    <canvas id="xmas-canvas" width="952" height="720" role="img"
+                        aria-label="ภาพเคลื่อนไหวต้นคริสต์มาสสีเขียววาดด้วยตัวอักษร มีไฟหลากสีกะพริบ ดาวสีทองบนยอด กล่องของขวัญใต้ต้น แมวส้มนั่งกระดิกหาง หิมะตก ป่าสนสีน้ำเงินด้านหลัง ข้อความนับถอยหลังถึงคริสต์มาส และพลุบนฟ้า"></canvas>
+                    <noscript><p>หน้านี้ต้องเปิด JavaScript ถึงจะเห็นต้นคริสต์มาส</p></noscript>
+                </div>
+                <div class="xmas-controls">
+                    <button type="button" class="btn" id="xmas-fire">จุดพลุ</button>
+                    <button type="button" class="btn btn-ghost" id="xmas-lights">ไฟหลากสี</button>
+                    <button type="button" class="btn btn-ghost" id="xmas-toggle">หยุดไว้ก่อน</button>
+                    <p class="xmas-hint">คลิกบนฟ้า พลุจะแตกตรงนั้น ลองคลิกแมวข้างกล่องของขวัญดูด้วย</p>
+                </div>
+            </div>
+        </header>
+    </main>
+
+    <footer>
+        <div class="container footer-inner">
+            <a href="index.html" class="footer-logo">nakcat</a>
+            <p>&copy; 2026 nakcat. สงวนลิขสิทธิ์.</p>
+        </div>
+    </footer>
+
+    <script>
+        const menuToggle = document.querySelector('.menu-toggle');
+        const siteMenu = document.querySelector('#site-menu');
+        menuToggle.addEventListener('click', () => {
+            const isOpen = siteMenu.classList.toggle('is-open');
+            menuToggle.setAttribute('aria-expanded', String(isOpen));
+            menuToggle.textContent = isOpen ? '✕' : '☰';
+        });
+    </script>
+    <script src="xmas.js"></script>
+    <script src="api.js"></script>
+    <script src="visits.js"></script>
+    <script src="app.js" defer></script>
+</body>
+</html>

@@ -7,3 +7,5 @@ api/obj/
 *.db-wal
 _old/
 .vscode/
+.venv/
+__pycache__/
