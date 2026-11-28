@@ -59,8 +59,8 @@ RAIN_BASE = (0.06, 0.20)        # ความสว่างพื้นขอ�
 GLITCH_EVERY = (0.35, 1.4)      # glitch เกิดห่างกันกี่วินาที
 
 # ช่วง 2-3: หลุมดำ
-HOLE_BIRTH_RADIUS = 36.0        # รัศมีหลุมตอนจบช่วง 2
-HOLE_MAX_RADIUS = 100.0         # รัศมีหลุมตอนกลืนครบทุกตัว
+HOLE_BIRTH_RADIUS = 44.0        # รัศมีหลุมตอนจบช่วง 2
+HOLE_MAX_RADIUS = 150.0         # รัศมีหลุมตอนกลืนครบทุกตัว
 LENS_FACTOR = 2.1               # รัศมีวงแหวนไอน์สไตน์ = ค่านี้ × รัศมีหลุม (ยิ่งมาก เลนส์ยิ่งแรง)
 LENS_TWIST = 0.9                # บิดมุมตัวอักษรรอบหลุมมากแค่ไหน
 PHOTON_RING = 1.22              # รัศมีวงแหวนแสงของหลุมดำเล็ก = ค่านี้ × รัศมีหลุม
@@ -92,6 +92,8 @@ SHOCK_SPEED = 1150.0
 BLAST_SHAKE = 24.0              # จอสั่นตอนระเบิดแรงแค่ไหน (พิกเซล)
 BLAST_FX = True                 # วงคลื่นแสง + เส้นแสงแนวนอน + แกนเรืองกลางจอตอนระเบิด (False = แบบเดิม)
 SWALLOW_STARS = True            # ดาวพื้นหลังจาง ๆ ช่วงดูดกลืน (ถูกเลนส์หลุมดำบิดด้วย)
+BLAST_CORE = 0.07               # สัดส่วนตัวอักษรที่พุ่งช้า ๆ ค้างกลางจอเป็นแกนดาวที่เพิ่งเกิด (0 = กลางจอว่าง)
+BLAST_RAYS = 2.4                # ความแรงของลำแสงที่แผ่ออกรอบทิศตอนระเบิด (0 = ไม่มี)
 
 # ช่วง 5: กาแล็กซี
 GALAXY_ARMS = 3                 # จำนวนแขน (2-4 สวย)
@@ -134,6 +136,7 @@ COLORS = {
     "shock2": (1.00, 0.50, 0.18),
     "streak": (0.55, 0.75, 1.00),
     "remnant": (1.00, 0.86, 0.62),
+    "rays": (1.00, 0.93, 0.78),
 }
 
 # ================================================================== ค่าที่คำนวณจาก CONFIG
@@ -335,9 +338,11 @@ def make_flash_texture(w, h):
     """แสงวาบตอนระเบิด: สว่างกลางจอ จางออกไปรอบ ๆ"""
     yy, xx = np.mgrid[0:h, 0:w]
     d = np.hypot((xx - w / 2) / (w / 2), (yy - h / 2) / (w / 2))
-    v = np.exp(-(d / 0.35) ** 2) + 0.25 * np.exp(-(d / 1.0) ** 2)
-    arr = (np.clip(v, 0, 1) * 255).astype(np.uint8).T
-    return pygame.surfarray.make_surface(np.repeat(arr[..., None], 3, 2)).convert()
+    core = np.exp(-(d / 0.2) ** 2)                                       # กลางจอขาว
+    warm = 0.55 * np.exp(-(d / 0.45) ** 2) + 0.25 * np.exp(-(d / 1.0) ** 2)   # รอบนอกทองอมส้ม
+    rgb = core[..., None] * np.ones(3) + warm[..., None] * np.array([1.0, 0.62, 0.28])
+    arr = (np.clip(rgb, 0, 1) * 255).astype(np.uint8).transpose(1, 0, 2)
+    return pygame.surfarray.make_surface(arr).convert()
 
 
 # ================================================================== หลุมดำเล็กจากการคลิก
@@ -600,6 +605,13 @@ class Sim:
         self.vel[:, 1] = np.sin(ang) * speed * 0.8
         # ตัวที่พุ่งเร็วยังร้อนขาวอยู่นาน ตัวที่ช้าเย็นเป็นส้มแดงเร็ว ลูกไฟเลยไล่สีจากขอบขาวเข้าหาข้างในแดง
         self.cool = BLAST_COOL * ((0.35 + 1.3 * ((speed - lo) / (hi - lo)) ** 0.7) if BLAST_FX else np.ones(n))
+        if BLAST_FX and BLAST_CORE > 0:
+            # ส่วนหนึ่งพุ่งช้ามาก ไปค้างอยู่กลางจอเป็นแกนดาวที่เพิ่งเกิด ร้อนนาน กลางลูกไฟเลยไม่เป็นรูมืด
+            core = rng.random(n) < BLAST_CORE
+            speed[core] = 8 + 290 * rng.random(int(core.sum())) ** 1.4
+            self.cool[core] = BLAST_COOL * 2.6
+            self.vel[core, 0] = np.cos(ang[core]) * speed[core]
+            self.vel[core, 1] = np.sin(ang[core]) * speed[core] * 0.8
         self.state[:] = BLAST
         self.owner[:] = 0
         self.blast_done = True
@@ -682,7 +694,7 @@ class Sim:
         if ph == 1:
             self.R_target = HOLE_BIRTH_RADIUS * (0.04 + 0.96 * float(smooth((tp - 0.2) / (dur - 0.5)))) if tp > 0.2 else 0.0
         elif ph == 2:
-            self.R_target = HOLE_BIRTH_RADIUS + (HOLE_MAX_RADIUS - HOLE_BIRTH_RADIUS) * math.sqrt(self.swallowed / self.n)
+            self.R_target = HOLE_BIRTH_RADIUS + (HOLE_MAX_RADIUS - HOLE_BIRTH_RADIUS) * (self.swallowed / self.n) ** 0.45
         elif ph == 3:
             u = tp / COLLAPSE_SECONDS
             self.R_target = self.R_collapse * (1 - float(smooth(u))) + 2.0 * min(u, 1) if tp < COLLAPSE_SECONDS + DARK_SECONDS else 0.0
@@ -1048,6 +1060,9 @@ class Sim:
             cool = self.cool[i]
             heat = np.exp(-since / cool)
             b_blast = 0.4 + 0.6 * heat
+            # ตัวอักษรกองแน่นกลางจอตอนเพิ่งระเบิด ถ้าสว่างเต็มที่จะขาวทึบทั้งก้อน เลยหรี่ลงช่วงแรกแล้วค่อยสว่างขึ้น
+            ramp = (0.4 + 0.6 * float(smooth(since / 0.9))) if BLAST_FX else 1.0
+            b_blast = b_blast * ramp
             tone_blast = HEAT0 + (heat * 15.99).astype(int)
             x, y = self.pos[i, 0], self.pos[i, 1]
             if ph == 4:
@@ -1063,11 +1078,11 @@ class Sim:
                 tone = np.where(on, self.gal_tone[i], tone_blast)
                 tone = np.where(self.boost[i] > 0.35, HEAT0 + 15, tone)
                 kind = self.gal_kind[i]
-                gw_blast = (0.25 + 0.55 * heat) if BLAST_FX else (0.3 + heat)   # ลดแสงฟุ้งลงหน่อย ไม่ให้ลูกไฟขาวจ้าจนไม่เห็นสี
+                gw_blast = ((0.25 + 0.55 * heat) * ramp) if BLAST_FX else (0.3 + heat)   # ลดแสงฟุ้งลงหน่อย ไม่ให้ลูกไฟขาวจ้าจนไม่เห็นสี
                 gw = np.where(on, np.where(kind == 0, 0.3, np.where(kind == 1, 0.32, 0.45)), gw_blast) + self.boost[i]
                 add(x, y, self.ch[i], tone, b, gw)
             else:
-                add(x, y, self.ch[i], tone_blast, b_blast, (0.25 + 0.55 * heat) if BLAST_FX else (0.3 + heat))
+                add(x, y, self.ch[i], tone_blast, b_blast, ((0.25 + 0.55 * heat) * ramp) if BLAST_FX else (0.3 + heat))
 
         # ตัวอักษรที่โคจรในดิสก์: ด้านหน้าเป็นแถบบางผ่านหน้าหลุม ด้านหลังถูกยกขึ้นเป็นโค้งเหนือหลุม
         if ph in (1, 2, 3) and self.R > 0.5:
@@ -1144,6 +1159,16 @@ class Renderer:
         self.fx_x = ((np.arange(self.ggw) + 0.5) * self.GLOW_DIV - CX)[:, None].astype(np.float32)
         self.fx_y = ((np.arange(self.ggh) + 0.5) * self.GLOW_DIV - CY)[None, :].astype(np.float32)
         self.fx_d = np.hypot(self.fx_x, self.fx_y / 0.92)
+        # ลำแสงรอบทิศตอนระเบิด: ความแรงตามมุม สุ่มเป็นเส้นใหญ่ไม่กี่เส้นกับเส้นเล็กจำนวนมาก
+        th = np.arctan2(self.fx_y / 0.92, self.fx_x)
+        rr = np.random.default_rng(3)
+        nb = 720
+        prof = 0.6 * rr.random(nb) ** 6
+        for a in rr.integers(0, nb, 9):
+            prof[(a + np.arange(-3, 4)) % nb] += np.exp(-np.arange(-3, 4) ** 2 / 3.0) * rr.uniform(0.6, 1.0)
+        for _ in range(3):                                   # เกลี่ยให้นุ่ม ไม่เป็นขั้นบันไดตอนขยายภาพ
+            prof = (prof + np.roll(prof, 1) + np.roll(prof, -1)) / 3
+        self.fx_ray = prof[(((th + np.pi) / (2 * np.pi)) * nb).astype(int) % nb].astype(np.float32)
         self.fx = []
         # เตรียมภาพปลายทางของการย่อ/ขยายไว้ใช้ซ้ำ (สร้างภาพเต็มจอใหม่ทุกเฟรมช้ากว่าเกือบ 3 เท่า)
         conv = lambda size: pygame.Surface(size).convert()
@@ -1215,9 +1240,9 @@ class Renderer:
                 c = int(255 * k)
                 fl.fill((c, c, c), special_flags=pygame.BLEND_RGB_MULT)
             screen.blit(fl, (sx, sy), special_flags=pygame.BLEND_RGB_ADD)
-            c = int(200 * math.exp(-since * 7))
-            if c > 0:
-                screen.fill((c, c, c), special_flags=pygame.BLEND_RGB_ADD)
+            c = 200 * math.exp(-since * 9)          # วาบทั้งจอสั้น ๆ สีขาวอมทอง
+            if c >= 1:
+                screen.fill((int(c), int(c * 0.82), int(c * 0.55)), special_flags=pygame.BLEND_RGB_ADD)
 
     def blast_fx(self, sim):
         """แสงประกอบฉากระเบิด วาดลงบัฟเฟอร์แสงเรือง (ความละเอียดต่ำ เลยแทบไม่กินแรงเครื่อง)
@@ -1251,10 +1276,19 @@ class Renderer:
             if a > 0.02:
                 line = np.exp(-(self.fx_y / (5 + 12 * since)) ** 2) * np.exp(-np.abs(self.fx_x) / (300 + 1300 * since))
                 out.append((a * line, COLORS["streak"], True))
-            a = 3.2 * math.exp(-since / 0.8)     # แกนเรืองสว่างที่ค้างกลางจอ (ดาวที่เพิ่งเกิด) แทนรูมืด ๆ ตรงกลางลูกไฟ
+            a = BLAST_RAYS * math.exp(-since / 0.45)   # ลำแสงพุ่งออกรอบทิศ ยืดยาวออกไปเรื่อย ๆ แล้วจางหาย
+            if a > 0.02:
+                L = 220 + 1500 * float(ease_out(min(since / 1.2, 1.0)))
+                out.append((a * self.fx_ray * np.exp(-d / L) * (1 - np.exp(-(d / 40) ** 2)), COLORS["rays"], False))
+        if 0 <= since < 8:
+            # แกนเรืองที่ค้างกลางจอ (ดาวที่เพิ่งเกิด): วาบแรงตอนแรก แล้วเหลือแสงทองเต้นช้า ๆ จนกาแล็กซีก่อตัว
+            a = 3.2 * math.exp(-since / 0.8)
+            b = (1.0 + 0.18 * math.sin(since * 7)) * math.exp(-since / 3.2) * (1 - float(smooth((since - 5) / 3)))
             if a > 0.02:
                 s = 36 + 16 * since
                 out.append((a * (np.exp(-(d / s) ** 2) + 0.35 * np.exp(-(d / (3 * s)) ** 2)), COLORS["remnant"], True))
+            if BLAST_CORE > 0 and b > 0.02:
+                out.append((b * (np.exp(-(d / 45) ** 2) + 0.4 * np.exp(-(d / 130) ** 2)), COLORS["remnant"], False))
         return out
 
     def draw_glow(self, x, y, tone, w, sx, sy, ph):
