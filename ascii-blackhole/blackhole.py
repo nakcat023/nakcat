@@ -14,7 +14,6 @@
     P       หยุด / เล่นต่อ                  + / -  ปรับความเร็ว
     L       เปิด / ปิดการวนรอบ             H      แสดง / ซ่อนแถบล่าง
     F       เต็มจอ                         Esc    ปิดโปรแกรม
-    M       เปิด / ปิดเสียง
 
 รันแบบไม่เปิดหน้าต่าง (เอาไว้เช็กภาพ):
     SDL_VIDEODRIVER=dummy python blackhole.py --fast --seconds 20 --shots 5,12,20
@@ -93,10 +92,6 @@ SHOCK_SPEED = 1150.0
 BLAST_SHAKE = 24.0              # จอสั่นตอนระเบิดแรงแค่ไหน (พิกเซล)
 BLAST_FX = True                 # วงคลื่นแสง + เส้นแสงแนวนอน + แกนเรืองกลางจอตอนระเบิด (False = แบบเดิม)
 SWALLOW_STARS = True            # ดาวพื้นหลังจาง ๆ ช่วงดูดกลืน (ถูกเลนส์หลุมดำบิดด้วย)
-
-# ---- เสียง (สังเคราะห์ด้วยโค้ด ไม่ต้องมีไฟล์เสียง) กด M เปิด/ปิดเสียงระหว่างเล่นได้
-SOUND = True
-SOUND_VOLUME = 0.7              # ความดังรวม 0..1
 
 # ช่วง 5: กาแล็กซี
 GALAXY_ARMS = 3                 # จำนวนแขน (2-4 สวย)
@@ -343,150 +338,6 @@ def make_flash_texture(w, h):
     v = np.exp(-(d / 0.35) ** 2) + 0.25 * np.exp(-(d / 1.0) ** 2)
     arr = (np.clip(v, 0, 1) * 255).astype(np.uint8).T
     return pygame.surfarray.make_surface(np.repeat(arr[..., None], 3, 2)).convert()
-
-
-# ================================================================== เสียง (สังเคราะห์ตอนเปิดโปรแกรม)
-def _band(rng, n, sr, lo, hi):
-    """noise ที่มีแต่ความถี่ช่วง lo..hi Hz (ขอบนุ่ม) ทำผ่าน FFT ผลที่ได้วนต่อหัวต่อท้ายได้สนิท"""
-    f = np.fft.rfftfreq(n, 1 / sr)
-    mask = smooth((f - 0.7 * lo) / (0.3 * lo + 1e-9)) * (1 - smooth((f - hi) / (0.4 * hi)))
-    x = np.fft.irfft(np.fft.rfft(rng.standard_normal(n)) * mask, n)
-    return x / (np.sqrt(np.mean(x * x)) + 1e-12)
-
-
-def _sweep(t, f, sr):
-    """คลื่น sine ที่ความถี่เปลี่ยนไปตามเวลา (f เป็น array ยาวเท่า t)"""
-    return np.sin(2 * np.pi * np.cumsum(f) / sr)
-
-
-def make_drone(rng, sr, secs=6.0):
-    """เสียงหึ่งต่ำ ๆ ของหลุมดำ (วนได้ไม่สะดุด) ความดังคุมทีละเฟรมตามที่ดูดกลืน"""
-    n = int(sr * secs)
-    t = np.arange(n) / sr
-    x = _band(rng, n, sr, 25, 110) + 0.4 * _band(rng, n, sr, 110, 380) + 0.05 * _band(rng, n, sr, 2000, 5000)
-    for f, a in ((55.0, 0.55), (331 / 6, 0.45), (82.5, 0.25), (110.0, 0.15)):   # ทุกความถี่ครบรอบพอดีใน 6 วิ
-        x += a * np.sin(2 * np.pi * f * t)
-    x *= 1 + 0.2 * np.sin(2 * np.pi * t / 3)          # หายใจช้า ๆ
-    return x / np.max(np.abs(x)) * 0.9
-
-
-def make_whoosh(rng, sr, dur):
-    """เสียงวูบดูดตอนหลุมยุบตัว: เสียงสูงขึ้นเรื่อย ๆ ดังขึ้นเรื่อย ๆ แล้วตัดเงียบทันที"""
-    n = int(sr * dur)
-    t = np.arange(n) / sr
-    x = np.zeros(n)
-    for k, ((lo, hi), w) in enumerate(zip(((80, 250), (250, 700), (700, 2000), (2000, 6000)), (1.0, 0.8, 0.55, 0.35))):
-        c = dur * (0.15 + 0.8 * k / 3)
-        x += w * _band(rng, n, sr, lo, hi) * np.exp(-((t - c) / (0.35 * dur)) ** 2)
-    x += 0.7 * _sweep(t, 40 + 70 * (t / dur) ** 2, sr)
-    x *= (t / dur) ** 1.5 * (1 - smooth((t - (dur - 0.03)) / 0.03))
-    return x / np.max(np.abs(x)) * 0.85
-
-
-def make_boom(rng, sr, dur=5.0):
-    """เสียงระเบิด: เสียงแตกสั้น ๆ + ก้อนเสียงต่ำหนัก ๆ + เบสที่ดิ่งลง + เสียงครืนยาวตามหลัง"""
-    n = int(sr * dur)
-    t = np.arange(n) / sr
-    x = (0.8 * _band(rng, n, sr, 1000, 9000) * np.exp(-t / 0.015)
-         + 1.0 * _band(rng, n, sr, 20, 180) * np.exp(-t / 1.2)
-         + 0.55 * _band(rng, n, sr, 180, 1500) * np.exp(-t / 0.35)
-         + 0.25 * _band(rng, n, sr, 1500, 8000) * np.exp(-t / 0.12)
-         + 0.4 * _band(rng, n, sr, 30, 120) * np.exp(-t / 2.5)
-         + 1.1 * _sweep(t, 28 + 40 * np.exp(-t / 0.5), sr) * np.exp(-t / 1.8))
-    x *= smooth(t / 0.004) * (1 - smooth((t - (dur - 0.6)) / 0.6))
-    x = np.tanh(2.0 * x / np.max(np.abs(x))) / math.tanh(2.0)
-    return x * 0.95
-
-
-def make_pad(rng, sr, secs=8.0):
-    """คอร์ดนุ่ม ๆ ลอย ๆ ช่วงกาแล็กซี (วนได้ไม่สะดุด)"""
-    n = int(sr * secs)
-    t = np.arange(n) / sr
-    x = 0.03 * _band(rng, n, sr, 3000, 8000)
-    for i, f in enumerate((110.0, 164.81, 220.0, 277.18, 329.63, 440.0)):
-        f = round(f * secs) / secs                    # ปัดให้ครบรอบพอดี วนแล้วไม่มีเสียงคลิก
-        a = 0.5 / (1 + 0.45 * i)
-        trem = 1 + 0.35 * np.sin(2 * np.pi * (1 + i % 3) / secs * t + i)
-        x += a * trem * (np.sin(2 * np.pi * f * t) + np.sin(2 * np.pi * (f + 1 / secs) * t)
-                         + 0.15 * np.sin(4 * np.pi * f * t))
-    return x / np.max(np.abs(x)) * 0.8
-
-
-def to_sound(x, channels, delay=12):
-    """array -1..1 → pygame Sound (สเตอริโอ: ช่องขวาช้ากว่าเล็กน้อย เสียงจะกว้างขึ้น)"""
-    y = (np.clip(x, -1, 1) * 32767).astype(np.int16)
-    if channels == 2:
-        y = np.column_stack([y, np.roll(y, delay)])
-    elif channels > 2:
-        y = np.repeat(y[:, None], channels, 1)
-    return pygame.sndarray.make_sound(np.ascontiguousarray(y))
-
-
-class Audio:
-    """เล่นเสียงตามเรื่อง: หึ่งต่ำตอนดูดกลืน, วูบตอนยุบตัว, เงียบตอนมืด, ตูมตอนระเบิด, คอร์ดนุ่มช่วงกาแล็กซี"""
-
-    def __init__(self):
-        self.on = False
-        self.muted = False
-        try:
-            if not pygame.mixer.get_init():
-                pygame.mixer.init(44100, -16, 2, 512)
-            sr, _, channels = pygame.mixer.get_init()
-            rng = np.random.default_rng(7)
-            self.drone = to_sound(make_drone(rng, sr), channels)
-            self.pad = to_sound(make_pad(rng, sr), channels)
-            self.whoosh = to_sound(make_whoosh(rng, sr, COLLAPSE_SECONDS), channels)
-            self.boom = to_sound(make_boom(rng, sr), channels, delay=25)
-            pygame.mixer.set_num_channels(8)
-            pygame.mixer.set_reserved(4)
-            self.ch_drone, self.ch_pad, self.ch_fx, self.ch_boom = (pygame.mixer.Channel(k) for k in range(4))
-            for ch, snd in ((self.ch_drone, self.drone), (self.ch_pad, self.pad)):
-                ch.set_volume(0.0)
-                ch.play(snd, loops=-1)
-        except (pygame.error, ValueError, TypeError) as e:
-            print(f"เปิดเสียงไม่ได้ เล่นต่อแบบไม่มีเสียง ({e})")
-            return
-        self.on = True
-        self.paused = False
-        self.v_drone = self.v_pad = 0.0
-        self.last = None                             # (phase, blast_t, t) ของเฟรมก่อน
-
-    def update(self, sim, dt, paused):
-        if not self.on:
-            return
-        if paused != self.paused:
-            (pygame.mixer.pause if paused else pygame.mixer.unpause)()
-            self.paused = paused
-        ph, tp = sim.phase, sim.tp
-        if self.last is not None:
-            last_ph, last_blast, last_t = self.last
-            if sim.t < last_t - 0.5:                 # กด R เริ่มใหม่
-                self.ch_fx.stop()
-                self.ch_boom.fadeout(300)
-            if ph == 3 and last_ph != 3:
-                self.ch_fx.play(self.whoosh)
-            if sim.blast_t != last_blast and sim.blast_t > -50:
-                self.ch_fx.fadeout(60)
-                self.ch_boom.play(self.boom)
-        self.last = (ph, sim.blast_t, sim.t)
-
-        dark = ph == 3 and tp >= COLLAPSE_SECONDS
-        if ph == 1:
-            drone = 0.3 * float(smooth(tp / PHASE_SECONDS[1]))
-        elif ph == 2:
-            drone = 0.3 + 0.7 * sim.growth(0.6)
-        elif ph == 3 and not dark:
-            drone = 1.0
-        else:
-            drone = 0.0
-        k = 1 - math.exp(-dt / (0.04 if dark else 0.5))   # ตอนมืดเงียบทันที ช่วงอื่นค่อย ๆ เปลี่ยน
-        self.v_drone += (drone - self.v_drone) * k
-        self.v_pad += (0.55 * sim.nebula_vis() - self.v_pad) * (1 - math.exp(-dt / 0.5))
-        master = 0.0 if self.muted else SOUND_VOLUME
-        self.ch_drone.set_volume(self.v_drone * master)
-        self.ch_pad.set_volume(self.v_pad * master)
-        self.ch_fx.set_volume(0.9 * master)
-        self.ch_boom.set_volume(master)
 
 
 # ================================================================== หลุมดำเล็กจากการคลิก
@@ -1518,7 +1369,7 @@ class Renderer:
 
 # ================================================================== โปรแกรมหลัก
 HELP = ("space: next phase   R: restart   click: mini black hole / supernova   "
-        "P: pause   +/-: speed   L: loop   M: sound   H: bar   F: fullscreen   esc: quit")
+        "P: pause   +/-: speed   L: loop   H: bar   F: fullscreen   esc: quit")
 SPEEDS = [0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 2.0, 3.0, 4.0]
 
 
@@ -1532,7 +1383,6 @@ def main():
     ap.add_argument("--seed", type=int, default=2026)
     ap.add_argument("--fast", action="store_true", help="ไม่รอเวลาจริง เดินเรื่องเฟรมละ 1/60 วิ (ไว้ทดสอบ)")
     ap.add_argument("--no-auto", action="store_true", help="ปิดการลดจำนวนตัวอักษรอัตโนมัติ")
-    ap.add_argument("--no-sound", action="store_true", help="ไม่เล่นเสียง")
     args = ap.parse_args()
     if sys.stdout is not None:
         try:
@@ -1541,10 +1391,6 @@ def main():
             pass
 
     headless = os.environ.get("SDL_VIDEODRIVER") == "dummy"
-    # เสียงไม่ตรงจังหวะถ้าเดินเรื่องแบบ --fast หรือรันแบบไม่เปิดหน้าต่าง เลยปิดไว้
-    use_sound = SOUND and not args.no_sound and not args.fast and not headless
-    if use_sound:
-        pygame.mixer.pre_init(44100, -16, 2, 512)
     pygame.init()
     flags = 0
     if not headless:
@@ -1562,7 +1408,6 @@ def main():
 
     sim = Sim(args.seed)
     ren = Renderer(screen)
-    audio = Audio() if use_sound else None
     auto =AUTO_REDUCE and not args.no_auto and not args.fast
     tails = True
     shots = sorted(float(s) for s in args.shots.split(",")) if args.shots else []
@@ -1617,12 +1462,6 @@ def main():
                     bar_until = real_t   # ปิดการปักไว้แล้วให้แถบหายเลย
                 elif e.key == pygame.K_f:
                     pygame.display.toggle_fullscreen()
-                elif e.key == pygame.K_m:
-                    if audio and audio.on:
-                        audio.muted = not audio.muted
-                        message, message_until = f"sound {'off' if audio.muted else 'on'}", real_t + 2
-                    else:
-                        message, message_until = "no sound", real_t + 2
             elif e.type == pygame.MOUSEBUTTONDOWN and e.button == 1:
                 sim.click(*e.pos)
             elif e.type == pygame.MOUSEMOTION and e.pos[1] > H - 70:
@@ -1641,8 +1480,6 @@ def main():
         if sim.events:
             message, message_until = sim.events[-1], real_t + 2.5
             sim.events.clear()
-        if audio:
-            audio.update(sim, frame_dt, paused)
 
         ren.draw(sim, tails)
         status = (f"phase {sim.phase + 1}/5 {PHASE_NAMES[sim.phase]}   {SPEEDS[speed_i]}x   "
