@@ -338,8 +338,8 @@ def make_flash_texture(w, h):
     """แสงวาบตอนระเบิด: สว่างกลางจอ จางออกไปรอบ ๆ"""
     yy, xx = np.mgrid[0:h, 0:w]
     d = np.hypot((xx - w / 2) / (w / 2), (yy - h / 2) / (w / 2))
-    core = np.exp(-(d / 0.2) ** 2)                                       # กลางจอขาว
-    warm = 0.55 * np.exp(-(d / 0.45) ** 2) + 0.25 * np.exp(-(d / 1.0) ** 2)   # รอบนอกทองอมส้ม
+    core = 0.9 * np.exp(-(d / 0.12) ** 2)                                # กลางจอขาว (แคบ ไม่เป็นแผ่นขาวทึบใหญ่)
+    warm = 0.55 * np.exp(-(d / 0.45) ** 2) + 0.12 * np.exp(-(d / 1.0) ** 2)   # รอบนอกทองอมส้ม
     rgb = core[..., None] * np.ones(3) + warm[..., None] * np.array([1.0, 0.62, 0.28])
     arr = (np.clip(rgb, 0, 1) * 255).astype(np.uint8).transpose(1, 0, 2)
     return pygame.surfarray.make_surface(arr).convert()
@@ -425,9 +425,10 @@ class Sim:
 
         core = kind == 0
         nc = core.sum()
-        r[core] = np.abs(rng.normal(0, 55, nc)) + 2
-        b[core] = rng.uniform(0.5, 0.9, nc)
-        tone[core] = CORE0 + np.clip((r[core] / 30).astype(int), 0, 5)
+        # แกนกลางกระจายกว้างและหรี่ลงหน่อย ตัวอักษร 2 พันกว่าตัวกองรวมกันจะได้ไม่สว่างจนเป็นก้อนขาวโพลน
+        r[core] = np.abs(rng.normal(0, 85, nc)) + 2
+        b[core] = rng.uniform(0.35, 0.75, nc)
+        tone[core] = CORE0 + np.clip((r[core] / 45).astype(int), 0, 5)
 
         arm = kind == 1
         na = arm.sum()
@@ -1079,7 +1080,7 @@ class Sim:
                 tone = np.where(self.boost[i] > 0.35, HEAT0 + 15, tone)
                 kind = self.gal_kind[i]
                 gw_blast = ((0.25 + 0.55 * heat) * ramp) if BLAST_FX else (0.3 + heat)   # ลดแสงฟุ้งลงหน่อย ไม่ให้ลูกไฟขาวจ้าจนไม่เห็นสี
-                gw = np.where(on, np.where(kind == 0, 0.3, np.where(kind == 1, 0.32, 0.45)), gw_blast) + self.boost[i]
+                gw = np.where(on, np.where(kind == 0, 0.12, np.where(kind == 1, 0.32, 0.45)), gw_blast) + self.boost[i]
                 add(x, y, self.ch[i], tone, b, gw)
             else:
                 add(x, y, self.ch[i], tone_blast, b_blast, ((0.25 + 0.55 * heat) * ramp) if BLAST_FX else (0.3 + heat))
@@ -1163,7 +1164,7 @@ class Renderer:
         th = np.arctan2(self.fx_y / 0.92, self.fx_x)
         rr = np.random.default_rng(3)
         nb = 720
-        prof = 0.6 * rr.random(nb) ** 6
+        prof = 0.35 * rr.random(nb) ** 8                     # พื้นระหว่างลำแสงมืด ลำแสงเลยเด่น ไม่เป็นสีน้ำตาลทั้งจอ
         for a in rr.integers(0, nb, 9):
             prof[(a + np.arange(-3, 4)) % nb] += np.exp(-np.arange(-3, 4) ** 2 / 3.0) * rr.uniform(0.6, 1.0)
         for _ in range(3):                                   # เกลี่ยให้นุ่ม ไม่เป็นขั้นบันไดตอนขยายภาพ
@@ -1210,9 +1211,10 @@ class Renderer:
             x = x + sx
             y = y + sy
             ok = (x > -10) & (x < W + 10) & (y > -12) & (y < H + 12) & (b > LEVEL_B[0] * 0.6)
-            # ตัวอักษรที่อยู่ในขอบฟ้าเหตุการณ์ไม่วาด (ยกเว้นดิสก์ส่วนที่อยู่หน้าหลุม)
+            # ตัวอักษรที่อยู่ในขอบฟ้าเหตุการณ์ไม่วาด ยกเว้นตัวที่อยู่หน้าหลุมและอยู่ในแถบดิสก์บาง ๆ ที่พาดผ่าน
+            # (ถ้าปล่อยทุกตัวที่อยู่ด้านหน้า ครึ่งล่างของเงาดำจะมีตัวอักษรรก ๆ เต็มไปหมด)
             if sim.R > 0.5:
-                ok &= (np.hypot(x - CX - sx, y - CY - sy) > sim.R) | front
+                ok &= (np.hypot(x - CX - sx, y - CY - sy) > sim.R) | (front & (np.abs(y - CY - sy) < 0.16 * sim.R))
             for m in sim.minis:
                 ok &= np.hypot(x - m.x - sx, y - m.y - sy) > m.radius()
             x, y, ch, tone, b, gw = x[ok], y[ok], ch[ok], tone[ok], np.minimum(b[ok], 1.0), gw[ok]
@@ -1240,7 +1242,7 @@ class Renderer:
                 c = int(255 * k)
                 fl.fill((c, c, c), special_flags=pygame.BLEND_RGB_MULT)
             screen.blit(fl, (sx, sy), special_flags=pygame.BLEND_RGB_ADD)
-            c = 200 * math.exp(-since * 9)          # วาบทั้งจอสั้น ๆ สีขาวอมทอง
+            c = 200 * math.exp(-since * 16)         # วาบทั้งจอสั้น ๆ สีขาวอมทอง (จางเร็ว ไม่ค้างเป็นสีน้ำตาลหม่นทั้งจอ)
             if c >= 1:
                 screen.fill((int(c), int(c * 0.82), int(c * 0.55)), special_flags=pygame.BLEND_RGB_ADD)
 
